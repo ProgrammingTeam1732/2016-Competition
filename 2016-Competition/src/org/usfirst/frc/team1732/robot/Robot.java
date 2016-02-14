@@ -9,23 +9,20 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class Robot extends SampleRobot {
 
-	final int STICK_LEFT_VERT = 1;
-	final int STICK_LEFT_HORI = 2;
-	final int STICK_RIGHT_VERT = 3;
-	final int STICK_TIGHT_HORT = 4;
-	
+	final int STICK_VERT = 1;
+	final int STICK_HORI = 2;
+
 	final double MOTOR_MIN = 0.1;
-	
-	final double ARM_POS_TOP = 45; 	// degrees
-	final double ARM_POS_BOT =  0; 	// degrees
-	
+
+	final double ARM_POS_TOP = 45; // degrees
+	final double ARM_POS_BOT = 0; // degrees
+
 	final int BUTTON_A = 0;
 	final int BUTTON_B = 1;
 	final int BUTTON_X = 2;
 	final int BUTTON_Y = 3;
 	final int BUTTON_R = 4;
 	final int BUTTON_L = 5;
-
 
 	CANTalon left_1;
 	CANTalon left_2;
@@ -54,34 +51,36 @@ public class Robot extends SampleRobot {
 	Encoder that_thing_that_hangs_encoder;
 
 	CANTalon defensomatic;
-	
-	Joystick controller;
+
+	Joystick joystick_left;
+	Joystick joystick_right;
 
 	public Robot() {
-		left_1 = new CANTalon(0);
-		left_2 = new CANTalon(1);
-		left_3 = new CANTalon(2);
-		right_1 = new CANTalon(3);
-		right_2 = new CANTalon(4);
-		right_3 = new CANTalon(6);
+		left_1 = new CANTalon(10);
+		left_2 = new CANTalon(11);
+		left_3 = new CANTalon(12);
+		right_1 = new CANTalon(13);
+		right_2 = new CANTalon(14);
+		right_3 = new CANTalon(15);
 
-		intakarino = new CANTalon(7);
+		intakarino = new CANTalon(16);
 
-		magic_fingers = new Solenoid(20, 0);
-		cocker = new CANTalon(8);
-		firer = new Solenoid(20, 1);
+		magic_fingers = new Solenoid(2, 0);
+		cocker = new CANTalon(17);
+		firer = new Solenoid(2, 1);
 
-		extendo = new CANTalon(9);
+		extendo = new CANTalon(18);
 		extendo_encoder = new Encoder(0, 1);
 		extendo_top = new DigitalInput(2);
 		extendo_bot = new DigitalInput(3);
-		
-		that_thing_that_hangs_1 = new CANTalon(10);
-		that_thing_that_hangs_2 = new CANTalon(10);
 
-		defensomatic = new CANTalon(11);
+		that_thing_that_hangs_1 = new CANTalon(19);
+		that_thing_that_hangs_2 = new CANTalon(20);
 
-		controller = new Joystick(0);
+		defensomatic = new CANTalon(21);
+
+		joystick_left = new Joystick(0);
+		joystick_right = new Joystick(1);
 
 	}
 
@@ -92,7 +91,7 @@ public class Robot extends SampleRobot {
 					System.out.println("Auto Running!");
 				}
 				while (isOperatorControl()) {
-					setMotors(controller.getRawAxis(STICK_LEFT_VERT), controller.getRawAxis(STICK_RIGHT_VERT));
+					setMotors(joystick_left.getRawAxis(STICK_VERT), joystick_right.getRawAxis(STICK_VERT));
 				}
 				if (!isAutonomous() && !isOperatorControl())
 					System.err.println("Enabled, but NOT Auto or Telep! Baka!");
