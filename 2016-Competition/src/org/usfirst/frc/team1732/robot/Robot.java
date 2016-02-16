@@ -92,7 +92,11 @@ public class Robot extends SampleRobot {
 				}
 				while (isOperatorControl()) {
 					setMotors(joystick_left.getRawAxis(STICK_VERT), joystick_right.getRawAxis(STICK_VERT));
-				}
+
+					}
+					
+				};
+				
 				if (!isAutonomous() && !isOperatorControl())
 					System.err.println("Enabled, but NOT Auto or Telep! Baka!");
 			}
@@ -125,6 +129,38 @@ public class Robot extends SampleRobot {
 		right_3.set(-right);
 	}
 
+	private void intakarino(boolean a1) {
+			if( a1 == true){
+				intakarino.set(1);
+			} else {
+				intakarino.set(0); 
+			}
+	}
+	private void intakamatic(boolean a3) {
+		if( a3 == true){
+			intakamatic.set(1);
+		} else {
+			intakamatic.set(0); 
+		}
+}
+	
+	private void magicfingers(boolean a2){
+		if(a2 == true) {
+				magic_fingers.set(true);
+		}else {
+				magic_fingers.set(false);
+		}
+	}
+    public void cockPult(boolean cock/*hahahah stfu*/){
+    	
+    if (cock == true){ // If the button is pushed, the follwing while loop is executed
+    	while( /*hall effect sensor #1*/ || /*hall effect sensor #2*/ != 1){ //If the hall sesnors are activated, the actuator is fully extended, so while the hall effect sensors ARE NOT 1, the motors cock the catapult back
+    		cockPult.set(1);
+    	} else {
+    			cockPult.set(0);//When the hall effect sensors are 1, meaning the acutators are fully extedned, the motor is set to 0.
+    		}
+    	}
+    }
 	/*
 	 * String autoSelected = (String) chooser.getSelected();
 	 * 
