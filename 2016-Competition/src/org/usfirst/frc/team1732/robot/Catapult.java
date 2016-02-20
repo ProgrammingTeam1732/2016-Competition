@@ -36,7 +36,7 @@ public class Catapult {
 	}
 	
 	public Catapult() {
-		latch = new Solenoid(2, 4);
+		latch = new Solenoid(2, 1);
 		reload = new CANTalon(11);
 		pot = new AnalogInput(1);
 		fingers = new Fingers();

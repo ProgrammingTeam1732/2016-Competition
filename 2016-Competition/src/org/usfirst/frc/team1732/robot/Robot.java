@@ -6,32 +6,32 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class Robot extends SampleRobot {
 
-	final int STICK_VERT = 1;
-	final int STICK_HORI = 0;
+	private final int STICK_VERT = 1;
+	private final int STICK_HORI = 0;
 	
-	final int CONTROL_LEFT_VERT = 1;
-	final int CONTROL_LEFT_HORI = 0;
-	final int CONTROL_RIGHT_VERT = 3;
-	final int CONTROL_RIGHT_HORI = 2;
+	private final int CONTROL_LEFT_VERT = 1;
+	private final int CONTROL_LEFT_HORI = 0;
+	private final int CONTROL_RIGHT_VERT = 3;
+	private final int CONTROL_RIGHT_HORI = 2;
 			
-	final int BUTTON_A = 2;
-	final int BUTTON_B = 3;
-	final int BUTTON_X = 1;
-	final int BUTTON_Y = 4;
-	final int BUTTON_LB = 5;
-	final int BUTTON_LT = 7;
-	final int BUTTON_RB = 6;
-	final int BUTTON_RT = 8;
+	private final int BUTTON_A = 2;
+	private final int BUTTON_B = 3;
+	private final int BUTTON_X = 1;
+	private final int BUTTON_Y = 4;
+	private final int BUTTON_LB = 5;
+	private final int BUTTON_LT = 7;
+	private final int BUTTON_RB = 6;
+	private final int BUTTON_RT = 8;
 
-	Drive drive;
-	Arm arm;
-	DefenseManipulator defense;
-	Hanger hanger;
-	Intake intake;
+	private Drive drive;
+	private Arm arm;
+	private DefenseManipulator defense;
+	private Hanger hanger;
+	private Intake intake;
 	
-	Joystick left;
-	Joystick right;
-	Joystick controller;
+	private Joystick left;
+	private Joystick right;
+	private Joystick controller;
 
 	public Robot() {
 		drive = new Drive();
@@ -62,8 +62,16 @@ public class Robot extends SampleRobot {
 						drive.drive(left.getRawAxis(STICK_VERT), right.getRawAxis(STICK_VERT));
 					}
 					if (SmartDashboard.getBoolean("Arm Enabled", false)) {
+						if (controller.getRawButton(BUTTON_LT)) {
+							arm.grab();
+						} else if (controller.getRawButton(BUTTON_RT)) {
+							arm.shoot();
+						} else {
+							arm.travel();
+						}
 					}
 					if (SmartDashboard.getBoolean("Defense Manipulator Enabled", false)) {
+						// do nothing
 					}
 					if (SmartDashboard.getBoolean("Intake Enabled", false)) {
 						if (controller.getRawButton(BUTTON_A)) {

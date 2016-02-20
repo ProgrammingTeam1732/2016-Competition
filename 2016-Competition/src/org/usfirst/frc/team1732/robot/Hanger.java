@@ -2,11 +2,13 @@ package org.usfirst.frc.team1732.robot;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.Solenoid;
 
 public class Hanger {
 	private CANTalon left;
 	private CANTalon right;
 	private AnalogInput pot;
+	private Solenoid solenoid; // baka
 	
 	private final static int BOT = 0;
 	private final static int TOP = 100;
@@ -26,6 +28,7 @@ public class Hanger {
 		left = new CANTalon(16);
 		right = new CANTalon(17);
 		pot = new AnalogInput(0);
+		solenoid = new Solenoid(2, 2);
 	}
 	
 	public void rotate() {

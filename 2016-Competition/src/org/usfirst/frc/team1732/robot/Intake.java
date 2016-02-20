@@ -5,13 +5,10 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class Intake {
 	private CANTalon motor;
-	private Solenoid left;
-	private Solenoid right;
+	private Solenoid solenoid;
 	
-	private static final boolean LEFT_UP = true;
-	private static final boolean RIGHT_UP = true;
-	private static final boolean LEFT_DOWN = false;
-	private static final boolean RIGHT_DOWN = false;
+	private static final boolean UP = true;
+	private static final boolean DOWN = false;
 	
 	private static final double INTAKE_SPEED = -0.5;
 	private static final double OUTPUT_SPEED = 0.5;
@@ -19,8 +16,7 @@ public class Intake {
 	
 	public Intake() {
 		motor = new CANTalon(10);
-		left = new Solenoid(2, 0);
-		right = new Solenoid(2, 1);
+		solenoid = new Solenoid(2, 3);
 	}
 	
 	public void setIn() {
@@ -36,13 +32,11 @@ public class Intake {
 	}
 	
 	public void setUp() {
-		left.set(LEFT_UP);
-		right.set(RIGHT_UP);
+		solenoid.set(UP);
 	}
 	
 	public void setDown() {
-		left.set(LEFT_DOWN);
-		right.set(RIGHT_DOWN);
+		solenoid.set(DOWN);
 	}
 	
 	public void disable() {
