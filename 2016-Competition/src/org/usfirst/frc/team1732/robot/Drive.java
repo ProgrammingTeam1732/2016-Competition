@@ -18,15 +18,15 @@ public class Drive {
 	private static final double STOP = 0;
 	
 	public Drive() {
-		left_1 = new CANTalon(13);
-		left_2 = new CANTalon(14);
+		left_1 = new CANTalon(14);
+		left_2 = new CANTalon(13);
 		left_3 = new CANTalon(15);
-		right_1 = new CANTalon(16);
-		right_2 = new CANTalon(17);
-		right_3 = new CANTalon(18);
+		right_1 = new CANTalon(20);
+		right_2 = new CANTalon(19);
+		right_3 = new CANTalon(21);
 		
 		left_encoder = new Encoder(0, 1);
-		right_encoder = new Encoder(1, 2);
+		right_encoder = new Encoder(2, 3);
 	}
 	
 	public void drive(double left, double right) {

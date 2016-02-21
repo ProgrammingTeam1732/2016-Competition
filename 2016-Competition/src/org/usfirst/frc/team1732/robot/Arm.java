@@ -79,9 +79,4 @@ public class Arm {
 			catapult.shoot(false, false);
 		}
 	}
-	
-	public void disable() {
-		raise.set(STOP);
-		catapult.disable();
-	}
 }

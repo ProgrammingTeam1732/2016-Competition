@@ -95,13 +95,6 @@ public class Robot extends SampleRobot {
 				if (!isAutonomous() && !isOperatorControl())
 					System.err.println("Enabled, but NOT Auto or Telep! Baka!");
 			}
-			while (isDisabled()) {
-				drive.disable();
-				arm.disable();
-				defense.disable();
-				intake.disable();
-				hanger.disable();
-			}
 			if (!isEnabled() && !isDisabled())
 				System.err.println("Not Enabled or Disabled? Coma? FUCK! What happened?");
 		}
