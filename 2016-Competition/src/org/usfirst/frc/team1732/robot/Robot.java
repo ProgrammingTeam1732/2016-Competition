@@ -1,19 +1,19 @@
 package org.usfirst.frc.team1732.robot;
 
-import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 
-public class Robot extends SampleRobot {
+public class Robot extends IterativeRobot {
 
 	private final int STICK_VERT = 1;
 	private final int STICK_HORI = 0;
-	
+
 	private final int CONTROL_LEFT_VERT = 1;
 	private final int CONTROL_LEFT_HORI = 0;
 	private final int CONTROL_RIGHT_VERT = 3;
 	private final int CONTROL_RIGHT_HORI = 2;
-			
+
 	private final int BUTTON_A = 2;
 	private final int BUTTON_B = 3;
 	private final int BUTTON_X = 1;
@@ -28,22 +28,23 @@ public class Robot extends SampleRobot {
 	private DefenseManipulator defense;
 	private Hanger hanger;
 	private Intake intake;
-	
+
 	private Joystick left;
 	private Joystick right;
 	private Joystick controller;
 
-	public Robot() {
+	@Override
+	public void robotInit() {
 		drive = new Drive();
 		arm = new Arm();
 		defense = new DefenseManipulator();
 		hanger = new Hanger();
 		intake = new Intake();
-		
+
 		left = new Joystick(0);
 		right = new Joystick(1);
 		controller = new Joystick(2);
-		
+
 		SmartDashboard.putBoolean("Drive Enabled", false);
 		SmartDashboard.putBoolean("Arm Enabled", false);
 		SmartDashboard.putBoolean("Defense Manipulator Enabled", false);
@@ -51,59 +52,40 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putBoolean("Hanger Enabled", false);
 	}
 
-	public void robotMain() {
-		while (true) {
-			while (isEnabled()) {
-				while (isAutonomous()) {
-					System.out.println("Auto Running!");
-				}
-				while (isOperatorControl()) {
-					if (SmartDashboard.getBoolean("Drive Enabled", false)) {
-						drive.drive(left.getRawAxis(STICK_VERT), right.getRawAxis(STICK_VERT));
-					}
-					if (SmartDashboard.getBoolean("Arm Enabled", false)) {
-						if (controller.getRawButton(BUTTON_LT)) {
-							arm.grab();
-						} else if (controller.getRawButton(BUTTON_RT)) {
-							arm.shoot();
-						} else {
-							arm.travel();
-						}
-					}
-					if (SmartDashboard.getBoolean("Defense Manipulator Enabled", false)) {
-						// do nothing
-					}
-					if (SmartDashboard.getBoolean("Intake Enabled", false)) {
-						if (controller.getRawButton(BUTTON_A)) {
-							intake.setDown();
-						} else if (controller.getRawButton(BUTTON_Y)) {
-							intake.setUp();
-						}
-						
-						if (controller.getRawButton(BUTTON_X)) {
-							intake.setIn();
-						} else if (controller.getRawButton(BUTTON_B)) {
-							intake.setOut();
-						} else {
-							intake.setStop();
-						}
-					}
-					if (SmartDashboard.getBoolean("Hanger Enabled", false)) {
-						// do nothing
-					}
-				}
-				if (!isAutonomous() && !isOperatorControl())
-					System.err.println("Enabled, but NOT Auto or Telep! Baka!");
+	@Override
+	public void teleopPeriodic() {
+		if (SmartDashboard.getBoolean("Drive Enabled", false)) {
+			drive.drive(left.getRawAxis(STICK_VERT), right.getRawAxis(STICK_VERT));
+		}
+		if (SmartDashboard.getBoolean("Arm Enabled", false)) {
+			if (controller.getRawButton(BUTTON_LT)) {
+				arm.grab();
+			} else if (controller.getRawButton(BUTTON_RT)) {
+				arm.shoot();
+			} else {
+				arm.travel();
 			}
-			while (isDisabled()) {
-				drive.disable();
-				arm.disable();
-				defense.disable();
-				intake.disable();
-				hanger.disable();
+		}
+		if (SmartDashboard.getBoolean("Defense Manipulator Enabled", false)) {
+			// do nothing
+		}
+		if (SmartDashboard.getBoolean("Intake Enabled", false)) {
+			if (controller.getRawButton(BUTTON_A)) {
+				intake.setDown();
+			} else if (controller.getRawButton(BUTTON_Y)) {
+				intake.setUp();
 			}
-			if (!isEnabled() && !isDisabled())
-				System.err.println("Not Enabled or Disabled? Coma? FUCK! What happened?");
+
+			if (controller.getRawButton(BUTTON_X)) {
+				intake.setIn();
+			} else if (controller.getRawButton(BUTTON_B)) {
+				intake.setOut();
+			} else {
+				intake.setStop();
+			}
+		}
+		if (SmartDashboard.getBoolean("Hanger Enabled", false)) {
+			// do nothing
 		}
 	}
 
