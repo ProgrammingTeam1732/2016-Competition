@@ -8,17 +8,18 @@ public class Drive {
 	private CANTalon left_1 = new CANTalon(14);
 	private CANTalon left_2 = new CANTalon(13);
 	private CANTalon left_3 = new CANTalon(15);
-	private Encoder left_encoder = new Encoder(2, 3);
+	//private Encoder left_encoder = new Encoder(2, 3);
 
 	private CANTalon right_1 = new CANTalon(20);
 	private CANTalon right_2 = new CANTalon(19);
 	private CANTalon right_3 = new CANTalon(21);
-	private Encoder right_encoder = new Encoder(0, 1);
+	//private Encoder right_encoder = new Encoder(0, 1);
 	
 	public void drive(double left, double right) {
 		SmartDashboard.putNumber("Drive Left", left);
 		SmartDashboard.putNumber("Drive Right", right);
-		
+		left = 0;
+		right = 0;
 		left *= -1;
 		left_1.set(left);
 		left_2.set(left);
@@ -27,7 +28,7 @@ public class Drive {
 		right_2.set(right);
 		right_3.set(right);
 		
-		SmartDashboard.putNumber("Encoder Left", left_encoder.get());
-		SmartDashboard.putNumber("Encoder Right", right_encoder.get());
+		//SmartDashboard.putNumber("Encoder Left", left_encoder.get());
+		//SmartDashboard.putNumber("Encoder Right", right_encoder.get());
 	}
 }

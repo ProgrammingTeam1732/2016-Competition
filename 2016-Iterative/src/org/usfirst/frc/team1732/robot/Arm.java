@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Arm {
 	private CANTalon motor = new CANTalon(18);
-	private AnalogInput pot = new AnalogInput(0);
+	private AnalogInput pot = new AnalogInput(1);
 		
 	private static final int LOW = 		500;
 	private static final int MIDDLE = 	1500;
@@ -16,11 +16,11 @@ public class Arm {
 	
 	private double previous_error = 0;
 	private double integral = 0;
-	private double setpoint;
+	private double setpoint = HIGH;
 	private long time = System.currentTimeMillis();
-	private double P = 1.0; // TODO
-	private double I = 1.0; // TODO
-	private double D = 1.0; // TODO
+	private double P = 1.0;
+	private double I = 0.0;
+	private double D = 0.0;
 	
 	public Arm() {
 		SmartDashboard.putNumber("Arm P", P);
@@ -37,9 +37,9 @@ public class Arm {
 		SmartDashboard.putNumber("Arm Pot", measured);
 		double dt = (System.currentTimeMillis() - time);
 		double error = setpoint - measured;
-		integral += error * dt;
+		integral += error * dt/1000.0;
 		double derivative = (error - previous_error) / dt;
-		double output = P * error + I * integral + D * derivative;
+		double output = (P/1000.0) * error + (I/1000.0) * integral + (D/1000.0) * derivative;
 		
 		motor.set(output);
 		

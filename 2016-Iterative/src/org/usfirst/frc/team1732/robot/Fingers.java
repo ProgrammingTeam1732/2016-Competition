@@ -8,7 +8,11 @@ public class Fingers {
 	
 	private final static boolean OPEN = true;
 	private final static boolean CLOSED = false;
-		
+	
+	public Fingers() {
+		SmartDashboard.putBoolean("Fingers Open", solenoid.get() == OPEN); SmartDashboard.putBoolean("Fingers Closed", solenoid.get() == CLOSED);
+	}
+	
 	public void open()	{ solenoid.set(OPEN); 	SmartDashboard.putBoolean("Fingers Open", true); SmartDashboard.putBoolean("Fingers Closed", false);}
 	public void close()	{ solenoid.set(CLOSED);	SmartDashboard.putBoolean("Fingers Open", false); SmartDashboard.putBoolean("Fingers Closed", true);}
 }

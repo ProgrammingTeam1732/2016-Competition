@@ -7,7 +7,8 @@ public class RobotState {
 	public boolean ball;
 	
 	public boolean arm_aligned;
-	public boolean catapult_aligned;
+	public boolean catapult_aligned_out;
+	public boolean catapult_aligned_in;
 	
 	public boolean low;
 	public boolean middle;

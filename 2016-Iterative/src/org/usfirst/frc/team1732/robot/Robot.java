@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team1732.robot;
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,6 +19,12 @@ public class Robot extends IterativeRobot {
 	String autoSelected;
 	SendableChooser chooser;
 
+	Encoder one = new Encoder(0, 1);
+	Encoder two = new Encoder(2, 3);
+	Encoder thr = new Encoder(4, 5);
+	Encoder fou = new Encoder(6, 7);
+	
+	
 	Drive drive = new Drive();
 	Intake intake = new Intake();
 	Arm arm = new Arm();
@@ -36,53 +43,54 @@ public class Robot extends IterativeRobot {
 		chooser.addDefault("Default Auto", defaultAuto);
 		chooser.addObject("My Auto", customAuto);
 		SmartDashboard.putData("Auto choices", chooser);
+		
 		sm.addState(new State((RobotState rbs) -> {
 			return rbs.shoot;
 		} , (RobotState rbs) -> {
 			SmartDashboard.putString("State", "Waiting to shoot");
 			return new RobotInstruction();
 		})).addState(new State((RobotState rbs) -> {
-			return (System.currentTimeMillis() - rbs.start_time > 100 && rbs.arm_aligned && rbs.high) && rbs.next;
+			return (Math.abs(System.currentTimeMillis() - rbs.start_time) > 5000 && rbs.arm_aligned && rbs.high);
 		} , (RobotState rbs) -> {
 			SmartDashboard.putString("State", "Opening Fingers");
 			RobotInstruction rbi = new RobotInstruction();
 			rbi.fingers_open = true;
 			return rbi;
 		})).addState(new State((RobotState rbs) -> {
-			return System.currentTimeMillis() - rbs.start_time > 100 && rbs.next;
+			return Math.abs(System.currentTimeMillis() - rbs.start_time) > 5000;
 		} , (RobotState rbs) -> {
 			SmartDashboard.putString("State", "Shooting");
 			RobotInstruction rbi = new RobotInstruction();
 			rbi.catapult_release = true;
 			return rbi;
 		})).addState(new State((RobotState rbs) -> {
-			return rbs.catapult_aligned && rbs.next;
+			return rbs.catapult_aligned_out;
 		} , (RobotState rbs) -> {
 			SmartDashboard.putString("State", "Retrive Tram");
 			RobotInstruction rbi = new RobotInstruction();
 			rbi.catapult_out = true;
 			return rbi;
 		})).addState(new State((RobotState rbs) -> {
-			return System.currentTimeMillis() - rbs.start_time > 100 && rbs.next;
+			return Math.abs(System.currentTimeMillis() - rbs.start_time) > 5000;
 		} , (RobotState rbs) -> {
 			SmartDashboard.putString("State", "Latching Tram");
 			RobotInstruction rbi = new RobotInstruction();
 			rbi.catapult_latch = true;
 			return rbi;
 		})).addState(new State((RobotState rbs) -> {
-			return rbs.catapult_aligned && rbs.next;
+			return rbs.catapult_aligned_out;
 		} , (RobotState rbs) -> {
 			SmartDashboard.putString("State", "Pulling Tram");
 			RobotInstruction rbi = new RobotInstruction();
 			rbi.catapult_in = true;
 			return rbi;
 		})).addState(new State((RobotState rbs) -> {
-			return rbs.ball && rbs.next;
+			return rbs.ball;
 		} , (RobotState rbs) -> {
 			SmartDashboard.putString("State", "Waiting for Ball");
 			return new RobotInstruction();
 		})).addState(new State((RobotState rbs) -> {
-			return System.currentTimeMillis() - rbs.start_time > 100 && rbs.next;
+			return Math.abs(System.currentTimeMillis() - rbs.start_time) > 5000;
 		} , (RobotState rbs) -> {
 			SmartDashboard.putString("State", "Closing Fingers");
 			RobotInstruction rbi = new RobotInstruction();
@@ -127,37 +135,65 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during operator control
 	 */
 	public void teleopPeriodic() {
-		drive.drive(input.getLeftVertC(), input.getRightVertC()); // drive always
 		
+		SmartDashboard.putNumber("One", one.get());
+		SmartDashboard.putNumber("Two", two.get());
+		SmartDashboard.putNumber("Thr", thr.get());
+		SmartDashboard.putNumber("Fou", fou.get());
+		
+		SmartDashboard.putNumber("Current Time", System.currentTimeMillis());
+		
+		drive.drive(input.getLeftVertC(), input.getRightVertC()); // drive
+																	// always
+
 		RobotState rbs = new RobotState();
-		rbs.start_time = System.currentTimeMillis();
 		rbs.shoot = input.getB();
 		rbs.ball = input.getRT();
 		rbs.arm_aligned = arm.inDeadband();
-		rbs.catapult_aligned = catapult.inDeadband();
+		rbs.catapult_aligned_out = catapult.inDeadbandOut();
 		rbs.low = arm.isLow();
 		rbs.middle = arm.isMiddle();
 		rbs.high = arm.isHigh();
-		
+
 		RobotInstruction rbi = sm.process(rbs);
-		
-		if (rbi.catapult_in)		{ catapult.setIn(); }
-		else if (rbi.catapult_out)	{ catapult.setOut(); }
-		else { catapult.snap(); }
-		
-		if (rbi.catapult_latch) 		{ catapult.latch(); }
-		else if (rbi.catapult_release) 	{ catapult.release(); }
-		
-		if (rbi.fingers_open)		{ fingers.open(); }
-		else if (rbi.fingers_close)	{ fingers.close(); }
-		
-		if (rbs.catapult_aligned && catapult.isIn()) {
-			if (input.getA()) arm.setLow();
-			else if (input.getX()) arm.setMiddle();
-			else if (input.getY()) arm.setHigh();
-			else arm.snap();
+
+		if (rbi.catapult_in) {
+			catapult.setIn();
+		} else if (rbi.catapult_out) {
+			catapult.setOut();
 		} else {
-			arm.snap();
+			catapult.snap();
 		}
+
+		if (rbi.catapult_latch) {
+			catapult.latch();
+		}
+		if (rbi.catapult_release) {
+			catapult.release();
+		}
+
+		if (rbi.fingers_open) {
+			fingers.open();
+		} else if (rbi.fingers_close) {
+			fingers.close();
+		}
+
+			if (input.getA())
+				arm.setLow();
+			else if (input.getX())
+				arm.setMiddle();
+			else if (input.getY())
+				arm.setHigh();
+			else
+				arm.snap();
+		
+		if (arm.isHigh() && input.getLT()) {
+			intake.setUp();
+		} else if (input.getLB()) {
+			intake.setDown();
+		}
+		
+		if (input.getRB()) intake.setIn(); 
+		else intake.setStop();
 	}
 }
