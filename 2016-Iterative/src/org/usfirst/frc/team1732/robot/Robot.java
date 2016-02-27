@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot {
 	final String defaultAuto = "Default";
-	final String customAuto = "My Auto";
+	final String customAuto = "Miato";
 	String autoSelected;
 	SendableChooser chooser;
 
@@ -50,14 +50,14 @@ public class Robot extends IterativeRobot {
 			SmartDashboard.putString("State", "Waiting to shoot");
 			return new RobotInstruction();
 		})).addState(new State((RobotState rbs) -> {
-			return (Math.abs(System.currentTimeMillis() - rbs.start_time) > 5000 && rbs.arm_aligned && rbs.high);
+			return (Math.abs(System.currentTimeMillis() - rbs.start_time) > 500);
 		} , (RobotState rbs) -> {
 			SmartDashboard.putString("State", "Opening Fingers");
 			RobotInstruction rbi = new RobotInstruction();
 			rbi.fingers_open = true;
 			return rbi;
 		})).addState(new State((RobotState rbs) -> {
-			return Math.abs(System.currentTimeMillis() - rbs.start_time) > 5000;
+			return Math.abs(System.currentTimeMillis() - rbs.start_time) > 500;
 		} , (RobotState rbs) -> {
 			SmartDashboard.putString("State", "Shooting");
 			RobotInstruction rbi = new RobotInstruction();
@@ -71,7 +71,7 @@ public class Robot extends IterativeRobot {
 			rbi.catapult_out = true;
 			return rbi;
 		})).addState(new State((RobotState rbs) -> {
-			return Math.abs(System.currentTimeMillis() - rbs.start_time) > 5000;
+			return Math.abs(System.currentTimeMillis() - rbs.start_time) > 500;
 		} , (RobotState rbs) -> {
 			SmartDashboard.putString("State", "Latching Tram");
 			RobotInstruction rbi = new RobotInstruction();
@@ -90,7 +90,7 @@ public class Robot extends IterativeRobot {
 			SmartDashboard.putString("State", "Waiting for Ball");
 			return new RobotInstruction();
 		})).addState(new State((RobotState rbs) -> {
-			return Math.abs(System.currentTimeMillis() - rbs.start_time) > 5000;
+			return Math.abs(System.currentTimeMillis() - rbs.start_time) > 500;
 		} , (RobotState rbs) -> {
 			SmartDashboard.putString("State", "Closing Fingers");
 			RobotInstruction rbi = new RobotInstruction();

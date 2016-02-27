@@ -18,8 +18,8 @@ public class Drive {
 	public void drive(double left, double right) {
 		SmartDashboard.putNumber("Drive Left", left);
 		SmartDashboard.putNumber("Drive Right", right);
-		left = 0;
-		right = 0;
+		//left = 0;
+		//right = 0;
 		left *= -1;
 		left_1.set(left);
 		left_2.set(left);

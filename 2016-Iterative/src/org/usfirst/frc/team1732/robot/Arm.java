@@ -10,7 +10,7 @@ public class Arm {
 		
 	private static final int LOW = 		500;
 	private static final int MIDDLE = 	1500;
-	private static final int HIGH = 	2500;
+	private static final int HIGH = 	2800;
 	
 	private static final int RADIUS = 100;
 	

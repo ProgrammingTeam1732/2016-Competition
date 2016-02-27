@@ -4,5 +4,6 @@ import edu.wpi.first.wpilibj.CANTalon;
 
 public class DefenseManipulator {
 	@SuppressWarnings("unused")
-	private CANTalon manipulate = new CANTalon(18);
+	private CANTalon manipulate = new CANTalon(11);
 }
+ 
