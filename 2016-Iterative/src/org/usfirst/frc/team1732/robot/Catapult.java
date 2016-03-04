@@ -10,8 +10,8 @@ public class Catapult {
 	private CANTalon motor = new CANTalon(17);
 	private AnalogInput pot = new AnalogInput(0);
 	
-	private static final int IN = 		250;
-	private static final int OUT = 		2000;
+	private static final int IN = 		275;	// 250
+	private static final int OUT = 		1337;	// 2000
 	
 	private static final int RADIUS = 100;
 	
@@ -22,14 +22,16 @@ public class Catapult {
 	private double integral = 0;
 	private double setpoint = IN;
 	private long time = System.currentTimeMillis();
-	private double P = 1.0;
+	private double P = 5.0;
 	private double I = 0.0;
 	private double D = 0.0;
+	private double MAX = 0.5;
 	
 	public Catapult() {
 		SmartDashboard.putNumber("Catapult P", P);
 		SmartDashboard.putNumber("Catapult I", I);
 		SmartDashboard.putNumber("Catapult D", D);
+		SmartDashboard.putNumber("Catapult MAX", MAX);
 		
 		SmartDashboard.putBoolean("Latched", false);
 		SmartDashboard.putBoolean("Released", false);
@@ -40,6 +42,7 @@ public class Catapult {
 		P = SmartDashboard.getNumber("Catapult P", P);
 		I = SmartDashboard.getNumber("Catapult I", I);
 		D = SmartDashboard.getNumber("Catapult D", D);
+		MAX = SmartDashboard.getNumber("Catapult MAX", MAX);
 		
 		double dt = (System.currentTimeMillis() - time);
 		double measured = pot.getValue();
@@ -49,10 +52,10 @@ public class Catapult {
 		double derivative = (error - previous_error) / dt;
 		double output = (P/1000.0) * error + (I/1000.0) * integral + (D/1000.0) * derivative;
 		
-		motor.set(output);
+		motor.set(limit(output));
 		
 		SmartDashboard.putNumber("Catapult Setpoint", setpoint);
-		SmartDashboard.putNumber("Catapult Output", output);
+		SmartDashboard.putNumber("Catapult Output", limit(output));
 		SmartDashboard.putNumber("Catapult Error (P)", error);
 		SmartDashboard.putNumber("Catapult Integral (I)", integral);
 		SmartDashboard.putNumber("Catapult Derivative (D)", derivative);
@@ -69,11 +72,20 @@ public class Catapult {
 	public void latch() 	{ latch.set(LATCH);  SmartDashboard.putBoolean("Latched", true); SmartDashboard.putBoolean("Released", false);}
 	public void release() 	{ latch.set(RELEASE); SmartDashboard.putBoolean("Latched", false); SmartDashboard.putBoolean("Released", true); }
 	
+	public double limit(double in) {
+		if (in > MAX) return MAX;
+		else if (in < -MAX) return -MAX;
+		return in;
+	}
+	
 	public boolean inDeadbandOut() {
 		return Math.abs(OUT - pot.getValue()) < RADIUS;
 	}
 	public boolean inDeadbandIn() {
 		return Math.abs(IN - pot.getValue()) < RADIUS;
 	}
-
+	
+	public double getPos() {
+		return pot.getValue();
+	}
 }

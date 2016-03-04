@@ -2,6 +2,7 @@ package org.usfirst.frc.team1732.robot;
 
 public class RobotInstruction {
 	public boolean finished = false;
+	public boolean machine_finished = false;
 		
 	public boolean catapult_in = false;
 	public boolean catapult_out = false;
@@ -10,4 +11,7 @@ public class RobotInstruction {
 	
 	public boolean fingers_open = false;
 	public boolean fingers_close = false;	
+	
+	public double drive_left = 0;
+	public double drive_right = 0;
 }

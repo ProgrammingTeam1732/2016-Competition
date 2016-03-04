@@ -9,6 +9,10 @@ public class StateMachine {
 	private int current_state;
 	private long start = System.currentTimeMillis();
 	
+	public void reset() {
+		current_state = 0;
+	}
+	
 	public StateMachine addState(State in) {
 		states.add(in);
 		return this;

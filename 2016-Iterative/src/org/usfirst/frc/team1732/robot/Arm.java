@@ -8,9 +8,9 @@ public class Arm {
 	private CANTalon motor = new CANTalon(18);
 	private AnalogInput pot = new AnalogInput(1);
 		
-	private static final int LOW = 		500;
-	private static final int MIDDLE = 	1500;
-	private static final int HIGH = 	2800;
+	private static final int LOW = 		250;	// 500
+	private static final int MIDDLE = 	1300;	// 1500
+	private static final int HIGH = 	1800;	// 2800
 	
 	private static final int RADIUS = 100;
 	
@@ -21,17 +21,21 @@ public class Arm {
 	private double P = 1.0;
 	private double I = 0.0;
 	private double D = 0.0;
+	private double MAX = 0.5;
 	
 	public Arm() {
 		SmartDashboard.putNumber("Arm P", P);
 		SmartDashboard.putNumber("Arm I", I);
 		SmartDashboard.putNumber("Arm D", D);
+		SmartDashboard.putNumber("Arm MAX", MAX);
 	}
 	
 	public void snap() {
 		P = SmartDashboard.getNumber("Arm P", P);
 		I = SmartDashboard.getNumber("Arm I", I);
 		D = SmartDashboard.getNumber("Arm D", D);
+		MAX = SmartDashboard.getNumber("Arm MAX", MAX);
+		
 		
 		double measured = pot.getValue();
 		SmartDashboard.putNumber("Arm Pot", measured);
@@ -41,7 +45,7 @@ public class Arm {
 		double derivative = (error - previous_error) / dt;
 		double output = (P/1000.0) * error + (I/1000.0) * integral + (D/1000.0) * derivative;
 		
-		motor.set(output);
+		motor.set(limit(output));
 		
 		SmartDashboard.putNumber("Arm Setpoint", setpoint);
 		SmartDashboard.putNumber("Arm Output", output);
@@ -59,7 +63,17 @@ public class Arm {
 	public void setMiddle()	{ setpoint = MIDDLE;	snap(); }	public boolean isMiddle() 	{ return setpoint == MIDDLE; }
 	public void setHigh()	{ setpoint = HIGH;		snap(); }	public boolean isHigh() 	{ return setpoint == HIGH; }
 	
+	public double limit(double in) {
+		if (in > MAX) return MAX;
+		else if (in < -MAX) return -MAX;
+		return in;
+	}
+	
 	public boolean inDeadband() {
 		return Math.abs(setpoint - pot.getValue()) < RADIUS;
+	}
+	
+	public double getPos() {
+		return pot.getValue();
 	}
 }

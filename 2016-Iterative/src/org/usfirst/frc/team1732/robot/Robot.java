@@ -19,10 +19,10 @@ public class Robot extends IterativeRobot {
 	String autoSelected;
 	SendableChooser chooser;
 
-	Encoder one = new Encoder(0, 1);
-	Encoder two = new Encoder(2, 3);
-	Encoder thr = new Encoder(4, 5);
-	Encoder fou = new Encoder(6, 7);
+	// Encoder one = new Encoder(0, 1);
+	// Encoder two = new Encoder(2, 3);
+	// Encoder thr = new Encoder(4, 5);
+	// Encoder fou = new Encoder(6, 7);
 	
 	
 	Drive drive = new Drive();
@@ -33,6 +33,16 @@ public class Robot extends IterativeRobot {
 	Input input = new Input();
 
 	StateMachine sm = new StateMachine();
+	
+	StateMachine portcullis = new StateMachine();
+	StateMachine lowbar = new StateMachine();
+	StateMachine rough_terrain = new StateMachine();
+	StateMachine draw_bridge = new StateMachine();
+	StateMachine ramparts = new StateMachine();
+	StateMachine moat = new StateMachine();
+	StateMachine sally_port = new StateMachine();
+	StateMachine cheval_de_frise = new StateMachine();
+	StateMachine rock_wall = new StateMachine();
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -78,7 +88,7 @@ public class Robot extends IterativeRobot {
 			rbi.catapult_latch = true;
 			return rbi;
 		})).addState(new State((RobotState rbs) -> {
-			return rbs.catapult_aligned_out;
+			return rbs.catapult_aligned_in;
 		} , (RobotState rbs) -> {
 			SmartDashboard.putString("State", "Pulling Tram");
 			RobotInstruction rbi = new RobotInstruction();
@@ -97,9 +107,109 @@ public class Robot extends IterativeRobot {
 			rbi.fingers_close = true;
 			return rbi;
 		}));
-
+		
+		
+		rock_wall.addState(new State((RobotState rbs) -> {
+			return ((System.currentTimeMillis() - rbs.start_time > 10000) || (rbs.drive_right_dist > 1000) || (rbs.drive_left_dist > 1000)) && !(System.currentTimeMillis() - rbs.start_time > 5000);
+		} , (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.drive_left = 0.5;
+			rbi.drive_right = 0.5;
+			return rbi;
+		})).addState(new State((RobotState rbs) -> {
+			return true;
+		} , (RobotState rbs) -> {
+			RobotInstruction rbi =  new RobotInstruction();
+			rbi.machine_finished = true;
+			return rbi;
+		}));
+		
+		lowbar.addState(new State((RobotState rbs) -> {
+			return ((System.currentTimeMillis() - rbs.start_time > 10000) || (rbs.drive_right_dist > 1000) || (rbs.drive_left_dist > 1000)) && !(System.currentTimeMillis() - rbs.start_time > 5000);
+		} , (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.drive_left = 0.5;
+			rbi.drive_right = 0.5;
+			return rbi;
+		})).addState(new State((RobotState rbs) -> {
+			return true;
+		} , (RobotState rbs) -> {
+			RobotInstruction rbi =  new RobotInstruction();
+			rbi.machine_finished = true;
+			return rbi;
+		}));
+		
+		rough_terrain.addState(new State((RobotState rbs) -> {
+			return ((System.currentTimeMillis() - rbs.start_time > 10000) || (rbs.drive_right_dist > 1000) || (rbs.drive_left_dist > 1000)) && !(System.currentTimeMillis() - rbs.start_time > 5000);
+		} , (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.drive_left = 0.5;
+			rbi.drive_right = 0.5;
+			return rbi;
+		})).addState(new State((RobotState rbs) -> {
+			return true;
+		} , (RobotState rbs) -> {
+			RobotInstruction rbi =  new RobotInstruction();
+			rbi.machine_finished = true;
+			return rbi;
+		}));
+		
+		moat.addState(new State((RobotState rbs) -> {
+			return ((System.currentTimeMillis() - rbs.start_time > 10000) || (rbs.drive_right_dist > 1000) || (rbs.drive_left_dist > 1000)) && !(System.currentTimeMillis() - rbs.start_time > 5000);
+		} , (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.drive_left = 0.5;
+			rbi.drive_right = 0.5;
+			return rbi;
+		})).addState(new State((RobotState rbs) -> {
+			return true;
+		} , (RobotState rbs) -> {
+			RobotInstruction rbi =  new RobotInstruction();
+			rbi.machine_finished = true;
+			return rbi;
+		}));
+		
+		ramparts.addState(new State((RobotState rbs) -> {
+			return ((System.currentTimeMillis() - rbs.start_time > 10000) || (rbs.drive_right_dist > 1000) || (rbs.drive_left_dist > 1000)) && !(System.currentTimeMillis() - rbs.start_time > 5000);
+		} , (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.drive_left = 0.5;
+			rbi.drive_right = 0.5;
+			return rbi;
+		})).addState(new State((RobotState rbs) -> {
+			return true;
+		} , (RobotState rbs) -> {
+			RobotInstruction rbi =  new RobotInstruction();
+			rbi.machine_finished = true;
+			return rbi;
+		}));
+		
+		rock_wall.addState(new State((RobotState rbs) -> {
+			return ((System.currentTimeMillis() - rbs.start_time > 10000) || (rbs.drive_right_dist > 1000) || (rbs.drive_left_dist > 1000)) && !(System.currentTimeMillis() - rbs.start_time > 5000);
+		} , (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.drive_left = 0.5;
+			rbi.drive_right = 0.5;
+			return rbi;
+		})).addState(new State((RobotState rbs) -> {
+			return true;
+		} , (RobotState rbs) -> {
+			RobotInstruction rbi =  new RobotInstruction();
+			rbi.machine_finished = true;
+			return rbi;
+		}));
+		
+		
 	}
 
+	/*
+	 * rock_wall.addState(new State((RobotState rbs) -> {
+			
+		} , (RobotState rbs) -> {
+			
+		}));
+	 */
+	
 	/**
 	 * This autonomous (along with the chooser code above) shows how to select
 	 * between different autonomous modes using the dashboard. The sendable
@@ -136,10 +246,10 @@ public class Robot extends IterativeRobot {
 	 */
 	public void teleopPeriodic() {
 		
-		SmartDashboard.putNumber("One", one.get());
-		SmartDashboard.putNumber("Two", two.get());
-		SmartDashboard.putNumber("Thr", thr.get());
-		SmartDashboard.putNumber("Fou", fou.get());
+		// SmartDashboard.putNumber("One", one.get());
+		// SmartDashboard.putNumber("Two", two.get());
+		// SmartDashboard.putNumber("Thr", thr.get());
+		// SmartDashboard.putNumber("Fou", fou.get());
 		
 		SmartDashboard.putNumber("Current Time", System.currentTimeMillis());
 		
@@ -151,9 +261,12 @@ public class Robot extends IterativeRobot {
 		rbs.ball = input.getRT();
 		rbs.arm_aligned = arm.inDeadband();
 		rbs.catapult_aligned_out = catapult.inDeadbandOut();
+		rbs.catapult_aligned_in = catapult.inDeadbandIn();
 		rbs.low = arm.isLow();
 		rbs.middle = arm.isMiddle();
 		rbs.high = arm.isHigh();
+		rbs.drive_left_dist = drive.getLeft();
+		rbs.drive_right_dist = drive.getRight();
 
 		RobotInstruction rbi = sm.process(rbs);
 
@@ -195,5 +308,10 @@ public class Robot extends IterativeRobot {
 		
 		if (input.getRB()) intake.setIn(); 
 		else intake.setStop();
+	}
+	
+	public void disabledPeriodic() {
+		SmartDashboard.putNumber("Arm Disabled Pos", arm.getPos());
+		SmartDashboard.putNumber("Catapult Disabled Pos", catapult.getPos());
 	}
 }
