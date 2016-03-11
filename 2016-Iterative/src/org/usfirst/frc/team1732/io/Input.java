@@ -23,8 +23,10 @@ public class Input {
 	private final int BUTTON_LT = 7;
 	private final int BUTTON_RB = 6;
 	private final int BUTTON_RT = 8;
-	private final int BUTTON_SELECT = 11;
-	private final int BUTTON_START = 12;
+	private final int BUTTON_RS = 12;
+	private final int BUTTON_LS = 11;
+	private final int BUTTON_SELECT = 9;
+	private final int BUTTON_START = 10;
 	
 	public boolean getA()	{ return controller.getRawButton(BUTTON_A); }
 	public boolean getB()	{ return controller.getRawButton(BUTTON_B); }
@@ -36,6 +38,9 @@ public class Input {
 	public boolean getRT()	{ return controller.getRawButton(BUTTON_RT); }
 	public boolean getSTART()	{ return controller.getRawButton(BUTTON_START); }
 	public boolean getSELECT()	{ return controller.getRawButton(BUTTON_SELECT); }
+	public boolean getRS()	{ return controller.getRawButton(BUTTON_RS); }
+	public boolean getLS()	{ return controller.getRawButton(BUTTON_LS); }
+
 	
 	public double getLeftVertC()	{ return controller.getRawAxis(CONTROL_LEFT_VERT); }
 	public double getLeftHoriC()	{ return controller.getRawAxis(CONTROL_LEFT_HORI); }

@@ -31,7 +31,7 @@ public class Catapult {
 	private double P = 5.0;
 	private double I = 0.0;
 	private double D = 0.0;
-	private double MAX = 0.5;
+	private double MAX = 0.4;
 	
 	private Mode mode = Mode.Auto;
 	private long time = System.currentTimeMillis();

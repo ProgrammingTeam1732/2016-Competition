@@ -6,12 +6,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class StateMachine {
 	private ArrayList<State> states = new ArrayList<State>();
-	private int current_state;
+	private String current_state;
 	private long start = System.currentTimeMillis();
-	
-	public void reset() {
-		current_state = 0;
-	}
 	
 	public StateMachine addState(State in) {
 		states.add(in);
@@ -20,15 +16,30 @@ public class StateMachine {
 	
 	public RobotInstruction process(RobotState rbs) {
 		rbs.start_time = start;
-		RobotInstruction out = states.get(current_state).process(rbs);
-		if (out.finished) {
-			current_state++;
-			start = System.currentTimeMillis();
-			SmartDashboard.putNumber("Start Time", start);
-			if (current_state >= states.size()) {
-				current_state = 0;
+		
+		int state_index = -1;
+		
+		for (int i = 0; i < states.size(); i++) {
+			if (states.get(i).getName() == current_state) {
+				state_index = i;
+				break;
 			}
 		}
+		
+		if (state_index == -1) {
+			SmartDashboard.putString("State", "State not found: " + current_state);
+			return new RobotInstruction();
+		}
+		
+		RobotInstruction out = states.get(state_index).process(rbs);
+		
+		if (!out.next.equals(current_state)) {
+			current_state = out.next;
+			
+			start = System.currentTimeMillis();
+		}
+		
+		SmartDashboard.putString("State", current_state);
 		return out;
 	}
 }

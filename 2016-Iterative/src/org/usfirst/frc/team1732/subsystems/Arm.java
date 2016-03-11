@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Arm {
-	private CANTalon motor = new CANTalon(18);
+	private CANTalon motor = new CANTalon(10);
 	private AnalogInput pot = new AnalogInput(1);	
 	
 	private double previous_error = 0;
@@ -20,7 +20,7 @@ public class Arm {
 	private Mode mode = Mode.AutoHigh;
 	private Setpoints setpoint = Setpoints.High;
 	
-	private static final int RADIUS = 100;
+	private static final int RADIUS = 50;
 	private static final double UP_SPEED = 0.4;
 	private static final double DOWN_SPEED = -0.4;
 	private static final double STOP = 0;
@@ -35,9 +35,9 @@ public class Arm {
 	}
 	
 	private enum Setpoints {
-		Low(250),		// 500
-		Middle(1300),	// 1500
-		High(1800);		// 2800
+		Low(700),		// 500
+		Middle(2300),	// 1500
+		High(3600);		// 2800
 		
 		private final int _value;
 		Setpoints(int value) { _value = value; }

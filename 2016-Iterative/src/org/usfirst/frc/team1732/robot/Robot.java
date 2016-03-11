@@ -29,47 +29,89 @@ public class Robot extends IterativeRobot {
 	StateMachine sm = new StateMachine();
 
 	public void robotInit() {
-		sm.addState(new State((RobotState rbs) -> {
-			SmartDashboard.putString("State", "Waiting to shoot");
-			return new RobotInstruction();
-		}, (RobotState rbs) -> {
-			return rbs.shoot && (rbs.arm_aligned_high || rbs.arm_aligned_middle);
-		})).addState(new State((RobotState rbs) -> {
-			SmartDashboard.putString("State", "Opening Fingers");
-			RobotInstruction rbi = new RobotInstruction();
-			rbi.fingers_open = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			return (Math.abs(System.currentTimeMillis() - rbs.start_time) > 200);
-		})).addState(new State((RobotState rbs) -> {
-			SmartDashboard.putString("State", "Shooting");
-			RobotInstruction rbi = new RobotInstruction();
-			rbi.catapult_release = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			return Math.abs(System.currentTimeMillis() - rbs.start_time) > 200;
-		})).addState(new State((RobotState rbs) -> {
-			SmartDashboard.putString("State", "Retrive Tram");
-			RobotInstruction rbi = new RobotInstruction();
-			rbi.catapult_out = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			return rbs.catapult_aligned_out;
-		})).addState(new State((RobotState rbs) -> {
-			SmartDashboard.putString("State", "Latching Tram");
-			RobotInstruction rbi = new RobotInstruction();
-			rbi.catapult_latch = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			return Math.abs(System.currentTimeMillis() - rbs.start_time) > 500;
-		})).addState(new State((RobotState rbs) -> {
-			SmartDashboard.putString("State", "Pulling Tram");
-			RobotInstruction rbi = new RobotInstruction();
-			rbi.catapult_in = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			return rbs.catapult_aligned_in;
-		}));
+		
+		sm.addState(
+			new State("Wait to Shoot",
+				(RobotState rbs) -> {
+					return new RobotInstruction();
+				}, 
+				(RobotState rbs) -> {
+					if (rbs.shoot && (rbs.arm_aligned_high || rbs.arm_aligned_middle)) return "Open Fingers";
+					else return null;
+				}
+			)
+		);
+		
+		sm.addState(
+			new State("Open Fingers",
+				(RobotState rbs) -> {
+					RobotInstruction rbi = new RobotInstruction();
+					rbi.fingers_open = true;
+					return rbi;
+				}, 
+				(RobotState rbs) -> {
+					if ((Math.abs(System.currentTimeMillis() - rbs.start_time) > 200)) return "Shoot";
+					else return null;
+				}
+			)
+		);
+		
+		sm.addState(
+			new State("Shoot",
+				(RobotState rbs) -> {
+					SmartDashboard.putString("State", "Shooting");
+					RobotInstruction rbi = new RobotInstruction();
+					rbi.catapult_release = true;
+					return rbi;
+				},
+				(RobotState rbs) -> {
+					if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 200) return "Retrive Tram";
+					else return null;
+				}
+			)
+		);
+		
+		sm.addState(
+			new State("Retrive Tram",
+				(RobotState rbs) -> {
+					RobotInstruction rbi = new RobotInstruction();
+					rbi.catapult_out = true;
+					return rbi;
+				}, 
+				(RobotState rbs) -> {
+					if (rbs.catapult_aligned_out) return "Latch Tram";
+					else return null;
+				}
+			)
+		);
+		
+		sm.addState(
+			new State("Latch Tram",
+				(RobotState rbs) -> {
+					RobotInstruction rbi = new RobotInstruction();
+					rbi.catapult_latch = true;
+					return rbi;
+				}, 
+				(RobotState rbs) -> {
+					if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 500) return "Pull Tram";
+					else return null;
+				}
+			)
+		);
+		
+		sm.addState(
+			new State("Pull Tram",
+				(RobotState rbs) -> {
+					RobotInstruction rbi = new RobotInstruction();
+					rbi.catapult_in = true;
+					return rbi;
+				},
+				(RobotState rbs) -> {
+					if (rbs.catapult_aligned_in) return "Wait to Shoot";
+					else return null;
+				}
+			)
+		);
 	}
 
 	public void teleopPeriodic() {
@@ -108,9 +150,9 @@ public class Robot extends IterativeRobot {
 			catapult.release();
 		}
 
-		if (rbi.fingers_open) {
+		if (input.getRS()) {
 			fingers.open();
-		} else if (rbi.fingers_close) {
+		} else if (input.getLS()) {
 			fingers.close();
 		}
 
