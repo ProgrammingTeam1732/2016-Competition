@@ -13,12 +13,15 @@ import org.usfirst.frc.team1732.subsystems.Drive;
 import org.usfirst.frc.team1732.subsystems.Fingers;
 import org.usfirst.frc.team1732.subsystems.Intake;
 
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot {
 
+	
+	BuiltInAccelerometer bia = new BuiltInAccelerometer();
 	Drive drive = new Drive();
 	Intake intake = new Intake();
 	Arm arm = new Arm();
@@ -134,6 +137,9 @@ public class Robot extends IterativeRobot {
 
 	public void teleopPeriodic() {
 		SmartDashboard.putNumber("Test", test.get());
+		SmartDashboard.putNumber("Acc X", bia.getX());
+		SmartDashboard.putNumber("Acc Y", bia.getY());
+		SmartDashboard.putNumber("Acc Z", bia.getZ());
 		
 		drive.drive(input.getLeftVertJ() + input.getLeftVertC()/3, input.getRightVertJ() + input.getRightVertC()/3);
 
