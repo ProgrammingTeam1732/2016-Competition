@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class StateMachine {
 	private ArrayList<State> states = new ArrayList<State>();
-	private String current_state;
+	private String current_state = "Wait to Shoot";
 	private long start = System.currentTimeMillis();
 	
 	public StateMachine addState(State in) {

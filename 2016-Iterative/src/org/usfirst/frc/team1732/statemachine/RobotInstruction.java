@@ -4,6 +4,7 @@ public class RobotInstruction {
 	public String next = null;
 	public boolean machine_finished = false;
 		
+	public boolean catapult_load = false;
 	public boolean catapult_in = false;
 	public boolean catapult_out = false;
 	public boolean catapult_latch = false;

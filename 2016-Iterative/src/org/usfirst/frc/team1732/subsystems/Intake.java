@@ -11,8 +11,8 @@ public class Intake {
 	private static final boolean UP = false;
 	private static final boolean DOWN = true;
 
-	private static final double INTAKE_SPEED = 0.5;
-	private static final double OUTPUT_SPEED = -0.5;
+	private static final double INTAKE_SPEED = 0.70;
+	private static final double OUTPUT_SPEED = -0.70;
 	private static final double STOP = 0.0;
 	
 	public void setIn() 	{ motor.set(INTAKE_SPEED); 	SmartDashboard.putBoolean("Intake In", true); 	SmartDashboard.putBoolean("Intake Out", false); }
