@@ -58,7 +58,7 @@ public class Robot extends IterativeRobot {
 					return rbi;
 				},
 				(RobotState rbs) -> {
-					if (rbs.catapult_aligned_in && ((Math.abs(System.currentTimeMillis() - rbs.start_time) > 200))) return "Shoot";
+					if (rbs.catapult_aligned_in && ((Math.abs(System.currentTimeMillis() - rbs.start_time) > 500))) return "Shoot";
 					else return null;
 				}
 			)
@@ -179,20 +179,46 @@ public class Robot extends IterativeRobot {
 			catapult.release();
 		}
 
+		
+		if (input.getA()) {
+			if (arm.isLow()) {
+				// do nothing
+			} else if (catapult.inDeadbandLoad() && intake.isDown()) {
+				rbi.fingers_close = true;
+				arm.setLow();
+			}
+		} else if (input.getX()) {
+			if (arm.isLow()) {
+				if (catapult.inDeadbandLoad() && intake.isDown()) {
+					rbi.fingers_close = true;
+					arm.setMiddle();
+				}
+			} else if (arm.isMiddle()) {
+				// do nothing
+			} else {
+				if (intake.isDown()) {
+					arm.setMiddle();
+				}
+			}
+		} else if (input.getY()) {
+			if (arm.isLow()) {
+				if (catapult.inDeadbandLoad() && intake.isDown()) {
+					rbi.fingers_close = true;
+					arm.setHigh();
+				}
+			} else {
+				arm.setHigh();
+			}
+		} else {
+			arm.run();
+		}
+		
+
 		if (input.getRS()||rbi.fingers_open) {
 			fingers.open();
-		} else if (input.getLS()) {
+		} else if (input.getLS()||rbi.fingers_close) {
 			fingers.close();
 		}
-
-		if (input.getA() /*&& intake.isDown() && catapult.inDeadbandIn()*/)
-			arm.setLow();
-		else if (input.getX() && intake.isDown())
-			arm.setMiddle();
-		else if (input.getY() && intake.isDown())
-			arm.setHigh();
-		else
-			arm.run();
 
 		if (/*arm.isHigh() &&*/ input.getLB()) {
 			intake.setUp();

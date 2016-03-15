@@ -12,8 +12,8 @@ public class Catapult {
 	
 	private enum Mode { Auto, Manual }
 	
-	static int Load = 350; 
-	static int In = (620);		// 250
+	static int Load = 250; 
+	static int In = (590);		// 250
 	static int Out = (1800);		// 2000
 		
 	
@@ -23,7 +23,7 @@ public class Catapult {
 	
 	private double previous_error = 0;
 	private double integral = 0;
-	private int setpoint = In;
+	private int setpoint = Load;
 	private double P = 5.0;
 	private double I = 0.0;
 	private double D = 0.0;
