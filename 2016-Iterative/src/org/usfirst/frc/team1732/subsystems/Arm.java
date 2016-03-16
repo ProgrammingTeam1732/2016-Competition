@@ -13,10 +13,11 @@ public class Arm {
 	private double integral = 0;
 	private long time = System.currentTimeMillis();
 
-	private double P = -3.0;
+	private double P = -8.0;
 	private double I = 0.0;
 	private double D = 0.0;
 	private double MAX = 0.8;
+	private double MIN = 0.2;
 	private double RAMP = 0.5; 
 
 	private Mode mode = Mode.AutoHigh;
@@ -31,8 +32,8 @@ public class Arm {
 		AutoHigh, AutoMiddle, AutoLow, ManualUp, ManualDown, ManualStop
 	}
 
-	static int Low = (575); // 500
-	static int Middle = (2300); // 1500
+	static int Low = (750); // 500
+	static int Middle = (2500); // 1500
 	static int High = (3150); // 2800
 
 	public Arm() {
@@ -81,10 +82,10 @@ public class Arm {
 			else if (isMiddle() && inDeadbandMiddle()) output = 0;
 			else if (isLow() && inDeadbandLow()) output = 0;
 			
-			motor.set(limit(output));
+			motor.set(limit(limit_low(output)));
 
 			SmartDashboard.putNumber("Arm Setpoint", setpoint);
-			SmartDashboard.putNumber("Arm Output", output);
+			SmartDashboard.putNumber("Arm Output", limit(limit_low(output)));
 			SmartDashboard.putNumber("Arm Error (P)", error);
 			SmartDashboard.putNumber("Arm Integral (I)", integral);
 			SmartDashboard.putNumber("Arm Derivative (D)", derivative);
@@ -142,6 +143,11 @@ public class Arm {
 		return setpoint == High;
 	}
 
+	public double limit_low(double in) {
+		if (in < MIN && in > -1 * MIN) return 0;
+		else return in;
+	}
+	
 	public double limit(double in) {
 		if (in > MAX)
 			return MAX;

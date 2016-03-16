@@ -7,8 +7,7 @@ public class RobotState {
 	public int drive_left_dist;
 	
 	public boolean shoot;
-	public boolean ball;
-	
+		
 	public boolean arm_aligned_high;
 	public boolean arm_aligned_middle;
 	public boolean arm_aligned_low;

@@ -9,6 +9,10 @@ public class StateMachine {
 	private String current_state = "Wait to Shoot";
 	private long start = System.currentTimeMillis();
 	
+	public void setState(String state) {
+		current_state = state;
+	}
+	
 	public StateMachine addState(State in) {
 		states.add(in);
 		return this;

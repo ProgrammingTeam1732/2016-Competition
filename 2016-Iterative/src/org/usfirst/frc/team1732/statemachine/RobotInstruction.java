@@ -15,4 +15,17 @@ public class RobotInstruction {
 	
 	public double drive_left = 0;
 	public double drive_right = 0;
+	
+	public boolean intake_down = false;
+	public boolean intake_up = false;
+	public boolean intake_in = false;
+	public boolean intake_out = false;
+	
+	public boolean arm_high = false;
+	public boolean arm_middle = false;
+	public boolean arm_low = false;
+	
+	public boolean defense_down = false;
+	public boolean defense_up = false;
+	
 }
