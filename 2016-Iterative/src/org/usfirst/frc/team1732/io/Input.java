@@ -5,12 +5,43 @@ import edu.wpi.first.wpilibj.Joystick;
 public class Input {
 	private Joystick left = new Joystick(0);
 	private Joystick right = new Joystick(1);
-	private Joystick controller = new Joystick(2);
+	//private Joystick controller = new Joystick(2);
 
+	private Joystick button1 = new Joystick(2);
+	private Joystick button2 = new Joystick(3);
+	
 	private final int STICK_VERT = 1;
 	private final int STICK_HORI = 0;
 	
-	private final int CONTROL_LEFT_VERT = 1;
+	public boolean getManipulatorUp() { return button2.getRawButton(11); }
+	public boolean getManipulatorNot() { return !getManipulatorUp() && !getManipulatorDown(); }
+	public boolean getManipulatorDown() { return button2.getRawButton(12); }
+	
+	public boolean getArmHigh() { return button1.getRawButton(9); }
+	public boolean getArmMiddle() { return button1.getRawButton(8); }
+	public boolean getArmLow() { return button1.getRawButton(10); }
+	
+	//public boolean getArmUp() { return button2.getRawButton(3); }
+	//public boolean getArmNot() { return !getArmUp() && !getArmDown(); }
+	//public boolean getArmDown() { return button2.getRawButton(2); }
+	
+	public boolean getShoot() { return  button2.getRawButton(1); }
+	
+	public boolean getClimberUp() { return button1.getRawButton(11); }
+	public boolean getClimberDown() { return button1.getRawButton(12); }
+	
+	public boolean getFingersOpen() { return button1.getRawButton(5); }
+	public boolean getFingersNot() { return !getFingersOpen() && !getFingersClose(); }
+	public boolean getFingersClose() { return button1.getRawButton(6); }
+
+	public boolean getIntakeUp() { return button1.getRawButton(2); }
+	public boolean getIntakeNot() { return !getIntakeUp() && !getIntakeDown(); }
+	public boolean getIntakeDown() { return button1.getRawButton(1); }
+	
+	public boolean getIntakeIn() { return button1.getRawButton(3); }
+	public boolean getIntakeOut() { return button1.getRawButton(4); }
+	
+	/*private final int CONTROL_LEFT_VERT = 1;
 	private final int CONTROL_LEFT_HORI = 0;
 	private final int CONTROL_RIGHT_VERT = 3;
 	private final int CONTROL_RIGHT_HORI = 2;
@@ -45,11 +76,11 @@ public class Input {
 	public double getLeftVertC()	{ return controller.getRawAxis(CONTROL_LEFT_VERT); }
 	public double getLeftHoriC()	{ return controller.getRawAxis(CONTROL_LEFT_HORI); }
 	public double getRightVertC()	{ return controller.getRawAxis(CONTROL_RIGHT_VERT); }
-	public double getRightHoriC()	{ return controller.getRawAxis(CONTROL_RIGHT_HORI); }
+	public double getRightHoriC()	{ return controller.getRawAxis(CONTROL_RIGHT_HORI); } */
 	
-	public double getLeftVertJ()	{ return left.getRawAxis(STICK_VERT); }
-	public double getLeftHoriJ()	{ return left.getRawAxis(STICK_HORI); }
-	public double getRightVertJ()	{ return right.getRawAxis(STICK_VERT); }
-	public double getRightHoriJ()	{ return right.getRawAxis(STICK_HORI); }
+	public double getLeftVert()	{ return left.getRawAxis(STICK_VERT); }
+	public double getLeftHori()	{ return left.getRawAxis(STICK_HORI); }
+	public double getRightVert()	{ return right.getRawAxis(STICK_VERT); }
+	public double getRightHori()	{ return right.getRawAxis(STICK_HORI); }
 
 }

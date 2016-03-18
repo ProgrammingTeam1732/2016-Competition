@@ -15,13 +15,10 @@ public class RobotState {
 	public boolean catapult_aligned_out;
 	public boolean catapult_aligned_load;
 	public boolean catapult_aligned_in;
-	
-	public boolean low;
-	public boolean middle;
-	public boolean high;
-		
-	public boolean next;
-	
+				
 	public boolean fingers_closed;
 	public boolean fingers_open;
+	
+	public boolean intake_down;
+	public boolean intake_up;
 }

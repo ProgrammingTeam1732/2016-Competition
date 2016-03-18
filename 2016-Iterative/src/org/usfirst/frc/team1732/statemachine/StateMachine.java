@@ -13,6 +13,10 @@ public class StateMachine {
 		current_state = state;
 	}
 	
+	public String getState() {
+		return current_state;
+	}
+	
 	public StateMachine addState(State in) {
 		states.add(in);
 		return this;

@@ -13,28 +13,26 @@ public class Arm {
 	private double integral = 0;
 	private long time = System.currentTimeMillis();
 
-	private double P = -8.0;
+	private double P = 5.0;
 	private double I = 0.0;
 	private double D = 0.0;
 	private double MAX = 0.8;
 	private double MIN = 0.2;
-	private double RAMP = 0.5; 
+	private double RAMP = 0.5;
 
-	private Mode mode = Mode.AutoHigh;
 	private int setpoint = High;
+	//private int dir = 0;
 
 	private static final int RADIUS = 50;
 	private static final double UP_SPEED = 0.4;
 	private static final double DOWN_SPEED = -0.4;
 	private static final double STOP = 0;
 
-	private enum Mode {
-		AutoHigh, AutoMiddle, AutoLow, ManualUp, ManualDown, ManualStop
-	}
-
-	static int Low = (750); // 500
-	static int Middle = (2500); // 1500
-	static int High = (3150); // 2800
+	static int Low = (580); // 500
+	static int Middle = (2400); // 1500
+	static int High = (3100); // 2800
+	
+	//private boolean auto = false;
 
 	public Arm() {
 		SmartDashboard.putNumber("Arm P", P);
@@ -45,17 +43,30 @@ public class Arm {
 		SmartDashboard.putNumber("Arm D", D);
 		SmartDashboard.putNumber("Arm MAX", MAX);
 		SmartDashboard.putNumber("Arm RAMP", RAMP);
-		
+		if (inDeadbandLow()) setpoint = Low;
+		else if (inDeadbandMiddle()) setpoint = Middle;
+		else if (inDeadbandHigh()) setpoint = High;
 	}
 
 	public void run() {
-		if (mode == Mode.AutoHigh || mode == Mode.AutoMiddle || mode == Mode.AutoLow) {
+		/*if (!auto) {
+			if (dir == -1) {
+				motor.set(DOWN_SPEED);
+			} else if (dir == 1) {
+				motor.set(UP_SPEED);
+			} else if (dir == 0) {
+				motor.set(STOP);
+			} else {
+				System.err.println("Unknown Arm Direction");
+				motor.set(STOP);
+			}
+		} else {*/
 			P = SmartDashboard.getNumber("Arm P", P);
 			I = SmartDashboard.getNumber("Arm I", I);
 			D = SmartDashboard.getNumber("Arm D", D);
 			MAX = SmartDashboard.getNumber("Arm MAX", MAX);
 			RAMP = SmartDashboard.getNumber("Arm RAMP", RAMP);
-			
+
 			Low = (int) SmartDashboard.getNumber("Arm Low", Low);
 			Middle = (int) SmartDashboard.getNumber("Arm Middle", Middle);
 			High = (int) SmartDashboard.getNumber("Arm High", High);
@@ -67,21 +78,24 @@ public class Arm {
 			integral += error * dt / 1000.0;
 			double derivative = (error - previous_error) / dt;
 			double output = (P / 1000.0) * error + (I / 1000.0) * integral + (D / 1000.0) * derivative;
-			
+
 			if (output < 1) {
-				if (previous - output > RAMP/1000 * dt) {
-					output = previous - (RAMP/1000 * dt);
+				if (previous - output > RAMP / 1000 * dt) {
+					output = previous - (RAMP / 1000 * dt);
 				}
 			} else {
-				if (output - previous > RAMP/1000 * dt) {
-					output =  previous + (RAMP/1000 * dt);
+				if (output - previous > RAMP / 1000 * dt) {
+					output = previous + (RAMP / 1000 * dt);
 				}
 			}
-			
-			if (isHigh() && inDeadbandHigh()) output = 0;
-			else if (isMiddle() && inDeadbandMiddle()) output = 0;
-			else if (isLow() && inDeadbandLow()) output = 0;
-			
+
+			if (isHigh() && inDeadbandHigh())
+				output = 0;
+			else if (isMiddle() && inDeadbandMiddle())
+				output = 0;
+			else if (isLow() && inDeadbandLow())
+				output = 0;
+
 			motor.set(limit(limit_low(output)));
 
 			SmartDashboard.putNumber("Arm Setpoint", setpoint);
@@ -93,32 +107,29 @@ public class Arm {
 			previous = output;
 			previous_error = error;
 			time = System.currentTimeMillis();
-		} else {
-			if (mode == Mode.ManualUp) {
-				motor.set(UP_SPEED);
-			} else if (mode == Mode.ManualDown) {
-				motor.set(DOWN_SPEED);
-			} else {
-				motor.set(STOP);
-			}
-		}
+		//}
 	}
 
-	public void setUp() {
-		mode = Mode.ManualUp;
+	/*public void setUp() {
+		auto = false;
+		dir = 1;
 	}
 
 	public void setDown() {
-		mode = Mode.ManualDown;
+		auto = false;
+		dir = -1;
 	}
-
+	
 	public void stop() {
-		mode = Mode.ManualStop;
-	}
+		auto = false;
+		dir = 0;
+	}*/
 
 	public void setLow() {
+		//auto = true;
 		setpoint = Low;
 		run();
+		//motor.set(DOWN_SPEED);
 	}
 
 	public boolean isLow() {
@@ -126,28 +137,39 @@ public class Arm {
 	}
 
 	public void setMiddle() {
+		//auto = true;
 		setpoint = Middle;
 		run();
+		//motor.set(STOP);
 	}
+	
 
 	public boolean isMiddle() {
 		return setpoint == Middle;
 	}
 
 	public void setHigh() {
+		//auto = true;
 		setpoint = High;
 		run();
+		//motor.set(UP_SPEED);
 	}
 
 	public boolean isHigh() {
 		return setpoint == High;
 	}
 
-	public double limit_low(double in) {
-		if (in < MIN && in > -1 * MIN) return 0;
-		else return in;
-	}
+	//public boolean isAuto() {
+	//	return auto;
+	//}
 	
+	public double limit_low(double in) {
+		if (in < MIN && in > -1 * MIN)
+			return 0;
+		else
+			return in;
+	}
+
 	public double limit(double in) {
 		if (in > MAX)
 			return MAX;
@@ -161,7 +183,7 @@ public class Arm {
 	}
 
 	public boolean inDeadbandMiddle() {
-		return Math.abs(Middle - pot.getValue()) < 2*RADIUS;
+		return Math.abs(Middle - pot.getValue()) < 2 * RADIUS;
 	}
 
 	public boolean inDeadbandLow() {
