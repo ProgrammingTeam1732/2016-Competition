@@ -6,6 +6,10 @@ public class RobotState {
 	public int drive_right_dist;
 	public int drive_left_dist;
 	
+	public double camera_angle;
+	
+	public double gyro;
+	
 	public boolean shoot;
 		
 	public boolean arm_aligned_high;

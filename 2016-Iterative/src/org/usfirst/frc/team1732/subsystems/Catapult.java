@@ -13,8 +13,8 @@ public class Catapult {
 	private enum Mode { Auto, Manual }
 	
 	static int Load = 250; 
-	static int In = 750;		// 250
-	static int Out = 2000;		// 2000
+	static int In = 920;		// 250
+	static int Out = 2200;		// 2000
 		
 	
 	private static final int RADIUS = 100;
