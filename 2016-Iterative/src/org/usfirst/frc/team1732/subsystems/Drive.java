@@ -8,7 +8,7 @@ public class Drive {
 	private CANTalon left_1 = new CANTalon(14);
 	private CANTalon left_2 = new CANTalon(13);
 	private CANTalon left_3 = new CANTalon(15);
-	private Encoder left_encoder = new Encoder(2, 3);
+	private Encoder left_encoder = new Encoder(3, 2);
 
 	private CANTalon right_1 = new CANTalon(20);
 	private CANTalon right_2 = new CANTalon(19);

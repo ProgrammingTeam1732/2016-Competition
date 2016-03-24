@@ -38,9 +38,9 @@ public class Systems {
 
 		rbs.shoot = false;
 
-		SmartDashboard.putNumber("Camera Angle", camera.getAngle());
+		SmartDashboard.putNumber("Camera Angle", camera.getAngleToGoal());
 		
-		rbs.camera_angle = camera.getAngle();
+		rbs.camera_angle = camera.getAngleToGoal();
 
 		rbs.arm_aligned_high = arm.inDeadbandHigh();
 		rbs.arm_aligned_middle = arm.inDeadbandMiddle();
@@ -48,7 +48,8 @@ public class Systems {
 
 		SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
 		rbs.gyro = gyro.getAngle();
-
+		rbs.distance = camera.getDistance();
+		
 		rbs.catapult_aligned_out = catapult.inDeadbandOut();
 		rbs.catapult_aligned_in = catapult.inDeadbandIn();
 		rbs.catapult_aligned_load = catapult.inDeadbandLoad();

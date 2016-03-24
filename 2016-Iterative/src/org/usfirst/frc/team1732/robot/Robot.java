@@ -293,6 +293,7 @@ public class Robot extends IterativeRobot {
 			return null;
 		}));
 
+		// CAN ALSO DO SAME METHOD TO APPROACH BATTER PERPINDICULAR TO GOAL FOR LOW BAR/POS 1
 		// TODO Rewrite?
 		pos2_sm.setState("Center");
 		pos2_sm.addState(new State("Center", (RobotState rbs) -> {
@@ -307,45 +308,74 @@ public class Robot extends IterativeRobot {
 			return rbi;
 		} , (RobotState rbs) -> {
 			if (Math.abs(rbs.gyro) < 1)
-				return "Camera";
+				return "Point at Goal";
 			return null;
-		})).addState(new State("Camera", (RobotState rbs) -> {
+		})).addState(new State("Point at Goal", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
 			if (rbs.camera_angle == Double.NaN) {
 				rbi.drive_left = 0.4;
 				rbi.drive_right = -0.4;
-			}  else {
+			} else {
 				rbi.drive_left =  limit(rbs.camera_angle / 6);
 				rbi.drive_right = -limit(rbs.camera_angle / 6);
 			}
-			//rbi.drive_left = rbs.camera_angle < 0 ? -0.4 : 0.4;
-			//rbi.drive_right = rbs.camera_angle < 0 ? 0.4 : -0.4;
 			return rbi;
 		} , (RobotState rbs) -> {
-			if (Math.abs(rbs.camera_angle) < 1)
-				return "Drive Acc";
-			else
-				return null;
-		})).addState(new State("Drive Acc", (RobotState rbs) -> {
+			if (Math.abs(rbs.camera_angle) < 1) {
+				rbs.turn_angle = rbs.gyro;
+				return "Turn Back to Zero";
+			}
+			else return null;
+		})).addState(new State("Turn Back to Zero", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
-			rbi.drive_left = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 2500.0);
-			rbi.drive_right = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 2500.0);
+			if (rbs.gyro > 0) {
+				rbi.drive_left = -0.4;
+				rbi.drive_right = 0.4;
+			} else {
+				rbi.drive_left = 0.4;
+				rbi.drive_right = -0.4;
+			}
 			return rbi;
-		} , (RobotState rbs) -> {
-			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 2500)
-				return "Drive Dec";
-			else
-				return null;
-		})).addState(new State("Drive Dec", (RobotState rbs) -> {
+		}, (RobotState rbs) -> {
+			if (Math.abs(rbs.gyro) < 1) {
+				bot.resetDriveEncoders();
+				return "Move One";
+			}
+			return null;
+		})).addState(new State("Move One", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
-			rbi.drive_left = 0.5 - 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 5000.0);
-			rbi.drive_right = 0.5 - 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 5000.0);
+			rbi.drive_left = 0.5;
+			rbi.drive_right = 0.5;
 			return rbi;
-		} , (RobotState rbs) -> {
-			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 5000)
+		}, (RobotState rbs) -> {
+			// If the robot has driven more than distance (see picture) 
+			if (rbs.drive_left_dist * 7.5 * Math.PI > rbs.distance * Math.sin(Math.toRadians(180 - 120 - Math.abs(rbs.turn_angle)))) {
+				return "Turn Two";
+			}
+			return null;
+		})).addState(new State("Turn Two", (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.drive_left =   0.4;
+			rbi.drive_right = -0.4;
+			return rbi;
+		}, (RobotState rbs) -> {
+			// Once robot has turned 60 degrees
+			if(Math.abs(rbs.gyro) > 60) {
+				bot.resetDriveEncoders();
+				return "Move Two";
+			}
+			return null;
+		})).addState(new State("Move Two", (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.drive_left = 0.4;
+			rbi.drive_right = 0.4;
+			return rbi;
+		}, (RobotState rbs) -> {
+			// If the robot has driven more than distance (see picture) 7.5 inches is wheel diamater
+			if (rbs.drive_left_dist * 7.5 * Math.PI > rbs.distance / Math.sin(Math.toRadians(120)) * Math.sin(Math.toRadians(Math.abs(rbs.turn_angle)))) {
 				return "Stop";
-			else
-				return null;
+			}
+			return null;
 		})).addState(new State("Stop", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
 			return rbi;

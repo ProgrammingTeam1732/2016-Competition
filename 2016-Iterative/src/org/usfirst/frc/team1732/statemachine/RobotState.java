@@ -7,8 +7,11 @@ public class RobotState {
 	public int drive_left_dist;
 	
 	public double camera_angle;
+	public double distance;
 	
 	public double gyro;
+	
+	public double turn_angle;
 	
 	public boolean shoot;
 		
