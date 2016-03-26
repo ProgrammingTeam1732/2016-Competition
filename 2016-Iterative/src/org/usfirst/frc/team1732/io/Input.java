@@ -8,38 +8,49 @@ public class Input {
 	//private Joystick controller = new Joystick(2);
 
 	private Joystick button1 = new Joystick(2);
-	private Joystick button2 = new Joystick(3);
 	
 	private final int STICK_VERT = 1;
 	private final int STICK_HORI = 0;
 	
-	public boolean getManipulatorUp() { return button2.getRawButton(11); }
-	public boolean getManipulatorNot() { return !getManipulatorUp() && !getManipulatorDown(); }
-	public boolean getManipulatorDown() { return button2.getRawButton(12); }
+	private final int MANIP_UP = 8;
+	private final int MANIP_DOWN = 7;
+	private final int ARM_HIGH = 4;
+	private final int ARM_MID = 5;
+	private final int ARM_LOW = 6;
+	private final int ARM_UP = 2;
+	private final int ARM_DOWN = 3;
+	private final int SHOOT = 1;
+	//private final int CLIMBER_UP = 11;
+	//private final int CLIMBER_DOWN = 12;
+	private final int FINGER = 12;
+	private final int INTAKE = 9;
+	private final int INTAKE_IN = 10;
+	private final int INTAKE_OUT = 11;
 	
-	public boolean getArmHigh() { return button1.getRawButton(9); }
-	public boolean getArmMiddle() { return button1.getRawButton(8); }
-	public boolean getArmLow() { return button1.getRawButton(10); }
+	public boolean getManipulatorUp() { return button1.getRawButton(MANIP_UP); }
+	public boolean getManipulatorDown() { return button1.getRawButton(MANIP_DOWN); }
 	
-	//public boolean getArmUp() { return button2.getRawButton(3); }
-	//public boolean getArmNot() { return !getArmUp() && !getArmDown(); }
-	//public boolean getArmDown() { return button2.getRawButton(2); }
+	public boolean getArmHigh() { return button1.getRawButton(ARM_HIGH); }
+	public boolean getArmMiddle() { return button1.getRawButton(ARM_MID); }
+	public boolean getArmLow() { return button1.getRawButton(ARM_LOW); }
 	
-	public boolean getShoot() { return  button2.getRawButton(1); }
+	public boolean getArmUp() { return button1.getRawButton(ARM_UP); }
+	public boolean getArmNot() { return !getArmUp() && !getArmDown(); }
+	public boolean getArmDown() { return button1.getRawButton(ARM_DOWN); }
 	
-	public boolean getClimberUp() { return button1.getRawButton(11); }
-	public boolean getClimberDown() { return button1.getRawButton(12); }
+	public boolean getShoot() { return  button1.getRawButton(SHOOT) || left.getRawButton(2) || right.getRawButton(2); }
 	
-	public boolean getFingersOpen() { return button1.getRawButton(5); }
-	public boolean getFingersNot() { return !getFingersOpen() && !getFingersClose(); }
-	public boolean getFingersClose() { return button1.getRawButton(6); }
+	//public boolean getClimberUp() { return button1.getRawButton(CLIMBER_UP); }
+	//public boolean getClimberDown() { return button1.getRawButton(CLIMBER_DOWN); }
+	
+	public boolean getFingersOpen() { return button1.getRawButton(FINGER) || left.getRawButton(1) || right.getRawButton(1); }
+	public boolean getFingersClose() { return !button1.getRawButton(FINGER); }
 
-	public boolean getIntakeUp() { return button1.getRawButton(2); }
-	public boolean getIntakeNot() { return !getIntakeUp() && !getIntakeDown(); }
-	public boolean getIntakeDown() { return button1.getRawButton(1); }
+	public boolean getIntakeUp() { return button1.getRawButton(INTAKE); }
+	public boolean getIntakeDown() { return !button1.getRawButton(INTAKE); }
 	
-	public boolean getIntakeIn() { return button1.getRawButton(3); }
-	public boolean getIntakeOut() { return button1.getRawButton(4); }
+	public boolean getIntakeIn() { return button1.getRawButton(INTAKE_IN); }
+	public boolean getIntakeOut() { return button1.getRawButton(INTAKE_OUT); }
 	
 	/*private final int CONTROL_LEFT_VERT = 1;
 	private final int CONTROL_LEFT_HORI = 0;

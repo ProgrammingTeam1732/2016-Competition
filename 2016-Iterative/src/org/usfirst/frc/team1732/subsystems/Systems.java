@@ -1,12 +1,14 @@
 package org.usfirst.frc.team1732.subsystems;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 
 import org.usfirst.frc.team1732.io.Input;
 import org.usfirst.frc.team1732.statemachine.RobotInstruction;
 import org.usfirst.frc.team1732.statemachine.RobotState;
 
 import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.AnalogInput;
+//import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -17,8 +19,10 @@ public class Systems {
 	Catapult catapult = new Catapult();
 	Fingers fingers = new Fingers();
 	DefenseManipulator defense_manipulator = new DefenseManipulator();
-	Camera camera = new Camera();
+	//Camera camera = new Camera();
 
+	AnalogInput pressure = new AnalogInput(3);
+	
 	Gyro gyro = new AnalogGyro(1);
 
 	public void resetGyro() {
@@ -38,18 +42,20 @@ public class Systems {
 
 		rbs.shoot = false;
 
-		SmartDashboard.putNumber("Camera Angle", camera.getAngleToGoal());
-		
-		rbs.camera_angle = camera.getAngleToGoal();
+		//SmartDashboard.putNumber("Camera Angle", camera.getAngleToGoal());
+
+		//rbs.camera_angle = camera.getAngleToGoal();
+		//rbs.distance_to_goal = camera.getDistance();
 
 		rbs.arm_aligned_high = arm.inDeadbandHigh();
 		rbs.arm_aligned_middle = arm.inDeadbandMiddle();
 		rbs.arm_aligned_low = arm.inDeadbandLow();
+		
+		SmartDashboard.putNumber("Pressure", pressure.getValue()/24.0);
 
 		SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
 		rbs.gyro = gyro.getAngle();
-		rbs.distance = camera.getDistance();
-		
+
 		rbs.catapult_aligned_out = catapult.inDeadbandOut();
 		rbs.catapult_aligned_in = catapult.inDeadbandIn();
 		rbs.catapult_aligned_load = catapult.inDeadbandLoad();
@@ -69,6 +75,8 @@ public class Systems {
 		RobotState rbs = new RobotState();
 
 		rbs.shoot = shoot;
+		
+		SmartDashboard.putNumber("Pressure", pressure.getValue()/24.0);
 
 		rbs.arm_aligned_high = arm.inDeadbandHigh();
 		rbs.arm_aligned_middle = arm.inDeadbandMiddle();
@@ -95,6 +103,14 @@ public class Systems {
 	public void run(RobotInstruction rbi) {
 		drive.drive(-1 * rbi.drive_left, -1 * rbi.drive_right);
 
+		if (rbi.reset_drive) {
+			drive.reset();
+		}
+
+		if (rbi.reset_gyro) {
+			resetGyro();
+		}
+		
 		if (rbi.catapult_in) {
 			catapult.setIn();
 		} else if (rbi.catapult_out) {
@@ -148,6 +164,7 @@ public class Systems {
 		} else {
 			defense_manipulator.stop();
 		}
+		
 	}
 
 	public void run(RobotInstruction rbi, Input io) {
@@ -207,18 +224,10 @@ public class Systems {
 			 * } else { System.err.println("Unknown Arm State"); }
 			 */
 
-		if (io.getFingersNot()) {
-			if (rbi.fingers_open) {
-				fingers.open();
-			} else if (rbi.fingers_close) {
-				fingers.close();
-			}
-		} else {
-			if (io.getFingersOpen()) {
-				fingers.open();
-			} else if (io.getFingersClose()) {
-				fingers.close();
-			}
+		if (io.getFingersOpen()) {
+			fingers.open();
+		} else if (io.getFingersClose()) {
+			fingers.close();
 		}
 
 		// if (io.getIntakeNot()) {
@@ -229,17 +238,17 @@ public class Systems {
 		// intake.setDown();
 		// }
 		// } else { // default case
-		if (io.getClimberUp()) {
+		if (io.getIntakeUp()) {
 			intake.setUp();
-		} else if (io.getClimberDown()) {
+		} else if (io.getIntakeDown()) {
 			intake.setDown();
 		}
 		// }
 
-		if (io.getIntakeIn() || rbi.intake_in) { // TODO make intake auto for
+		if (io.getIntakeIn()) { // TODO make intake auto for
 													// raise and lower arm
 			intake.setIn();
-		} else if (io.getIntakeOut() || rbi.intake_out) {
+		} else if (io.getIntakeOut()) {
 			intake.setOut();
 		} else {
 			intake.setStop();
@@ -260,9 +269,11 @@ public class Systems {
 		SmartDashboard.putNumber("Drive Left Dist", drive.getLeft());
 		SmartDashboard.putNumber("Drive Right Dist", drive.getRight());
 		SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
+		SmartDashboard.putNumber("Pressure", pressure.getValue()/24.0);
+		//camera.getAngleToGoal();
 	}
-
+	/*
 	public void startCamera() {
 		camera.startCamera();
-	}
+	}*/
 }

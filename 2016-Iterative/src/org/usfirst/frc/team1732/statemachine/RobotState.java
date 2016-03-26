@@ -6,13 +6,11 @@ public class RobotState {
 	public int drive_right_dist;
 	public int drive_left_dist;
 	
-	public double camera_angle;
-	public double distance;
+	//public double camera_angle;
+	//public double distance_to_goal;
 	
 	public double gyro;
-	
-	public double turn_angle;
-	
+		
 	public boolean shoot;
 		
 	public boolean arm_aligned_high;
@@ -28,4 +26,5 @@ public class RobotState {
 	
 	public boolean intake_down;
 	public boolean intake_up;
+	
 }

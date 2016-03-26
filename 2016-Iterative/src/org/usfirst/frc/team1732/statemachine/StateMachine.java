@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class StateMachine {
+	
+	private boolean isAuto = true;
+	
 	private ArrayList<State> states = new ArrayList<State>();
 	private String current_state = "Wait to Shoot";
 	private long start = System.currentTimeMillis();
@@ -35,7 +38,8 @@ public class StateMachine {
 		}
 		
 		if (state_index == -1) {
-			SmartDashboard.putString("State", "State not found: " + current_state);
+			if(!isAuto) SmartDashboard.putString("State", "State not found: " + current_state);
+			else SmartDashboard.putString("Auto State", "State not found: " + current_state);
 			return new RobotInstruction();
 		}
 		
@@ -47,7 +51,12 @@ public class StateMachine {
 			start = System.currentTimeMillis();
 		}
 		
-		SmartDashboard.putString("State", current_state);
+		if(!isAuto) SmartDashboard.putString("State", current_state);
+		else SmartDashboard.putString("Auto State", current_state);
 		return out;
+	}
+	
+	public void setAuto(boolean b) {
+		isAuto = b;
 	}
 }

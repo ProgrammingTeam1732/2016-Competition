@@ -16,6 +16,9 @@ public class RobotInstruction {
 	public double drive_left = 0;
 	public double drive_right = 0;
 	
+	public boolean reset_drive = false;
+	public boolean reset_gyro = false;
+	
 	public boolean intake_down = false;
 	public boolean intake_up = false;
 	public boolean intake_in = false;

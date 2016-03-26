@@ -41,7 +41,7 @@ public class Drive {
 	}
 	
 	public int getLeft() {
-		return left_encoder.get() - left;
+		return -(left_encoder.get() - left);
 	}
 	
 	public int getRight() {

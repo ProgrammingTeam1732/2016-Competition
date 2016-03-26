@@ -7,14 +7,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Catapult {
 	private Solenoid latch = new Solenoid(2, 1);
-	private CANTalon motor = new CANTalon(17);
+	private CANTalon motor = new CANTalon(18);
 	private AnalogInput pot = new AnalogInput(0);
 	
 	private enum Mode { Auto, Manual }
 	
-	static int Load = 250; 
-	static int In = 920;		// 250
-	static int Out = 2200;		// 2000
+	static int Load = 300; 
+	static int In = 800;		// 250
+	static int Out = 1930;		// 2000
 		
 	
 	private static final int RADIUS = 100;

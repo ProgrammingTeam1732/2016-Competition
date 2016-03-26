@@ -11,7 +11,7 @@ public class Intake {
 	private static final boolean UP = false;
 	private static final boolean DOWN = true;
 
-	private static final double INTAKE_SPEED = 0.80;
+	private static final double INTAKE_SPEED = 0.60;
 	private static final double OUTPUT_SPEED = -0.80;
 	private static final double STOP = 0.0;
 	

@@ -1,5 +1,6 @@
 package org.usfirst.frc.team1732.subsystems;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -8,6 +9,8 @@ public class Fingers {
 
 	private final static boolean OPEN = true;
 	private final static boolean CLOSED = false;
+	
+	private DigitalInput intake_sensor = new DigitalInput(5);
 
 	public Fingers() {
 		SmartDashboard.putBoolean("Fingers Open", solenoid.get() == OPEN);
@@ -32,5 +35,9 @@ public class Fingers {
 	
 	public boolean isClosed() {
 		return solenoid.get() ==  CLOSED;
+	}
+	
+	public boolean hasBall() {
+		return intake_sensor.get();
 	}
 }
