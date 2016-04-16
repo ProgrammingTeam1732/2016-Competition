@@ -99,4 +99,9 @@ public class Catapult {
 	public double getPos() {
 		return pot.getValue();
 	}
+	
+	public void testCatapultActuator(double speed) {
+		motor.set(speed);
+		SmartDashboard.putNumber("Catapult Pot", pot.getValue());
+	}
 }

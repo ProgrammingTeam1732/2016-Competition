@@ -193,4 +193,9 @@ public class Arm {
 	public double getPos() {
 		return pot.getValue();
 	}
+	
+	public void testArmActuator(double speed) {
+		motor.set(speed);
+		SmartDashboard.putNumber("Arm Pot", pot.getValue());
+	}
 }

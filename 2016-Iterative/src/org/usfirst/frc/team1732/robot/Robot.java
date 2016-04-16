@@ -774,7 +774,14 @@ public class Robot extends IterativeRobot {
 		bot.run(sm.process(bot.getState(input.getShoot())), input);
 		SmartDashboard.putNumber("TimeASUKDFYVA", System.currentTimeMillis() - last);
 		last = System.currentTimeMillis();
-
+	}
+	
+	public void testInit() {
+		System.out.println("Test Initialization");
+	}
+	
+	public void testPeriodic() {
+		bot.test_mode(input);
 	}
 
 	public void disabledPeriodic() {

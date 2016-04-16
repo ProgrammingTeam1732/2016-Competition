@@ -23,4 +23,3 @@ public class DefenseManipulator {
 		SmartDashboard.putNumber("Denfense Manipulator Pos", pos.get());		
 	}
 }
- 

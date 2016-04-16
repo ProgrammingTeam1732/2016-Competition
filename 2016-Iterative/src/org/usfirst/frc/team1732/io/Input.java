@@ -11,6 +11,12 @@ public class Input {
 	
 	private final int STICK_VERT = 1;
 	private final int STICK_HORI = 0;
+	private final int STICK_TRIGGER = 1;
+	private final int STICK_TWO = 2;
+	private final int STICK_THREE = 3;
+	private final int STICK_FOUR = 4;
+	private final int STICK_FIVE = 5;
+	private final int STICK_SIX = 6;
 	
 	private final int MANIP_UP = 8;
 	private final int MANIP_DOWN = 7;
@@ -38,12 +44,12 @@ public class Input {
 	public boolean getArmNot() { return !getArmUp() && !getArmDown(); }
 	public boolean getArmDown() { return button1.getRawButton(ARM_DOWN); }
 	
-	public boolean getShoot() { return  button1.getRawButton(SHOOT) || left.getRawButton(2) || right.getRawButton(2); }
+	public boolean getShoot() { return  button1.getRawButton(SHOOT) || left.getRawButton(STICK_TWO) || right.getRawButton(STICK_TWO); }
 	
 	//public boolean getClimberUp() { return button1.getRawButton(CLIMBER_UP); }
 	//public boolean getClimberDown() { return button1.getRawButton(CLIMBER_DOWN); }
 	
-	public boolean getFingersOpen() { return button1.getRawButton(FINGER) || left.getRawButton(1) || right.getRawButton(1); }
+	public boolean getFingersOpen() { return button1.getRawButton(FINGER) || left.getRawButton(STICK_TRIGGER) || right.getRawButton(STICK_TRIGGER); }
 	public boolean getFingersClose() { return !button1.getRawButton(FINGER); }
 
 	public boolean getIntakeUp() { return button1.getRawButton(INTAKE); }
@@ -51,6 +57,24 @@ public class Input {
 	
 	public boolean getIntakeIn() { return button1.getRawButton(INTAKE_IN); }
 	public boolean getIntakeOut() { return button1.getRawButton(INTAKE_OUT); }
+	
+	public double getLeftVert()	{ return left.getRawAxis(STICK_VERT); }
+	public double getLeftHori()	{ return left.getRawAxis(STICK_HORI); }
+	public double getRightVert()	{ return right.getRawAxis(STICK_VERT); }
+	public double getRightHori()	{ return right.getRawAxis(STICK_HORI); }
+	
+	public boolean getLeftTrigger() {return left.getRawButton(STICK_TRIGGER);}
+	public boolean getLeftTwo() {return left.getRawButton(STICK_TWO);}
+	public boolean getLeftThree() {return left.getRawButton(STICK_THREE);}
+	public boolean getLeftFour() {return left.getRawButton(STICK_FOUR);}
+	public boolean getLeftFive() {return left.getRawButton(STICK_FIVE);}
+	public boolean getLeftSix() {return left.getRawButton(STICK_SIX);}
+	public boolean getRightTrigger() {return left.getRawButton(STICK_TRIGGER);}
+	public boolean getRightTwo() {return left.getRawButton(STICK_TWO);}
+	public boolean getRightThree() {return left.getRawButton(STICK_THREE);}
+	public boolean getRightFour() {return left.getRawButton(STICK_FOUR);}
+	public boolean getRightFive() {return left.getRawButton(STICK_FIVE);}
+	public boolean getRightSix() {return left.getRawButton(STICK_SIX);}
 	
 	/*private final int CONTROL_LEFT_VERT = 1;
 	private final int CONTROL_LEFT_HORI = 0;
@@ -88,10 +112,5 @@ public class Input {
 	public double getLeftHoriC()	{ return controller.getRawAxis(CONTROL_LEFT_HORI); }
 	public double getRightVertC()	{ return controller.getRawAxis(CONTROL_RIGHT_VERT); }
 	public double getRightHoriC()	{ return controller.getRawAxis(CONTROL_RIGHT_HORI); } */
-	
-	public double getLeftVert()	{ return left.getRawAxis(STICK_VERT); }
-	public double getLeftHori()	{ return left.getRawAxis(STICK_HORI); }
-	public double getRightVert()	{ return right.getRawAxis(STICK_VERT); }
-	public double getRightHori()	{ return right.getRawAxis(STICK_HORI); }
 
 }

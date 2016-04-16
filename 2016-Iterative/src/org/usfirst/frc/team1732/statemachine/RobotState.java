@@ -26,5 +26,4 @@ public class RobotState {
 	
 	public boolean intake_down;
 	public boolean intake_up;
-	
 }

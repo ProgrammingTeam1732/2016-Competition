@@ -19,10 +19,12 @@ public class Systems {
 	Catapult catapult = new Catapult();
 	Fingers fingers = new Fingers();
 	DefenseManipulator defense_manipulator = new DefenseManipulator();
-	//Camera camera = new Camera();
+	// Camera camera = new Camera();
+
+	boolean test_mode_started = false;
 
 	AnalogInput pressure = new AnalogInput(3);
-	
+
 	Gyro gyro = new AnalogGyro(1);
 
 	public void resetGyro() {
@@ -42,16 +44,16 @@ public class Systems {
 
 		rbs.shoot = false;
 
-		//SmartDashboard.putNumber("Camera Angle", camera.getAngleToGoal());
+		// SmartDashboard.putNumber("Camera Angle", camera.getAngleToGoal());
 
-		//rbs.camera_angle = camera.getAngleToGoal();
-		//rbs.distance_to_goal = camera.getDistance();
+		// rbs.camera_angle = camera.getAngleToGoal();
+		// rbs.distance_to_goal = camera.getDistance();
 
 		rbs.arm_aligned_high = arm.inDeadbandHigh();
 		rbs.arm_aligned_middle = arm.inDeadbandMiddle();
 		rbs.arm_aligned_low = arm.inDeadbandLow();
-		
-		SmartDashboard.putNumber("Pressure", pressure.getValue()/24.0);
+
+		SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
 
 		SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
 		rbs.gyro = gyro.getAngle();
@@ -75,8 +77,8 @@ public class Systems {
 		RobotState rbs = new RobotState();
 
 		rbs.shoot = shoot;
-		
-		SmartDashboard.putNumber("Pressure", pressure.getValue()/24.0);
+
+		SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
 
 		rbs.arm_aligned_high = arm.inDeadbandHigh();
 		rbs.arm_aligned_middle = arm.inDeadbandMiddle();
@@ -110,7 +112,7 @@ public class Systems {
 		if (rbi.reset_gyro) {
 			resetGyro();
 		}
-		
+
 		if (rbi.catapult_in) {
 			catapult.setIn();
 		} else if (rbi.catapult_out) {
@@ -164,7 +166,7 @@ public class Systems {
 		} else {
 			defense_manipulator.stop();
 		}
-		
+
 	}
 
 	public void run(RobotInstruction rbi, Input io) {
@@ -246,7 +248,7 @@ public class Systems {
 		// }
 
 		if (io.getIntakeIn()) { // TODO make intake auto for
-													// raise and lower arm
+								// raise and lower arm
 			intake.setIn();
 		} else if (io.getIntakeOut()) {
 			intake.setOut();
@@ -263,17 +265,74 @@ public class Systems {
 		}
 	}
 
+	public void test_mode(Input io) {
+		/* In testing mode:
+		 * wheel motors controlled by y-axis on sticks
+		 * catapult latch is controlled by left stick button six
+		 * capapult actuator is controlled by left stick buttons four (positive) and three (negative)
+		 */
+		if (!test_mode_started) {
+			System.out.println("Test Mode Started");
+			test_mode_started = true;
+		}
+		drive.drive(io.getLeftVert(), io.getRightVert());
+
+		if (io.getRightSix())
+			catapult.latch();
+		else
+			catapult.release();
+
+		if (io.getLeftFour())
+			catapult.testCatapultActuator(0.2);
+		else if (io.getLeftThree())
+			catapult.testCatapultActuator(-0.2);
+		else
+			catapult.testCatapultActuator(0);
+
+		if (io.getRightFour())
+			arm.testArmActuator(0.2);
+		else if (io.getRightThree())
+			arm.testArmActuator(-0.2);
+		else
+			arm.testArmActuator(0);
+
+		if (io.getFingersOpen())
+			fingers.open();
+		else if (io.getFingersClose())
+			fingers.close();
+
+		if (io.getIntakeUp())
+			intake.setUp();
+		else if (io.getIntakeDown())
+			intake.setDown();
+
+		// TODO make intake auto for raise and lower arm
+		if (io.getIntakeIn())
+			intake.setIn();
+		else if (io.getIntakeOut())
+			intake.setOut();
+		else
+			intake.setStop();
+
+		if (io.getManipulatorDown())
+			defense_manipulator.down();
+		else if (io.getManipulatorUp())
+			defense_manipulator.up();
+		else
+			defense_manipulator.stop();
+
+	}
+
 	public void disabled() {
 		SmartDashboard.putNumber("Arm Disabled Pos", arm.getPos());
 		SmartDashboard.putNumber("Catapult Disabled Pos", catapult.getPos());
 		SmartDashboard.putNumber("Drive Left Dist", drive.getLeft());
 		SmartDashboard.putNumber("Drive Right Dist", drive.getRight());
 		SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
-		SmartDashboard.putNumber("Pressure", pressure.getValue()/24.0);
-		//camera.getAngleToGoal();
+		SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
+		// camera.getAngleToGoal();
 	}
 	/*
-	public void startCamera() {
-		camera.startCamera();
-	}*/
+	 * public void startCamera() { camera.startCamera(); }
+	 */
 }
