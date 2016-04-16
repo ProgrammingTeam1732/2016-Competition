@@ -181,10 +181,10 @@ public class Robot extends IterativeRobot {
 			return rbi;
 		} , (RobotState rbs) -> {
 			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 1000)
-				return "Stop";
+				return "Finished";
 			else
 				return null;
-		})).addState(new State("Stop", (RobotState rbs) -> {
+		})).addState(new State("Finished", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
 			return rbi;
 		} , (RobotState rbs) -> {
@@ -270,61 +270,26 @@ public class Robot extends IterativeRobot {
 			rbi.arm_high = true;
 			return rbi;
 		} , (RobotState rbs) -> {
-			return "Shoot Position";
-		})).addState(new State("Shoot Position", (RobotState) -> {
-			RobotInstruction rbi = new RobotInstruction();
-			rbi.catapult_in = true;
-			return rbi;
-		} , (RobotState rbs) -> {
-			if (rbs.catapult_aligned_in && rbs.arm_aligned_high && rbs.fingers_open && ((Math.abs(System.currentTimeMillis() - rbs.start_time) > 500)))
-				return "Shoot";
+			if (System.currentTimeMillis() - rbs.start_time > 500)
+				return "Open Fingers";
 			else
 				return null;
 		})).addState(new State("Open Fingers", (RobotState rbs) -> {
-			 RobotInstruction rbi = new RobotInstruction(); //
-			 rbi.fingers_open = true; return rbi; } , (RobotState rbs) -> {
-			 if ((Math.abs(System.currentTimeMillis() - rbs.start_time) > 200)) return "Shoot Position";
-			 else 
-				 return null;
-		})).addState(new State("Shoot", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
-			rbi.catapult_release = true;
+			rbi.fingers_open = true;
 			return rbi;
 		} , (RobotState rbs) -> {
-			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 200)
-				return "Retrive Tram";
+			if (System.currentTimeMillis() - rbs.start_time > 500)
+				return "Finished";
 			else
 				return null;
-		})).addState(new State("Retrive Tram", (RobotState rbs) -> {
-			RobotInstruction rbi = new RobotInstruction();
-			rbi.catapult_out = true;
-			return rbi;
+		})).addState(new State("Finished", (RobotState rbs) -> {
+			return new RobotInstruction();
 		} , (RobotState rbs) -> {
-			if (rbs.catapult_aligned_out)
-				return "Latch Tram";
-			else
-				return null;
-		})).addState(new State("Latch Tram", (RobotState rbs) -> {
-			RobotInstruction rbi = new RobotInstruction();
-			rbi.catapult_latch = true;
-			return rbi;
-		} , (RobotState rbs) -> {
-			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 500)
-				return "Pull Tram";
-			else
-				return null;
-		})).addState(new State("Pull Tram", (RobotState rbs) -> {
-			RobotInstruction rbi = new RobotInstruction();
-			rbi.catapult_load = true;
-			return rbi;
-		} , (RobotState rbs) -> {
-			if (rbs.catapult_aligned_load)
-				return "Wait to Shoot";
-			else
-				return null;
+			return null;
 		}));
-		
-		//TODO: shooting
+
+		// TODO: shooting
 
 		pos5_sm.setState("Center");
 		pos5_sm.addState(new State("Center", (RobotState rbs) -> {
@@ -392,10 +357,10 @@ public class Robot extends IterativeRobot {
 			return rbi;
 		} , (RobotState rbs) -> {
 			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 58) {
-				return "Stop";
+				return "Finished";
 			}
 			return null;
-		})).addState(new State("Stop", (RobotState rbs) -> {
+		})).addState(new State("Finished", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
 			rbi.arm_high = true;
 			return rbi;
@@ -468,10 +433,10 @@ public class Robot extends IterativeRobot {
 			return rbi;
 		} , (RobotState rbs) -> {
 			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 53) {
-				return "Stop";
+				return "Finished";
 			}
 			return null;
-		})).addState(new State("Stop", (RobotState rbs) -> {
+		})).addState(new State("Finished", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
 			rbi.arm_high = true;
 			return rbi;
@@ -595,10 +560,10 @@ public class Robot extends IterativeRobot {
 			return rbi;
 		} , (RobotState rbs) -> {
 			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 89) {
-				return "Stop";
+				return "Finished";
 			}
 			return null;
-		})).addState(new State("Stop", (RobotState rbs) -> {
+		})).addState(new State("Finished", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
 			rbi.arm_high = true;
 			return rbi;
@@ -674,10 +639,10 @@ public class Robot extends IterativeRobot {
 			return rbi;
 		} , (RobotState rbs) -> {
 			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 111) {
-				return "Stop";
+				return "Finished";
 			}
 			return null;
-		})).addState(new State("Stop", (RobotState rbs) -> {
+		})).addState(new State("Finished", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
 			rbi.arm_high = true;
 			return rbi;
@@ -735,17 +700,49 @@ public class Robot extends IterativeRobot {
 		portcullis_sm.setState("Accelerate");
 		portcullis_sm.addState(new State("Accelerate", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
-			rbi.drive_left = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
-			rbi.drive_right = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
+			rbi.reset_defense = true;
+			rbi.intake_down = true;
+			rbi.arm_auto = true;
 			return rbi;
 		} , (RobotState rbs) -> {
-			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 1000)
-				return "Stop";
-			else
-				return null;
-		})).addState(new State("Stop", (RobotState rbs) -> {
+			// if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 >
+			// 20) {
+			if (rbs.arm_aligned_auto) {
+				return "Lower Mans";
+			}
+			return null;
+		})).addState(new State("Lower Mans", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
+			rbi.defense_down = true;
 			return rbi;
+		} , (RobotState rbs) -> {
+			// FIXME: counts per rotation
+			if (rbs.manip_encoder / 10.0 > 0.25)
+				return "Drive";
+			return null;
+		})).addState(new State("Drive", (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.drive_left = .345;
+			rbi.drive_right = .345;
+			return rbi;
+		} , (RobotState rbs) -> {
+			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 21) {
+				return "Arm Low";
+			}
+			return null;
+		})).addState(new State("Arm Low", (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.arm_low = true;
+			rbi.drive_left = .345;
+			rbi.drive_right = .345;
+			return rbi;
+		} , (RobotState rbs) -> {
+			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 55) {
+				return "Finished";
+			} else
+				return null;
+		})).addState(new State("Finished", (RobotState rbs) -> {
+			return new RobotInstruction();
 		} , (RobotState rbs) -> {
 			return null;
 		}));
@@ -758,10 +755,10 @@ public class Robot extends IterativeRobot {
 			return rbi;
 		} , (RobotState rbs) -> {
 			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 1000)
-				return "Stop";
+				return "Finished";
 			else
 				return null;
-		})).addState(new State("Stop", (RobotState rbs) -> {
+		})).addState(new State("Finished", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
 			return rbi;
 		} , (RobotState rbs) -> {
@@ -776,10 +773,10 @@ public class Robot extends IterativeRobot {
 			return rbi;
 		} , (RobotState rbs) -> {
 			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 1000)
-				return "Stop";
+				return "Finished";
 			else
 				return null;
-		})).addState(new State("Stop", (RobotState rbs) -> {
+		})).addState(new State("Finished", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
 			return rbi;
 		} , (RobotState rbs) -> {
@@ -789,15 +786,57 @@ public class Robot extends IterativeRobot {
 		cheval_sm.setState("Accelerate");
 		cheval_sm.addState(new State("Accelerate", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
-			rbi.drive_left = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
-			rbi.drive_right = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
+			// rbi.drive_left = 0.5 * ((System.currentTimeMillis() -
+			// rbs.start_time) / 1000.0);
+			// rbi.drive_right = 0.5 * ((System.currentTimeMillis() -
+			// rbs.start_time) / 1000.0);
+			rbi.arm_auto = true;
 			return rbi;
 		} , (RobotState rbs) -> {
-			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 1000)
-				return "Stop";
+			if (rbs.arm_aligned_auto)
+				return "Drive";
 			else
 				return null;
-		})).addState(new State("Stop", (RobotState rbs) -> {
+		})).addState(new State("Drive", (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.drive_left = .345;
+			rbi.drive_right = .345;
+			return rbi;
+		} , (RobotState rbs) -> {
+			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 21) {
+				return "Low Mans";
+			} else
+				return null;
+		})).addState(new State("Low Mans", (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.defense_down = true;
+			return rbi;
+		} , (RobotState rbs) -> {
+			if (rbs.manip_encoder / 10.0 > 0.25)
+				return "Drive2";
+			return null;
+		})).addState(new State("Drive2", (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.drive_left = .345;
+			rbi.drive_right = .345;
+			rbi.arm_middle = true;
+			rbi.reset_defense = true;
+			return rbi;
+		} , (RobotState rbs) -> {
+			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 55) {
+				return "Raise Mans";
+			} else
+				return null;
+		})).addState(new State("Raise Mans", (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.defense_up = true;
+			return rbi;
+		} , (RobotState rbs) -> {
+			// FIXME: determine positive and negative directoin on encoder for mnas
+			if (rbs.manip_encoder / 10.0 < -0.25)
+				return "Finished";
+			return null;
+		})).addState(new State("Finished", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
 			return rbi;
 		} , (RobotState rbs) -> {
@@ -821,11 +860,11 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("TimeASUKDFYVA", System.currentTimeMillis() - last);
 		last = System.currentTimeMillis();
 	}
-	
+
 	public void testInit() {
 		System.out.println("Test Initialization");
 	}
-	
+
 	public void testPeriodic() {
 		bot.test_mode(input);
 	}
@@ -870,6 +909,7 @@ public class Robot extends IterativeRobot {
 		pos = (String) pos_chooser.getSelected();
 		after = (String) after_chooser.getSelected();
 		cross_terrain.setState("Arm Down");
+		sm.setState("Shoot Position");
 		pos2_sm.setState("Center");
 		pos3_sm.setState("Center");
 		pos4_sm.setState("Turn Left");
@@ -897,7 +937,8 @@ public class Robot extends IterativeRobot {
 						over = true;
 				} else if (auto_mode.equals(low_bar)) {
 					bot.run(low_bar_sm.process(bot.getState()));
-					// does not progress to different auto
+					if (low_bar_sm.equals("Finished"))
+						over = true;
 				} else if (auto_mode.equals(drawbridge)) {
 					bot.run(drawbridge_sm.process(bot.getState()));
 					if (drawbridge_sm.getState().equals("Finished"))
@@ -906,7 +947,7 @@ public class Robot extends IterativeRobot {
 					bot.run(portcullis_sm.process(bot.getState()));
 					if (portcullis_sm.getState().equals("Finished"))
 						over = true;
-				}  else if (auto_mode.equals(sally_port)) {
+				} else if (auto_mode.equals(sally_port)) {
 					bot.run(sally_port_sm.process(bot.getState()));
 					if (sally_port_sm.getState().equals("Finished"))
 						over = true;
@@ -915,7 +956,9 @@ public class Robot extends IterativeRobot {
 					bot.run(sm.process(bot.getState()));
 				}
 			} else { // we are over the obstacle(?)
-				if (pos.equals(pos2)) {
+				if (pos.equals(pos1)) {
+					bot.run(sm.process(bot.getState()));
+				} else if (pos.equals(pos2)) {
 					if (pos2_sm.getState().equals("Camera")) {
 						bot.run(pos2_sm.process(bot.getCameraState()));
 					} else {

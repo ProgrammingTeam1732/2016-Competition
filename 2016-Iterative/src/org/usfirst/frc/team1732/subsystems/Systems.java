@@ -77,13 +77,16 @@ public class Systems {
 		RobotState rbs = new RobotState();
 
 		rbs.shoot = shoot;
-
+		int c = defense_manipulator.getValue();
+		rbs.manip_encoder = c;
+		SmartDashboard.putNumber("Manip_encoder", c);
 		SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
 
 		rbs.arm_aligned_high = arm.inDeadbandHigh();
 		rbs.arm_aligned_middle = arm.inDeadbandMiddle();
 		rbs.arm_aligned_low = arm.inDeadbandLow();
-
+		rbs.arm_aligned_auto = arm.inDeadbandAuto();
+		
 		SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
 		rbs.gyro = gyro.getAngle();
 
@@ -105,6 +108,12 @@ public class Systems {
 	public void run(RobotInstruction rbi) {
 		drive.drive(-1 * rbi.drive_left, -1 * rbi.drive_right);
 
+		if (rbi.reset_defense) {
+			defense_manipulator.reset();
+		}
+		if (rbi.arm_auto){
+			arm.setAuto();
+		}
 		if (rbi.reset_drive) {
 			drive.reset();
 		}

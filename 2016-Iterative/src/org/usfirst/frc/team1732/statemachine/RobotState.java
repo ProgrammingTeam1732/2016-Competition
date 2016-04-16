@@ -10,12 +10,15 @@ public class RobotState {
 	//public double distance_to_goal;
 	
 	public double gyro;
+	
+	public int manip_encoder;
 		
 	public boolean shoot;
 		
 	public boolean arm_aligned_high;
 	public boolean arm_aligned_middle;
 	public boolean arm_aligned_low;
+	public boolean arm_aligned_auto;
 	
 	public boolean catapult_aligned_out;
 	public boolean catapult_aligned_load;

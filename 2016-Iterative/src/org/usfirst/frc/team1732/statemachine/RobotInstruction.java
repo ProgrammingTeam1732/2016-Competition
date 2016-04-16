@@ -18,6 +18,7 @@ public class RobotInstruction {
 	
 	public boolean reset_drive = false;
 	public boolean reset_gyro = false;
+	public boolean reset_defense = false;
 	
 	public boolean intake_down = false;
 	public boolean intake_up = false;
@@ -27,6 +28,7 @@ public class RobotInstruction {
 	public boolean arm_high = false;
 	public boolean arm_middle = false;
 	public boolean arm_low = false;
+	public boolean arm_auto = false;
 	
 	public boolean defense_down = false;
 	public boolean defense_up = false;

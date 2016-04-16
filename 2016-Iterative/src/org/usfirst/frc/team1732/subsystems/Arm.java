@@ -30,6 +30,7 @@ public class Arm {
 
 	static int Low = (735); // 500
 	static int Middle = (1450); // 1500
+	static int Auto = (3120+1450)/2;
 	static int High = (3120); // 2800
 	
 	//private boolean auto = false;
@@ -39,6 +40,7 @@ public class Arm {
 		SmartDashboard.putNumber("Arm Low", Low);
 		SmartDashboard.putNumber("Arm Middle", Middle);
 		SmartDashboard.putNumber("Arm High", High);
+		SmartDashboard.putNumber("Arm Auto", Auto);
 		SmartDashboard.putNumber("Arm I", I);
 		SmartDashboard.putNumber("Arm D", D);
 		SmartDashboard.putNumber("Arm MAX", MAX);
@@ -46,6 +48,7 @@ public class Arm {
 		if (inDeadbandLow()) setpoint = Low;
 		else if (inDeadbandMiddle()) setpoint = Middle;
 		else if (inDeadbandHigh()) setpoint = High;
+		else if(inDeadbandAuto()) setpoint = Auto;
 	}
 
 	public void run() {
@@ -70,6 +73,7 @@ public class Arm {
 			Low = (int) SmartDashboard.getNumber("Arm Low", Low);
 			Middle = (int) SmartDashboard.getNumber("Arm Middle", Middle);
 			High = (int) SmartDashboard.getNumber("Arm High", High);
+			Auto = (int) SmartDashboard.getNumber("Arm Auto", Auto);
 
 			double measured = pot.getValue();
 			SmartDashboard.putNumber("Arm Pot", measured);
@@ -95,7 +99,9 @@ public class Arm {
 				output = 0;
 			else if (isLow() && inDeadbandLow())
 				output = 0;
-
+			else if(isAuto() && inDeadbandAuto())
+				output = 0;
+			
 			motor.set(limit(limit_low(output)));
 
 			SmartDashboard.putNumber("Arm Setpoint", setpoint);
@@ -109,7 +115,6 @@ public class Arm {
 			time = System.currentTimeMillis();
 		//}
 	}
-
 	/*public void setUp() {
 		auto = false;
 		dir = 1;
@@ -142,8 +147,13 @@ public class Arm {
 		run();
 		//motor.set(STOP);
 	}
-	
-
+	public void setAuto(){
+		setpoint = Auto;
+		run();
+	}
+	public boolean isAuto(){
+		return setpoint == Auto;
+	}
 	public boolean isMiddle() {
 		return setpoint == Middle;
 	}
@@ -181,7 +191,11 @@ public class Arm {
 	public boolean inDeadbandHigh() {
 		return Math.abs(High - pot.getValue()) < RADIUS;
 	}
-
+	
+	public boolean inDeadbandAuto(){
+		return Math.abs(Auto - pot.getValue()) < RADIUS;
+	}
+	
 	public boolean inDeadbandMiddle() {
 		return Math.abs(Middle - pot.getValue()) < 2 * RADIUS;
 	}

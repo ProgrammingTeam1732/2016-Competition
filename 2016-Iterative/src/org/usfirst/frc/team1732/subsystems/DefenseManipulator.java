@@ -9,7 +9,7 @@ public class DefenseManipulator {
 	private Encoder pos = new Encoder(6, 7);
 	
 	public void down() {
-		manipulate.set(0.3);
+		manipulate.set(.3);
 		SmartDashboard.putNumber("Denfense Manipulator Pos", pos.get());
 	}
 	
@@ -17,9 +17,19 @@ public class DefenseManipulator {
 		manipulate.set(-0.3);
 		SmartDashboard.putNumber("Denfense Manipulator Pos", pos.get());
 	}
-	
 	public void stop() {
 		manipulate.set(0);
 		SmartDashboard.putNumber("Denfense Manipulator Pos", pos.get());		
 	}
+	
+	private int value = 0;
+	
+	public void reset() {
+		value = pos.get();
+	}
+	
+	public int getValue() {
+		return -(pos.get() - value);
+	}
+	
 }
