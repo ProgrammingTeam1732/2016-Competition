@@ -10,7 +10,6 @@ import org.usfirst.frc.team1732.subsystems.Systems;
 
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -19,10 +18,7 @@ public class Robot extends IterativeRobot {
 	Systems bot = new Systems();
 	Input input = new Input();
 
-	StateMachine rough_sm = new StateMachine();
-	StateMachine rock_wall_sm = new StateMachine();
-	StateMachine ramparts_sm = new StateMachine();
-	StateMachine moat_sm = new StateMachine();
+	StateMachine cross_terrain = new StateMachine();
 	StateMachine portcullis_sm = new StateMachine();
 	StateMachine cheval_sm = new StateMachine();
 	StateMachine drawbridge_sm = new StateMachine();
@@ -53,19 +49,16 @@ public class Robot extends IterativeRobot {
 		}
 
 		chooser.addDefault(default_auto, default_auto);
-		chooser.addObject(rough, rough);
-		chooser.addObject(ramparts, ramparts);
-		chooser.addObject(moat, moat);
+		chooser.addObject(cross_chooser, cross_chooser);
 		chooser.addObject(portcullis, portcullis);
 		chooser.addObject(low_bar, low_bar);
 		chooser.addObject(cheval, cheval);
 		chooser.addObject(sally_port, sally_port);
 		chooser.addObject(drawbridge, drawbridge);
-		chooser.addObject(rock_wall, rock_wall);
 		SmartDashboard.putData("Auto Mode", chooser);
 
 		after_chooser.addDefault(default_auto, default_auto); // stop
-		after_chooser.addObject(shoot, shoot); // shoot
+		after_chooser.addObject(cross, cross); // shoot
 		after_chooser.addObject(accelerate, accelerate); // approach
 		SmartDashboard.putData("After Mode", after_chooser);
 
@@ -142,8 +135,8 @@ public class Robot extends IterativeRobot {
 				return null;
 		}));
 
-		rough_sm.setState("Arm Down");
-		rough_sm.addState(new State("Arm Down", (RobotState rbs) -> {
+		cross_terrain.setState("Arm Down");
+		cross_terrain.addState(new State("Arm Down", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
 			rbi.intake_down = true;
 			rbi.arm_middle = true;
@@ -793,10 +786,7 @@ public class Robot extends IterativeRobot {
 	boolean once = true;
 
 	final String default_auto = "Default";
-	final String rough = "Rough";
-	final String rock_wall = "Wall";
-	final String ramparts = "Ramparts";
-	final String moat = "Moat";
+	final String cross_chooser = "Cross Terrain";
 	final String portcullis = "Portcullis";
 	final String cheval = "Cheval";
 	final String drawbridge = "Draw Bridge";
@@ -805,7 +795,7 @@ public class Robot extends IterativeRobot {
 	String auto_mode;
 	SendableChooser chooser = new SendableChooser();
 
-	final String shoot = "Shoot";
+	final String cross = "Cross";
 	final String accelerate = "Approach";
 	String after;
 	SendableChooser after_chooser = new SendableChooser();
@@ -826,7 +816,7 @@ public class Robot extends IterativeRobot {
 		auto_mode = (String) chooser.getSelected();
 		pos = (String) pos_chooser.getSelected();
 		after = (String) after_chooser.getSelected();
-		rough_sm.setState("Arm Down");
+		cross_terrain.setState("Arm Down");
 		pos2_sm.setState("Center");
 		pos3_sm.setState("Center");
 		pos4_sm.setState("Turn Left");
@@ -840,21 +830,13 @@ public class Robot extends IterativeRobot {
 			bot.run(approach.process(bot.getState())); // run forward
 		} else if (after.equals(default_auto)) {
 			bot.run(sm.process(bot.getState())); // cock if not, moit?
-		} else if (after.equals(shoot)) {
+		} else if (after.equals(cross)) {
 			if (!over) {
 				if (auto_mode.equals(default_auto)) {
 					bot.run(sm.process(bot.getState()));
-				} else if (auto_mode.equals(rough)) {
-					bot.run(rough_sm.process(bot.getState()));
-					if (rough_sm.getState().equals("Finished"))
-						over = true;
-				} else if (auto_mode.equals(rock_wall)) {
-					bot.run(rock_wall_sm.process(bot.getState()));
-					if (rock_wall_sm.getState().equals("Finished"))
-						over = true;
-				} else if (auto_mode.equals(moat)) {
-					bot.run(moat_sm.process(bot.getState()));
-					if (moat_sm.getState().equals("Finished"))
+				} else if (auto_mode.equals(cross_chooser)) {
+					bot.run(cross_terrain.process(bot.getState()));
+					if (cross_terrain.getState().equals("Finished"))
 						over = true;
 				} else if (auto_mode.equals(cheval)) {
 					bot.run(cheval_sm.process(bot.getState()));
@@ -871,12 +853,7 @@ public class Robot extends IterativeRobot {
 					bot.run(portcullis_sm.process(bot.getState()));
 					if (portcullis_sm.getState().equals("Finished"))
 						over = true;
-				} else if (auto_mode.equals(ramparts)) {
-					bot.run(ramparts_sm.process(bot.getState()));
-					if (ramparts_sm.getState().equals("Finished"))
-						over = true;
-
-				} else if (auto_mode.equals(sally_port)) {
+				}  else if (auto_mode.equals(sally_port)) {
 					bot.run(sally_port_sm.process(bot.getState()));
 					if (sally_port_sm.getState().equals("Finished"))
 						over = true;
@@ -886,7 +863,7 @@ public class Robot extends IterativeRobot {
 				}
 			} else { // we are over the obstacle(?)
 				if (pos.equals(pos2)) {
-					if (pos2_sm.getState() == "Camera") {
+					if (pos2_sm.getState().equals("Camera")) {
 						bot.run(pos2_sm.process(bot.getCameraState()));
 					} else {
 						bot.run(pos2_sm.process(bot.getState()));
