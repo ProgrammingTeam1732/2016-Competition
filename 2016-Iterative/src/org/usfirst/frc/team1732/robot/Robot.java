@@ -262,16 +262,69 @@ public class Robot extends IterativeRobot {
 			return rbi;
 		} , (RobotState rbs) -> {
 			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 160) {
-				return "Stop";
+				return "Raise Arm";
 			}
 			return null;
-		})).addState(new State("Stop", (RobotState rbs) -> {
+		})).addState(new State("Raise Arm", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
 			rbi.arm_high = true;
 			return rbi;
 		} , (RobotState rbs) -> {
-			return null;
+			return "Shoot Position";
+		})).addState(new State("Shoot Position", (RobotState) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.catapult_in = true;
+			return rbi;
+		} , (RobotState rbs) -> {
+			if (rbs.catapult_aligned_in && rbs.arm_aligned_high && rbs.fingers_open && ((Math.abs(System.currentTimeMillis() - rbs.start_time) > 500)))
+				return "Shoot";
+			else
+				return null;
+		})).addState(new State("Open Fingers", (RobotState rbs) -> {
+			 RobotInstruction rbi = new RobotInstruction(); //
+			 rbi.fingers_open = true; return rbi; } , (RobotState rbs) -> {
+			 if ((Math.abs(System.currentTimeMillis() - rbs.start_time) > 200)) return "Shoot Position";
+			 else 
+				 return null;
+		})).addState(new State("Shoot", (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.catapult_release = true;
+			return rbi;
+		} , (RobotState rbs) -> {
+			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 200)
+				return "Retrive Tram";
+			else
+				return null;
+		})).addState(new State("Retrive Tram", (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.catapult_out = true;
+			return rbi;
+		} , (RobotState rbs) -> {
+			if (rbs.catapult_aligned_out)
+				return "Latch Tram";
+			else
+				return null;
+		})).addState(new State("Latch Tram", (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.catapult_latch = true;
+			return rbi;
+		} , (RobotState rbs) -> {
+			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 500)
+				return "Pull Tram";
+			else
+				return null;
+		})).addState(new State("Pull Tram", (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.catapult_load = true;
+			return rbi;
+		} , (RobotState rbs) -> {
+			if (rbs.catapult_aligned_load)
+				return "Wait to Shoot";
+			else
+				return null;
 		}));
+		
+		//TODO: shooting
 
 		pos5_sm.setState("Center");
 		pos5_sm.addState(new State("Center", (RobotState rbs) -> {
