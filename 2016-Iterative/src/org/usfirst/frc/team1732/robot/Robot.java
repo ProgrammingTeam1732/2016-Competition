@@ -86,7 +86,8 @@ public class Robot extends IterativeRobot {
 			rbi.catapult_in = true;
 			return rbi;
 		} , (RobotState rbs) -> {
-			if (rbs.catapult_aligned_in && rbs.arm_aligned_high && rbs.fingers_open
+			if (rbs.catapult_aligned_in && //rbs.arm_aligned_high &&
+					rbs.fingers_open
 					&& ((Math.abs(System.currentTimeMillis() - rbs.start_time) > 500)))
 				return "Shoot";
 			else

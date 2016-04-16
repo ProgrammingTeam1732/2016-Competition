@@ -14,7 +14,8 @@ public class Catapult {
 	
 	static int Load = 300; 
 	static int In = 800;		// 250
-	static int Out = 1930;		// 2000
+	static int Out = 1675;		// 1750 is max
+	// before out was 1930
 		
 	
 	private static final int RADIUS = 100;
