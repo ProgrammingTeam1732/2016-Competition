@@ -86,9 +86,8 @@ public class Robot extends IterativeRobot {
 			rbi.catapult_in = true;
 			return rbi;
 		} , (RobotState rbs) -> {
-			if (rbs.catapult_aligned_in && //rbs.arm_aligned_high &&
-					rbs.fingers_open
-					&& ((Math.abs(System.currentTimeMillis() - rbs.start_time) > 500)))
+			if (rbs.catapult_aligned_in && rbs.arm_aligned_high &&
+					rbs.fingers_open && ((Math.abs(System.currentTimeMillis() - rbs.start_time) > 500)))
 				return "Shoot";
 			else
 				return null;
@@ -696,35 +695,42 @@ public class Robot extends IterativeRobot {
 		 * RobotInstruction rbi = new RobotInstruction(); return rbi; } ,
 		 * (RobotState rbs) -> { return null; }));
 		 */
-
 		// TODO Rewrite?
 		portcullis_sm.setState("Accelerate");
 		portcullis_sm.addState(new State("Accelerate", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
-			rbi.reset_defense = true;
+			// rbi.reset_defense = true; not needed if lowering defense at same
+			// time
 			rbi.intake_down = true;
+			rbi.defense_down = true;
 			rbi.arm_auto = true;
+			rbi.drive_left = 0.345;
+			rbi.drive_right = 0.345;
 			return rbi;
 		} , (RobotState rbs) -> {
-			// if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 >
-			// 20) {
-			if (rbs.arm_aligned_auto) {
-				return "Lower Mans";
+			if (rbs.arm_aligned_auto && rbs.manip_encoder / 10.0 > 0.25) {
+				// FIXME: counts per rotation
+				return "Continue Drive";
+			}
+			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 21) {
+				return "Continue Arm/Defense";
 			}
 			return null;
-		})).addState(new State("Lower Mans", (RobotState rbs) -> {
+		})).addState(new State("Continue Arm/Defense", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
 			rbi.defense_down = true;
+			rbi.arm_auto = true;
 			return rbi;
-		} , (RobotState rbs) -> {
-			// FIXME: counts per rotation
-			if (rbs.manip_encoder / 10.0 > 0.25)
-				return "Drive";
+		}, (RobotState rbs) -> {
+			if (rbs.arm_aligned_auto && rbs.manip_encoder / 10.0 > 0.25) {
+				// FIXME: counts per rotation
+				return "Arm Low";
+			}
 			return null;
-		})).addState(new State("Drive", (RobotState rbs) -> {
+		})).addState(new State("Continue Drive", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
-			rbi.drive_left = .345;
-			rbi.drive_right = .345;
+			rbi.drive_left = 0.345;
+			rbi.drive_right = 0.345;
 			return rbi;
 		} , (RobotState rbs) -> {
 			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 21) {
@@ -833,7 +839,8 @@ public class Robot extends IterativeRobot {
 			rbi.defense_up = true;
 			return rbi;
 		} , (RobotState rbs) -> {
-			// FIXME: determine positive and negative directoin on encoder for mnas
+			// FIXME: determine positive and negative directoin on encoder for
+			// mnas
 			if (rbs.manip_encoder / 10.0 < -0.25)
 				return "Finished";
 			return null;
