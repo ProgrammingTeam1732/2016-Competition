@@ -63,8 +63,16 @@ public class Catapult {
 			double derivative = (error - previous_error) / dt;
 			double output = (P/1000.0) * error + (I/1000.0) * integral + (D/1000.0) * derivative;
 			
+			if (isLoad() && inDeadbandLoad())
+				output = 0;
+			else if (isIn() && inDeadbandIn())
+				output = 0;
+			else if (isOut() && inDeadbandOut())
+				output = 0;
+			
 			motor.set(limit(output));
 			
+			SmartDashboard.putNumber("Catapult Current", motor.getOutputCurrent());
 			SmartDashboard.putNumber("Catapult Setpoint", setpoint);
 			SmartDashboard.putNumber("Catapult Output", limit(output));
 			SmartDashboard.putNumber("Catapult Error (P)", error);

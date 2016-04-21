@@ -865,7 +865,7 @@ public class Robot extends IterativeRobot {
 
 	public void teleopPeriodic() {
 		bot.run(sm.process(bot.getState(input.getShoot())), input);
-		SmartDashboard.putNumber("TimeASUKDFYVA", System.currentTimeMillis() - last);
+		SmartDashboard.putNumber("Delay", System.currentTimeMillis() - last);
 		last = System.currentTimeMillis();
 	}
 
