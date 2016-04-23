@@ -19,13 +19,17 @@ public class Systems {
 	Catapult catapult = new Catapult();
 	Fingers fingers = new Fingers();
 	DefenseManipulator defense_manipulator = new DefenseManipulator();
-	// Camera camera = new Camera();
+	Camera camera = new Camera();
 
 	boolean test_mode_started = false;
 
 	AnalogInput pressure = new AnalogInput(3);
 
 	Gyro gyro = new AnalogGyro(1);
+	
+	public void resetDefense() {
+		defense_manipulator.reset();
+	}
 
 	public void resetGyro() {
 		gyro.reset();
@@ -41,26 +45,32 @@ public class Systems {
 
 	public RobotState getCameraState() {
 		RobotState rbs = new RobotState();
-
+		
 		rbs.shoot = false;
-
-		// SmartDashboard.putNumber("Camera Angle", camera.getAngleToGoal());
-
-		// rbs.camera_angle = camera.getAngleToGoal();
-		// rbs.distance_to_goal = camera.getDistance();
+		
+		rbs.angle_to_goal = camera.getAngle();
+		rbs.camera_exists = camera.camera_exists;
+		
+		rbs.manip_encoder = defense_manipulator.getValue();
+		SmartDashboard.putNumber("Manip_encoder", defense_manipulator.getValue());
+		
+		SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
 
 		rbs.arm_aligned_high = arm.inDeadbandHigh();
 		rbs.arm_aligned_middle = arm.inDeadbandMiddle();
 		rbs.arm_aligned_low = arm.inDeadbandLow();
-
-		SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
+		rbs.arm_aligned_auto = arm.inDeadbandAuto();
 
 		SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
 		rbs.gyro = gyro.getAngle();
 
+		rbs.shoot_mode_far = catapult.isFar();
+		rbs.shoot_mode_close = catapult.isClose();
+		rbs.shoot_mode_auto = catapult.isAuto();
+		
 		rbs.catapult_aligned_out = catapult.inDeadbandOut();
-		rbs.catapult_aligned_in = catapult.inDeadbandIn();
 		rbs.catapult_aligned_load = catapult.inDeadbandLoad();
+		rbs.catapult_aligned_shoot = catapult.inDeadbandShoot();
 
 		rbs.intake_down = intake.isDown();
 		rbs.intake_up = intake.isUp();
@@ -77,22 +87,30 @@ public class Systems {
 		RobotState rbs = new RobotState();
 
 		rbs.shoot = shoot;
-		int c = defense_manipulator.getValue();
-		rbs.manip_encoder = c;
-		SmartDashboard.putNumber("Manip_encoder", c);
+		
+		rbs.camera_exists = camera.camera_exists;
+		rbs.distance_to_goal = camera.getDistance();
+		
+		rbs.manip_encoder = defense_manipulator.getValue();
+		SmartDashboard.putNumber("Manip_encoder", defense_manipulator.getValue());
+		
 		SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
 
 		rbs.arm_aligned_high = arm.inDeadbandHigh();
 		rbs.arm_aligned_middle = arm.inDeadbandMiddle();
 		rbs.arm_aligned_low = arm.inDeadbandLow();
 		rbs.arm_aligned_auto = arm.inDeadbandAuto();
-		
+
 		SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
 		rbs.gyro = gyro.getAngle();
 
+		rbs.shoot_mode_far = catapult.isFar();
+		rbs.shoot_mode_close = catapult.isClose();
+		rbs.shoot_mode_auto = catapult.isAuto();
+		
 		rbs.catapult_aligned_out = catapult.inDeadbandOut();
-		rbs.catapult_aligned_in = catapult.inDeadbandIn();
 		rbs.catapult_aligned_load = catapult.inDeadbandLoad();
+		rbs.catapult_aligned_shoot = catapult.inDeadbandShoot();
 
 		rbs.intake_down = intake.isDown();
 		rbs.intake_up = intake.isUp();
@@ -111,7 +129,7 @@ public class Systems {
 		if (rbi.reset_defense) {
 			defense_manipulator.reset();
 		}
-		if (rbi.arm_auto){
+		if (rbi.arm_auto) {
 			arm.setAuto();
 		}
 		if (rbi.reset_drive) {
@@ -122,8 +140,9 @@ public class Systems {
 			resetGyro();
 		}
 
-		if (rbi.catapult_in) {
-			catapult.setIn();
+		if (rbi.catapult_shoot) {
+			catapult.setAuto(rbi.catapult_auto_pos);
+			catapult.setShoot();
 		} else if (rbi.catapult_out) {
 			catapult.setOut();
 		} else if (rbi.catapult_load) {
@@ -181,8 +200,15 @@ public class Systems {
 	public void run(RobotInstruction rbi, Input io) {
 		drive.drive(io.getLeftVert(), io.getRightVert());
 
-		if (rbi.catapult_in) {
-			catapult.setIn();
+		if (io.getSetShootClose()) {
+			catapult.setClose();
+		} else if (io.getSetShootFar()) {
+			catapult.setFar();
+		} else if (io.getSetShootAuto()) {
+			catapult.setAuto(rbi.catapult_auto_pos);
+		}
+		if (rbi.catapult_shoot) {
+			catapult.setShoot();
 		} else if (rbi.catapult_out) {
 			catapult.setOut();
 		} else if (rbi.catapult_load) {
@@ -275,10 +301,10 @@ public class Systems {
 	}
 
 	public void test_mode(Input io) {
-		/* In testing mode:
-		 * wheel motors controlled by y-axis on sticks
-		 * catapult latch is controlled by left stick button six
-		 * capapult actuator is controlled by left stick buttons four (positive) and three (negative)
+		/*
+		 * In testing mode: wheel motors controlled by y-axis on sticks catapult
+		 * latch is controlled by left stick button six capapult actuator is
+		 * controlled by left stick buttons four (positive) and three (negative)
 		 */
 		if (!test_mode_started) {
 			System.out.println("Test Mode Started");
@@ -344,4 +370,10 @@ public class Systems {
 	/*
 	 * public void startCamera() { camera.startCamera(); }
 	 */
+
+	public void prepareAuto() {
+		drive.reset();
+		defense_manipulator.reset();
+		catapult.setAuto(270);
+	}
 }

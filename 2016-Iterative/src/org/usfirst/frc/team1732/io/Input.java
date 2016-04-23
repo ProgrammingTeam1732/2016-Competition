@@ -23,8 +23,8 @@ public class Input {
 	private final int ARM_HIGH = 4;
 	private final int ARM_MID = 5;
 	private final int ARM_LOW = 6;
-	private final int ARM_UP = 2;
-	private final int ARM_DOWN = 3;
+	private final int SET_SHOOT_FAR = 2;
+	private final int SET_SHOOT_CLOSE = 3;
 	private final int SHOOT = 1;
 	//private final int CLIMBER_UP = 11;
 	//private final int CLIMBER_DOWN = 12;
@@ -40,9 +40,9 @@ public class Input {
 	public boolean getArmMiddle() { return button1.getRawButton(ARM_MID); }
 	public boolean getArmLow() { return button1.getRawButton(ARM_LOW); }
 	
-	public boolean getArmUp() { return button1.getRawButton(ARM_UP); }
-	public boolean getArmNot() { return !getArmUp() && !getArmDown(); }
-	public boolean getArmDown() { return button1.getRawButton(ARM_DOWN); }
+	public boolean getSetShootFar() { return button1.getRawButton(SET_SHOOT_FAR); }
+	public boolean getSetShootAuto() { return !getSetShootFar() && !getSetShootClose(); }
+	public boolean getSetShootClose() { return button1.getRawButton(SET_SHOOT_CLOSE); }
 	
 	public boolean getShoot() { return  button1.getRawButton(SHOOT) || left.getRawButton(STICK_TWO) || right.getRawButton(STICK_TWO); }
 	

@@ -5,8 +5,10 @@ public class RobotInstruction {
 	public boolean machine_finished = false;
 		
 	public boolean catapult_load = false;
-	public boolean catapult_in = false;
 	public boolean catapult_out = false;
+	public boolean catapult_shoot = false;
+	public int catapult_auto_pos = 280;
+	
 	public boolean catapult_latch = false;
 	public boolean catapult_release = false;
 	

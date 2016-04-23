@@ -10,11 +10,12 @@ public class Catapult {
 	private CANTalon motor = new CANTalon(18);
 	private AnalogInput pot = new AnalogInput(0);
 	
-	private enum Mode { Auto, Manual }
-	
-	static int Load = 300; 
-	static int In = 800;		// 250
-	static int Out = 1675;		// 1750 is max
+	private static int Load = 300; 
+	private static int Auto = 270;
+	private static int Far = 280;
+	private static int Close = 800;
+	private static int Out = 1675;		// 1750 is max
+	private static int Shoot = 280;
 	// before out was 1930
 		
 	
@@ -29,13 +30,14 @@ public class Catapult {
 	private double I = 0.0;
 	private double D = 0.0;
 	private double MAX = 0.6;
-	
-	private Mode mode = Mode.Auto;
+
 	private long time = System.currentTimeMillis();
 	
 	public Catapult() {
 		SmartDashboard.putNumber("Catapult P", P);
-		SmartDashboard.putNumber("Catapult In", In);
+		SmartDashboard.putNumber("Catapult Far", Far);
+		SmartDashboard.putNumber("Catapult Close", Close);
+		SmartDashboard.putNumber("Catapult Auto", Auto);
 		SmartDashboard.putNumber("Catapult Out", Out);
 		SmartDashboard.putNumber("Catapult I", I);
 		SmartDashboard.putNumber("Catapult D", D);
@@ -47,62 +49,66 @@ public class Catapult {
 	}
 	
 	public void run() {
-		if (mode == Mode.Auto) {
-			P = SmartDashboard.getNumber("Catapult P", P);
-			I = SmartDashboard.getNumber("Catapult I", I);
-			D = SmartDashboard.getNumber("Catapult D", D);
-			MAX = SmartDashboard.getNumber("Catapult MAX", MAX);
-			In = (int) SmartDashboard.getNumber("Catapult In", In);
-			Out = (int) SmartDashboard.getNumber("Catapult Out", Out);
+		P = SmartDashboard.getNumber("Catapult P", P);
+		I = SmartDashboard.getNumber("Catapult I", I);
+		D = SmartDashboard.getNumber("Catapult D", D);
+		MAX = SmartDashboard.getNumber("Catapult MAX", MAX);
+		Far = (int) SmartDashboard.getNumber("Catapult Far", Far);
+		Close = (int) SmartDashboard.getNumber("Catapult Close", Close);
+		Out = (int) SmartDashboard.getNumber("Catapult Out", Out);
+		
+		double dt = (System.currentTimeMillis() - time);
+		double measured = pot.getValue();
+		SmartDashboard.putNumber("Catapult Pot", measured);
+		double error = setpoint - measured;
+		integral += error * dt/1000.0;
+		double derivative = (error - previous_error) / dt;
+		double output = (P/1000.0) * error + (I/1000.0) * integral + (D/1000.0) * derivative;
+		
+		if (isLoad() && inDeadbandLoad())
+			output = 0;
+		else if (isShoot() && inDeadbandShoot())
+			output = 0;
+		else if (isOut() && inDeadbandOut())
+			output = 0;
 			
-			double dt = (System.currentTimeMillis() - time);
-			double measured = pot.getValue();
-			SmartDashboard.putNumber("Catapult Pot", measured);
-			double error = setpoint - measured;
-			integral += error * dt/1000.0;
-			double derivative = (error - previous_error) / dt;
-			double output = (P/1000.0) * error + (I/1000.0) * integral + (D/1000.0) * derivative;
-			
-			if (isLoad() && inDeadbandLoad())
-				output = 0;
-			else if (isIn() && inDeadbandIn())
-				output = 0;
-			else if (isOut() && inDeadbandOut())
-				output = 0;
-			
-			motor.set(limit(output));
-			
-			SmartDashboard.putNumber("Catapult Current", motor.getOutputCurrent());
-			SmartDashboard.putNumber("Catapult Setpoint", setpoint);
-			SmartDashboard.putNumber("Catapult Output", limit(output));
-			SmartDashboard.putNumber("Catapult Error (P)", error);
-			SmartDashboard.putNumber("Catapult Integral (I)", integral);
-			SmartDashboard.putNumber("Catapult Derivative (D)", derivative);
-			
-			previous_error = error;
-			time = System.currentTimeMillis();
-		} else { 
-			motor.set(0);
-		}
+		motor.set(limit(output));
+		
+		SmartDashboard.putNumber("Catapult Auto",  Auto);
+		SmartDashboard.putNumber("Catapult Current", motor.getOutputCurrent());
+		SmartDashboard.putNumber("Catapult Setpoint", setpoint);
+		SmartDashboard.putNumber("Catapult Output", limit(output));
+		SmartDashboard.putNumber("Catapult Error (P)", error);
+		SmartDashboard.putNumber("Catapult Integral (I)", integral);
+		SmartDashboard.putNumber("Catapult Derivative (D)", derivative);
+		
+		previous_error = error;
+		time = System.currentTimeMillis();
 	}
 	
 	//public void calibrate(double input) { motor.set(input); SmartDashboard.putNumber("Catapult Output", input); SmartDashboard.putNumber("Catapult Pot", pot.getValue()); }
 	
-	public void setLoad()	{ setpoint = Load;	run(); }	public boolean isLoad()	{ return setpoint == Load; }
-	public void setIn()		{ setpoint = In;	run(); }	public boolean isIn() 	{ return setpoint == In; }
-	public void setOut()	{ setpoint = Out;	run(); }	public boolean isOut()	{ return setpoint == Out; }
+	public void setLoad()		{ setpoint = Load;	run(); }		public boolean isLoad()		{ return setpoint == Load; }
+	public void setOut()		{ setpoint = Out;	run(); }		public boolean isOut()		{ return setpoint == Out; }
+	public void setShoot() 		{ setpoint = Shoot; run(); }		public boolean isShoot()	{ return setpoint == Shoot; }
+	public void setFar()		{ Shoot = Far; }					public boolean isFar()		{ return Shoot == Far; }
+	public void setClose()  	{ Shoot = Close; }					public boolean isClose()	{ return Shoot == Close; }
+	public void setAuto(int s)	{ Shoot = s; Auto = s; }			public boolean isAuto() 	{ return Shoot == Auto; }
 	
 	public void latch() 	{ latch.set(LATCHED);  SmartDashboard.putBoolean("Latched", true); SmartDashboard.putBoolean("Released", false);}
 	public void release() 	{ latch.set(RELEASE); SmartDashboard.putBoolean("Latched", false); SmartDashboard.putBoolean("Released", true); }
 	
 	public double limit(double in) { if (in > MAX) return MAX; else if (in < -MAX) return -MAX; return in; }
 	
-	public boolean inDeadbandOut() { return Math.abs(Out - pot.getValue()) < RADIUS; }
-	public boolean inDeadbandIn() { return Math.abs(In - pot.getValue()) < RADIUS; }
+	public boolean inDeadbandOut() { return Math.abs(setpoint - pot.getValue()) < RADIUS; }
+	public boolean inDeadbandFar() { return Math.abs(Far - pot.getValue()) < RADIUS; }
+	public boolean inDeadbandClose() { return Math.abs(Close - pot.getValue()) < RADIUS; }
+	public boolean inDeadbandAuto() { return Math.abs(Auto - pot.getValue()) < RADIUS; }
 	public boolean inDeadbandLoad() { return Math.abs(Load - pot.getValue()) < RADIUS; }
+	public boolean inDeadbandShoot() { return Math.abs(Shoot - pot.getValue()) < RADIUS; }
 	
 	public boolean cocked() {
-		return inDeadbandIn() && latch.get() == LATCHED;
+		return inDeadbandShoot() && latch.get() == LATCHED;
 	}
 	
 	public double getPos() {
