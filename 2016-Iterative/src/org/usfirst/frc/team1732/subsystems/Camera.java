@@ -14,7 +14,9 @@ public class Camera {
 	private Image frame;
 	private Image binaryFrame;
 	private int numberParticles;
-	private AxisCamera camera;
+	private int session;
+	//private AxisCamera camera;
+
 	public boolean camera_exists = true; // assume it exists
 	
 	private final double RATIO = 1.428571;
@@ -30,11 +32,18 @@ public class Camera {
 	private double distance = 0.0;
 	
 	public Camera() {
-		try{camera = new AxisCamera("10.99.99.9");}
-		catch(Exception e) {System.out.println("Camera not found"); camera_exists = false;}
+		//try{camera = new AxisCamera("10.99.99.9");}
+		//catch(Exception e) {System.err.println("Camera not found"); camera_exists = false;}
+		try{
+			session = NIVision.IMAQdxOpenCamera("cam0", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+			NIVision.IMAQdxConfigureGrab(session);
+			NIVision.IMAQdxStartAcquisition(session);
+		}
+		catch(Exception e) {System.err.println("Camera not found"); camera_exists = false;}
 		frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 		binaryFrame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_U8, 0);
-		CameraServer.getInstance().setQuality(50);
+		CameraServer.getInstance().setQuality(25);
+		CameraServer.getInstance().setSize(1);
 		SmartDashboard.putBoolean("binaryFrame?", false);
 		SmartDashboard.putBoolean("Camera Exists?", camera_exists);
 		// Color limits
@@ -55,14 +64,18 @@ public class Camera {
 		SmartDashboard.putNumber("Aspect", 0);
 		SmartDashboard.putNumber("Distance",  0);
 		SmartDashboard.putNumber("Direction", 0);
-		try{camera.getImage(frame);}
-		catch(Exception e) {System.out.println("Camera not found"); camera_exists = false;}
+		//try{camera.getImage(frame);}
+		//catch(Exception e) {System.out.println("Camera not found"); camera_exists = false;}
+		try{NIVision.IMAQdxGrab(session, frame, 1);}
+		catch(Exception e) {System.err.println("Camera not found"); camera_exists = false;}
 	}
 	
 	public double getAngle() {
 		if( camera_exists) {
-			try{camera.getImage(frame);}
-			catch(Exception e) {System.out.println("Camera not found"); camera_exists = false;}
+			//try{camera.getImage(frame);}
+			//catch(Exception e) {System.out.println("Camera not found"); camera_exists = false;}
+			try{NIVision.IMAQdxGrab(session, frame, 1);}
+			catch(Exception e) {System.err.println("Camera not found"); camera_exists = false;}
 			
 			PAR_HUE_RANGE.minValue = (int) SmartDashboard.getNumber("Particle hue min", PAR_HUE_RANGE.minValue);
 			PAR_HUE_RANGE.maxValue = (int) SmartDashboard.getNumber("Particle hue max", PAR_HUE_RANGE.maxValue);
@@ -113,11 +126,20 @@ public class Camera {
 					SmartDashboard.putNumber("Distance",  distance);
 					SmartDashboard.putNumber("Direction", direction);
 					drawRectangle(frame, bestPar);
+					if(SmartDashboard.getBoolean("binaryFrame?", false)) CameraServer.getInstance().setImage(binaryFrame);
+					else CameraServer.getInstance().setImage(frame);
 					return direction;
 				}
+				else {
+					if(SmartDashboard.getBoolean("binaryFrame?", false)) CameraServer.getInstance().setImage(binaryFrame);
+					else CameraServer.getInstance().setImage(frame);
+					return -1.0;
+				}
+			} else {
+				if(SmartDashboard.getBoolean("binaryFrame?", false)) CameraServer.getInstance().setImage(binaryFrame);
+				else CameraServer.getInstance().setImage(frame);
+				return -1.0;
 			}
-			if(SmartDashboard.getBoolean("binaryFrame?", false)) CameraServer.getInstance().setImage(binaryFrame);
-			else CameraServer.getInstance().setImage(frame);
 		}
 		return -1.0;
 	}
@@ -136,5 +158,21 @@ public class Camera {
 									  rect,
 									  NIVision.DrawMode.PAINT_VALUE,
 									  NIVision.ShapeMode.SHAPE_RECT, (float) 0x00FF00);
+	}
+	
+	public void sendImage() {
+		try{
+			NIVision.IMAQdxGrab(session, frame, 1);
+			CameraServer.getInstance().setImage(frame);
+		}
+		catch(Exception e) {System.err.println("Camera not found"); camera_exists = false;}
+	}
+	
+	public void startCamera() {
+		NIVision.IMAQdxStartAcquisition(session);
+	}
+	
+	public void stopCamera() {
+		NIVision.IMAQdxStopAcquisition(session);
 	}
 }

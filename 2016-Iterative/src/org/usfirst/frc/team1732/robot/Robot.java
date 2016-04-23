@@ -34,7 +34,7 @@ public class Robot extends IterativeRobot {
 	StateMachine sm = new StateMachine();
 	
 	public void robotInit() {
-
+		bot.startCamera();
 		start_chooser.addDefault(default_auto, default_auto); // stop
 		start_chooser.addObject(cross_defenses, cross_defenses); // cross defenses
 		start_chooser.addObject(approach_defenses, approach_defenses); // approach defenses
@@ -87,12 +87,17 @@ public class Robot extends IterativeRobot {
 			else return null;
 		})).addState(new State("Point at Goal", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
+			if(rbs.angle_to_goal == -1.0) {
+				rbi.drive_left = 0.2;
+				rbi.drive_right = -0.2;
+			}
 			double turn = (rbs.angle_to_goal - 0.5) / 4;
 			rbi.drive_left = -turn;
 			rbi.drive_right = turn;
 			return rbi;
 		}, (RobotState rbs) -> {
 			if(Math.abs(0.5 - rbs.angle_to_goal) < 0.1) return "Auto Shoot Posistion";
+			else if(!rbs.shoot_mode_auto) return "Wait to Shoot";
 			else return null;
 		})).addState(new State("Auto Shoot Posistion", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
@@ -773,7 +778,7 @@ public class Robot extends IterativeRobot {
 			return in;
 	}
 
-	long last;
+	private long last;
 	
 	public void teleopInit() {
 		sm.setAuto(false);
@@ -795,6 +800,8 @@ public class Robot extends IterativeRobot {
 
 	public void disabledPeriodic() {
 		bot.disabled();
+		SmartDashboard.putNumber("Delay", System.currentTimeMillis() - last);
+		last = System.currentTimeMillis();
 	}
 
 	long start_time;
@@ -821,7 +828,7 @@ public class Robot extends IterativeRobot {
 	final String pos3 = "3";
 	final String pos4 = "4";
 	final String pos5 = "5";
-	final String dont_shoot = "";
+	final String dont_shoot = "Don't Move After Crossing";
 	String pos;
 	SendableChooser pos_chooser = new SendableChooser();
 
@@ -892,7 +899,8 @@ public class Robot extends IterativeRobot {
 				}
 			} else if (!shoot){ // crossing state machine has finished, not readt to shoot
 				if (pos.equals(pos1)) {
-					shoot = false;
+					if(low_bar_sm.getState().equals("Finished"))
+						shoot = false;
 				} else if (pos.equals(pos2)) {
 					bot.run(pos2_sm.process(bot.getState()));
 					if(pos2_sm.getState().equals("Finished"))

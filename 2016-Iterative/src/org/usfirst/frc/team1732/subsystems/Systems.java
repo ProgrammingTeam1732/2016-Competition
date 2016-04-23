@@ -198,6 +198,8 @@ public class Systems {
 	}
 
 	public void run(RobotInstruction rbi, Input io) {
+		camera.sendImage();
+		
 		drive.drive(io.getLeftVert(), io.getRightVert());
 
 		if (io.getSetShootClose()) {
@@ -207,6 +209,7 @@ public class Systems {
 		} else if (io.getSetShootAuto()) {
 			catapult.setAuto(rbi.catapult_auto_pos);
 		}
+		
 		if (rbi.catapult_shoot) {
 			catapult.setShoot();
 		} else if (rbi.catapult_out) {
@@ -361,16 +364,21 @@ public class Systems {
 	public void disabled() {
 		SmartDashboard.putNumber("Arm Disabled Pos", arm.getPos());
 		SmartDashboard.putNumber("Catapult Disabled Pos", catapult.getPos());
-		SmartDashboard.putNumber("Drive Left Dist", drive.getLeft());
-		SmartDashboard.putNumber("Drive Right Dist", drive.getRight());
+		SmartDashboard.putNumber("Drive Left", drive.getLeft());
+		SmartDashboard.putNumber("Drive Right", drive.getRight());
 		SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
 		SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
-		// camera.getAngleToGoal();
+		camera.getAngle();
 	}
-	/*
-	 * public void startCamera() { camera.startCamera(); }
-	 */
 
+	public void stopCamera() {
+		camera.stopCamera();
+	}
+	
+	public void startCamera() {
+		camera.startCamera();
+	}
+	
 	public void prepareAuto() {
 		drive.reset();
 		defense_manipulator.reset();

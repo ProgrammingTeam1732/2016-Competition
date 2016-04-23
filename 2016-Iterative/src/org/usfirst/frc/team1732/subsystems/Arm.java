@@ -31,7 +31,7 @@ public class Arm {
 	static int Low = (735); // 500
 	static int Middle = (1450); // 1500
 	static int Auto = (3120+1450)/2;
-	static int High = (3120); // 2800
+	static int High = (3185); // 2800
 	
 	//private boolean auto = false;
 

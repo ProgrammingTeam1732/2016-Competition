@@ -12,9 +12,9 @@ public class Catapult {
 	
 	private static int Load = 300; 
 	private static int Auto = 270;
-	private static int Far = 280;
-	private static int Close = 800;
-	private static int Out = 1675;		// 1750 is max
+	private static int Far = 520;
+	private static int Close = 650;
+	private static int Out = 1750;		// 1750 is max
 	private static int Shoot = 280;
 	// before out was 1930
 		
@@ -100,7 +100,7 @@ public class Catapult {
 	
 	public double limit(double in) { if (in > MAX) return MAX; else if (in < -MAX) return -MAX; return in; }
 	
-	public boolean inDeadbandOut() { return Math.abs(setpoint - pot.getValue()) < RADIUS; }
+	public boolean inDeadbandOut() { return Math.abs(Out - pot.getValue()) < RADIUS; }
 	public boolean inDeadbandFar() { return Math.abs(Far - pot.getValue()) < RADIUS; }
 	public boolean inDeadbandClose() { return Math.abs(Close - pot.getValue()) < RADIUS; }
 	public boolean inDeadbandAuto() { return Math.abs(Auto - pot.getValue()) < RADIUS; }

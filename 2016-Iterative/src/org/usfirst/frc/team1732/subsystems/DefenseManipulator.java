@@ -10,16 +10,16 @@ public class DefenseManipulator {
 	
 	public void down() {
 		manipulate.set(.3);
-		SmartDashboard.putNumber("Denfense Manipulator Pos", pos.get());
+		SmartDashboard.putNumber("Manip_encoder", pos.get());
 	}
 	
 	public void up() {
 		manipulate.set(-0.3);
-		SmartDashboard.putNumber("Denfense Manipulator Pos", pos.get());
+		SmartDashboard.putNumber("Manip_encoder", pos.get());
 	}
 	public void stop() {
 		manipulate.set(0);
-		SmartDashboard.putNumber("Denfense Manipulator Pos", pos.get());		
+		SmartDashboard.putNumber("Manip_encoder", pos.get());		
 	}
 	
 	private int value = 0;

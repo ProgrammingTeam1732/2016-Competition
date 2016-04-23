@@ -4,8 +4,8 @@ import java.util.Comparator;
 
 public class Particle implements Comparable<Particle> {
 
-	// Image width: 640
-	// height: 480
+	// Image width: 320
+	// height: 240
 
 	private double left;
 	private double top;
@@ -54,12 +54,12 @@ public class Particle implements Comparable<Particle> {
 	}
 
 	public double getDistance() {
-		return (640 * 20) / (Math.abs(right - left) * 2 * Math.tan(Math.toRadians(47 / 2)));
+		return (320 * 20) / (Math.abs(right - left) * 2 * Math.tan(Math.toRadians(47 / 2)));
 	}
 	// 640/w = 2*tan(47/2)*d/20
 
 	public double getDirection() {
-		return (right + left) / 1280; // 0 = left, 1 = right, 0.5 = middle
+		return (right + left) / 640; // 0 = left, 1 = right, 0.5 = middle
 	}
 
 }
