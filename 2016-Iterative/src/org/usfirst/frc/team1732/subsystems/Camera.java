@@ -169,10 +169,18 @@ public class Camera {
 	}
 	
 	public void startCamera() {
-		NIVision.IMAQdxStartAcquisition(session);
+		try{
+			session = NIVision.IMAQdxOpenCamera("cam0", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+			NIVision.IMAQdxConfigureGrab(session);
+			NIVision.IMAQdxStartAcquisition(session);
+		}
+		catch(Exception e) {System.err.println("Camera not found"); camera_exists = false;}
 	}
 	
 	public void stopCamera() {
-		NIVision.IMAQdxStopAcquisition(session);
+		try{
+			NIVision.IMAQdxStopAcquisition(session);
+		}
+		catch(Exception e) {System.err.println("Camera not found"); camera_exists = false;}
 	}
 }

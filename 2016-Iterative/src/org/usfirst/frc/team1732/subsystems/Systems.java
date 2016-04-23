@@ -23,7 +23,7 @@ public class Systems {
 
 	boolean test_mode_started = false;
 
-	AnalogInput pressure = new AnalogInput(3);
+	//AnalogInput pressure = new AnalogInput(3);
 
 	Gyro gyro = new AnalogGyro(1);
 	
@@ -54,7 +54,7 @@ public class Systems {
 		rbs.manip_encoder = defense_manipulator.getValue();
 		SmartDashboard.putNumber("Manip_encoder", defense_manipulator.getValue());
 		
-		SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
+		//SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
 
 		rbs.arm_aligned_high = arm.inDeadbandHigh();
 		rbs.arm_aligned_middle = arm.inDeadbandMiddle();
@@ -94,7 +94,7 @@ public class Systems {
 		rbs.manip_encoder = defense_manipulator.getValue();
 		SmartDashboard.putNumber("Manip_encoder", defense_manipulator.getValue());
 		
-		SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
+		//SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
 
 		rbs.arm_aligned_high = arm.inDeadbandHigh();
 		rbs.arm_aligned_middle = arm.inDeadbandMiddle();
@@ -198,7 +198,6 @@ public class Systems {
 	}
 
 	public void run(RobotInstruction rbi, Input io) {
-		camera.sendImage();
 		
 		drive.drive(io.getLeftVert(), io.getRightVert());
 
@@ -367,7 +366,8 @@ public class Systems {
 		SmartDashboard.putNumber("Drive Left", drive.getLeft());
 		SmartDashboard.putNumber("Drive Right", drive.getRight());
 		SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
-		SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
+		//SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
+		camera.startCamera();
 		camera.getAngle();
 	}
 

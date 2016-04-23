@@ -96,7 +96,8 @@ public class Robot extends IterativeRobot {
 			rbi.drive_right = turn;
 			return rbi;
 		}, (RobotState rbs) -> {
-			if(Math.abs(0.5 - rbs.angle_to_goal) < 0.1) return "Auto Shoot Posistion";
+			//FIXME: change this after testing turning
+			if(Math.abs(0.5 - rbs.angle_to_goal) < 0.1) return "Wait to Shoot";
 			else if(!rbs.shoot_mode_auto) return "Wait to Shoot";
 			else return null;
 		})).addState(new State("Auto Shoot Posistion", (RobotState rbs) -> {
