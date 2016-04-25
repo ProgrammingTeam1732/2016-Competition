@@ -367,7 +367,6 @@ public class Systems {
 		SmartDashboard.putNumber("Drive Right", drive.getRight());
 		SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
 		//SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
-		camera.startCamera();
 		camera.getAngle();
 	}
 
@@ -383,5 +382,6 @@ public class Systems {
 		drive.reset();
 		defense_manipulator.reset();
 		catapult.setAuto(270);
+		camera.openCamera();
 	}
 }

@@ -34,7 +34,6 @@ public class Robot extends IterativeRobot {
 	StateMachine sm = new StateMachine();
 	
 	public void robotInit() {
-		bot.startCamera();
 		start_chooser.addDefault(default_auto, default_auto); // stop
 		start_chooser.addObject(cross_defenses, cross_defenses); // cross defenses
 		start_chooser.addObject(approach_defenses, approach_defenses); // approach defenses
@@ -798,7 +797,7 @@ public class Robot extends IterativeRobot {
 	public void testPeriodic() {
 		bot.test_mode(input);
 	}
-
+	
 	public void disabledPeriodic() {
 		bot.disabled();
 		SmartDashboard.putNumber("Delay", System.currentTimeMillis() - last);
