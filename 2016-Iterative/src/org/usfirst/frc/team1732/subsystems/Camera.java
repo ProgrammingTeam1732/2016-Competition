@@ -153,6 +153,7 @@ public class Camera {
 		SmartDashboard.putNumber("Direction", angle);
 		return (dist > 200) ? angle : getAngle();
 	}
+	
 
 	public double getDistance() {
 		return distance;
