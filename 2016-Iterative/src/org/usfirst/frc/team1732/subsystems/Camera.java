@@ -24,9 +24,9 @@ public class Camera {
 	private NIVision.Range PAR_HUE_RANGE = new NIVision.Range(120, 140);
 	private NIVision.Range PAR_SAT_RANGE = new NIVision.Range(50, 255);
 	private NIVision.Range PAR_VAL_RANGE = new NIVision.Range(150, 255);
-	private double RATIO_MIN = 1.0;
-	private double RATIO_MAX = 1.8;
-	private double MIN_AREA = 100;
+	private double RATIO_MIN = 1.1;
+	private double RATIO_MAX = 1.7;
+	private double MIN_AREA = 600;
 	private int PAR_LIMIT = 10;
 	private double distance = 0.0;
 
@@ -151,7 +151,7 @@ public class Camera {
 		SmartDashboard.putNumber("Aspect", aspect);
 		SmartDashboard.putNumber("Distance", dist);
 		SmartDashboard.putNumber("Direction", angle);
-		return (dist > 200) ? angle : getAngle();
+		return angle;
 	}
 	
 
