@@ -12,7 +12,7 @@ public class Catapult {
 	
 	private static int Load = 300; 
 	private static int Auto = 270;
-	private static int Far = 520;
+	private static int Far = 500;
 	private static int Close = 650;
 	private static int Out = 1750;		// 1750 is max
 	private static int Shoot = 280;
@@ -39,6 +39,7 @@ public class Catapult {
 		SmartDashboard.putNumber("Catapult Close", Close);
 		SmartDashboard.putNumber("Catapult Auto", Auto);
 		SmartDashboard.putNumber("Catapult Out", Out);
+		SmartDashboard.putNumber("Catapult Load", Load);
 		SmartDashboard.putNumber("Catapult I", I);
 		SmartDashboard.putNumber("Catapult D", D);
 		SmartDashboard.putNumber("Catapult MAX", MAX);
@@ -56,7 +57,7 @@ public class Catapult {
 		Far = (int) SmartDashboard.getNumber("Catapult Far", Far);
 		Close = (int) SmartDashboard.getNumber("Catapult Close", Close);
 		Out = (int) SmartDashboard.getNumber("Catapult Out", Out);
-		
+		Load = (int) SmartDashboard.getNumber("Catapult Load", Load);
 		double dt = (System.currentTimeMillis() - time);
 		double measured = pot.getValue();
 		SmartDashboard.putNumber("Catapult Pot", measured);

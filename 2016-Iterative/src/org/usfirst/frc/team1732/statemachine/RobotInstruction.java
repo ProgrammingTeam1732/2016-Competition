@@ -9,6 +9,8 @@ public class RobotInstruction {
 	public boolean catapult_shoot = false;
 	public int catapult_auto_pos = 280;
 	
+	public boolean drive_auto = false;
+	
 	public boolean catapult_latch = false;
 	public boolean catapult_release = false;
 	

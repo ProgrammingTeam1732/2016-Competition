@@ -199,8 +199,8 @@ public class Systems {
 
 	public void run(RobotInstruction rbi, Input io) {
 		
-		drive.drive(io.getLeftVert(), io.getRightVert());
-
+		if(!rbi.drive_auto) drive.drive(io.getLeftVert(), io.getRightVert());
+		else drive.drive(rbi.drive_left, rbi.drive_right);
 		if (io.getSetShootClose()) {
 			catapult.setClose();
 		} else if (io.getSetShootFar()) {
@@ -363,9 +363,9 @@ public class Systems {
 	public void disabled() {
 		SmartDashboard.putNumber("Arm Disabled Pos", arm.getPos());
 		SmartDashboard.putNumber("Catapult Disabled Pos", catapult.getPos());
-		SmartDashboard.putNumber("Drive Left", drive.getLeft());
-		SmartDashboard.putNumber("Drive Right", drive.getRight());
-		SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
+		SmartDashboard.putNumber("Encoder Left Disabled", drive.getLeft());
+		SmartDashboard.putNumber("Encoder Right Disabled", drive.getRight());
+		SmartDashboard.putNumber("Gyro Angle Disabled", gyro.getAngle());
 		//SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
 		camera.getAngle();
 	}

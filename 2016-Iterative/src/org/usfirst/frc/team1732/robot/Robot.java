@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot {
 
-	Systems bot = new Systems();
+	Systems bot;
 	Input input = new Input();
 	
 	StateMachine cross_terrain = new StateMachine();
@@ -34,6 +34,7 @@ public class Robot extends IterativeRobot {
 	StateMachine sm = new StateMachine();
 	
 	public void robotInit() {
+		bot = new Systems();
 		start_chooser.addDefault(default_auto, default_auto); // stop
 		start_chooser.addObject(cross_defenses, cross_defenses); // cross defenses
 		start_chooser.addObject(approach_defenses, approach_defenses); // approach defenses
@@ -90,9 +91,12 @@ public class Robot extends IterativeRobot {
 				rbi.drive_left = 0.2;
 				rbi.drive_right = -0.2;
 			}
-			double turn = (rbs.angle_to_goal - 0.5) / 4;
-			rbi.drive_left = -turn;
-			rbi.drive_right = turn;
+			double turn  = -0.2;
+			if(rbs.angle_to_goal < 0.5) turn = 0.2;
+			else turn = -0.2;
+			rbi.drive_auto = true;
+			rbi.drive_left = turn;
+			rbi.drive_right = -turn;
 			return rbi;
 		}, (RobotState rbs) -> {
 			//FIXME: change this after testing turning
@@ -259,7 +263,7 @@ public class Robot extends IterativeRobot {
 			rbi.drive_right = 0.345;
 			return rbi;
 		}, (RobotState rbs) -> {
-			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 280) {
+			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 220) {
 				return "Turn";
 			}
 			return null;
@@ -785,7 +789,10 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void teleopPeriodic() {
-		bot.run(sm.process(bot.getState(input.getShoot())), input);
+		if(sm.getState().equals("Point at Goal")) {
+			bot.run(sm.process(bot.getCameraState()), input);
+		}
+		else bot.run(sm.process(bot.getState(input.getShoot())), input);
 		SmartDashboard.putNumber("Delay", System.currentTimeMillis() - last);
 		last = System.currentTimeMillis();
 	}

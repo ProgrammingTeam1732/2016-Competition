@@ -6,14 +6,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Arm {
 	private CANTalon motor = new CANTalon(17);
-	private AnalogInput pot = new AnalogInput(3);
+	private AnalogInput pot = new AnalogInput(3); //2
 
 	private double previous_error = 0;
 	private double previous = 0;
 	private double integral = 0;
 	private long time = System.currentTimeMillis();
 
-	private double P = 5.0;
+	private double P = 4.0;
 	private double I = 0.0;
 	private double D = 0.0;
 	private double MAX = 0.8;
@@ -31,7 +31,7 @@ public class Arm {
 	static int Low = (640); // 500
 	static int Middle = (1450); // 1500
 	static int Auto = (3120+1450)/2;
-	static int High = (3185); // 2800
+	static int High = (3135); // 2800
 	
 	//private boolean auto = false;
 

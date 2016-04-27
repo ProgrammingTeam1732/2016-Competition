@@ -34,11 +34,15 @@ public class Camera {
 		// try{camera = new AxisCamera("10.99.99.9");}
 		// catch(Exception e) {System.err.println("Camera not found");
 		// camera_exists = false;}
-		frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
-		binaryFrame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_U8, 0);
+		try{
+			frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
+			binaryFrame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_U8, 0);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
 		openCamera();
 		CameraServer.getInstance().setQuality(25);
-		CameraServer.getInstance().setSize(1);
 		SmartDashboard.putBoolean("binaryFrame?", false);
 		SmartDashboard.putBoolean("Camera Exists?", camera_exists);
 		// Color limits
@@ -74,7 +78,7 @@ public class Camera {
 		} catch (Exception e) {
 			System.err.println("Camera not found");
 			camera_exists = false;
-			openCamera();
+			startCamera();
 		}
 		if (camera_exists) {
 			// try{camera.getImage(frame);}
@@ -88,8 +92,12 @@ public class Camera {
 			PAR_VAL_RANGE.maxValue = (int) SmartDashboard.getNumber("Particle val max", PAR_VAL_RANGE.maxValue);
 
 			// Threshold the image looking for green (Goal color)
+			try{
 			NIVision.imaqColorThreshold(binaryFrame, frame, 255, NIVision.ColorMode.HSL, PAR_HUE_RANGE, PAR_SAT_RANGE,
 					PAR_VAL_RANGE);
+			}catch(Exception e){
+				System.err.println(e.getMessage());
+			}
 
 			// Count and display particles
 			numberParticles = NIVision.imaqCountParticles(binaryFrame, 1);
@@ -137,16 +145,13 @@ public class Camera {
 					drawRectangle(frame, bestPar);
 				}
 			}
-			if (SmartDashboard.getBoolean("binaryFrame?", false))
-				CameraServer.getInstance().setImage(binaryFrame);
-			else
-				CameraServer.getInstance().setImage(frame);
 		}
+		sendImage();
 		SmartDashboard.putNumber("Area", area);
 		SmartDashboard.putNumber("Aspect", aspect);
 		SmartDashboard.putNumber("Distance", dist);
 		SmartDashboard.putNumber("Direction", angle);
-		return angle;
+		return (dist > 200) ? angle : getAngle();
 	}
 
 	public double getDistance() {
@@ -162,12 +167,14 @@ public class Camera {
 
 	public void sendImage() {
 		try {
-			NIVision.IMAQdxGrab(session, frame, 1);
-			CameraServer.getInstance().setImage(frame);
+			if (SmartDashboard.getBoolean("binaryFrame?", false))
+				CameraServer.getInstance().setImage(binaryFrame);
+			else
+				CameraServer.getInstance().setImage(frame);
 		} catch (Exception e) {
 			System.err.println("Camera not found");
 			camera_exists = false;
-			openCamera();
+			System.err.println(e.getMessage());
 		}
 	}
 
@@ -176,11 +183,10 @@ public class Camera {
 			session = NIVision.IMAQdxOpenCamera("cam0", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
 			NIVision.IMAQdxConfigureGrab(session);
 			NIVision.IMAQdxStartAcquisition(session);
-			NIVision.IMAQdxGrab(session, frame, 1);
-			CameraServer.getInstance().setImage(frame);
 			camera_exists = true;
 		} catch (Exception e) {
 			System.err.println("Camera not found");
+			System.err.println(e.getMessage());
 			camera_exists = false;
 		}
 	}
@@ -188,10 +194,11 @@ public class Camera {
 	public void startCamera() {
 		try {
 			NIVision.IMAQdxStartAcquisition(session);
+			camera_exists = true;
 		} catch (Exception e) {
 			System.err.println("Camera not found");
+			System.err.println(e.getMessage());
 			camera_exists = false;
-			openCamera();
 		}
 	}
 
@@ -200,6 +207,7 @@ public class Camera {
 			NIVision.IMAQdxStopAcquisition(session);
 		} catch (Exception e) {
 			System.err.println("Camera not found");
+			System.err.println(e.getMessage());
 			camera_exists = false;
 		}
 	}
