@@ -39,11 +39,12 @@ public class Camera {
 			//frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 			//binaryFrame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_U8, 0);
 			camera = new USBCamera("cam0");
+			camera.openCamera();
 			camera.startCapture();
 			SmartDashboard.putNumber("Camera Brightness: ", (int)camera.getBrightness());
 			SmartDashboard.putNumber("Camera Exposure: " , 0);
-			SmartDashboard.putNumber("Camera FPS: ", 10);
-			SmartDashboard.putNumber("Camera White Balance:", 0);			
+			SmartDashboard.putNumber("Camera FPS: ", 10);	
+			SmartDashboard.putNumber("Camera White Balance:", 0);		
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -82,21 +83,22 @@ public class Camera {
 		double dist = 0.0;
 		double aspect = 0.0;
 		double area = 0.0;
-		camera.setBrightness((int) SmartDashboard.getNumber("Camera Brightness: ", (int)camera.getBrightness()));
-		camera.setExposureManual((int) SmartDashboard.getNumber("Camera Exposure: " , 0));
-		camera.setFPS((int) SmartDashboard.getNumber("Camera FPS: ", 10));
-		camera.setWhiteBalanceManual((int) SmartDashboard.getNumber("Camera White Balance:", 0));			
 		try {
 			//NIVision.IMAQdxGrab(session, frame, 1);
+			camera.setBrightness((int) SmartDashboard.getNumber("Camera Brightness: ", (int)camera.getBrightness()));
+			camera.setExposureManual((int) SmartDashboard.getNumber("Camera Exposure: " , 0));
+			camera.setFPS((int) SmartDashboard.getNumber("Camera FPS: ", 10));
+			camera.setWhiteBalanceManual((int) SmartDashboard.getNumber("Camera White Balance:", 0));
+			camera.updateSettings();
 			camera.getImage(frame);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			System.err.println(e);
 			e.printStackTrace();
-			camera_exists = false;
+			//camera_exists = false;
 			//startCamera();
 		}
-		if (camera_exists) {
+		//if (camera_exists) {
 			// try{camera.getImage(frame);}
 			// catch(Exception e) {System.out.println("Camera not found");
 			// camera_exists = false;}
@@ -163,7 +165,7 @@ public class Camera {
 					drawRectangle(frame, bestPar);
 				}
 			}
-		}
+		//}
 		sendImage();
 		SmartDashboard.putNumber("Area", area);
 		SmartDashboard.putNumber("Aspect", aspect);
@@ -233,6 +235,7 @@ public class Camera {
 			camera_exists = false;
 		}
 	}
+	
 
 	public void stopCamera() {
 		try {
@@ -244,4 +247,8 @@ public class Camera {
 			camera_exists = false;
 		}
 	}*/
+	
+	public void startCapture() {
+		camera.startCapture();
+	}
 }

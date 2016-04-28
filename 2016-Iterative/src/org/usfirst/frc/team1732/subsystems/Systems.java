@@ -371,19 +371,20 @@ public class Systems {
 		camera.getAngle();
 	}
 
-	public void stopCamera() {
+	/*public void stopCamera() {
 		camera.stopCamera();
 	}
 	
 	public void startCamera() {
-		camera.startCamera();
-	}
+		//camera.startCamera();
+	}*/
 	
 	public void prepareAuto() {
 		drive.reset();
 		defense_manipulator.reset();
 		catapult.setAuto(270);
 		//catapult.setClose();
-		camera.openCamera();
+		//camera.openCamera();
+		camera.startCapture();
 	}
 }
