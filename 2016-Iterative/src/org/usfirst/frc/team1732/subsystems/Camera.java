@@ -190,6 +190,15 @@ public class Camera {
 		try {
 			session = NIVision.IMAQdxOpenCamera("cam1", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
 			NIVision.IMAQdxConfigureGrab(session);
+			NIVision.IMAQdxSetAttributeString(session, "CameraAttributes::WhiteBalance::Mode", "Manual");
+			NIVision.IMAQdxSetAttributeI64(session, "CameraAttributes::WhiteBalance::Value", NIVision.IMAQdxGetAttributeMinimumI64(session, "CameraAttributes::WhiteBalance::Value"));
+			
+			NIVision.IMAQdxSetAttributeString(session, "CameraAttributes::Exposure::Mode", "Manual");
+			NIVision.IMAQdxSetAttributeI64(session, "CameraAttributes::Exposure::Value", NIVision.IMAQdxGetAttributeMinimumI64(session, "CameraAttributes::Exposure::Value"));
+			
+			NIVision.IMAQdxSetAttributeString(session, "CameraAttributes::Brightness::Mode", "Manual");
+			NIVision.IMAQdxSetAttributeI64(session, "CameraAttributes::Brightness::Value", NIVision.IMAQdxGetAttributeMinimumI64(session, "CameraAttributes::Brightness::Value"));
+			
 			NIVision.IMAQdxStartAcquisition(session);
 			camera_exists = true;
 		} catch (Exception e) {
