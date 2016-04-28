@@ -878,7 +878,7 @@ public class Robot extends IterativeRobot {
 			if (!over) {
 				if (cross_mode.equals(default_auto)) {
 					bot.run(sm.process(bot.getState()));
-				} else if (cross_mode.equals(start_chooser)) {
+				} else if (cross_mode.equals(cross_terrain_auto)) {
 					bot.run(cross_terrain.process(bot.getState()));
 					if (cross_terrain.getState().equals("Finished"))
 						over = true;

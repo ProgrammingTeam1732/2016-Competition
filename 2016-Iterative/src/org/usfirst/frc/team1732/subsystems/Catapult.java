@@ -72,6 +72,8 @@ public class Catapult {
 			output = 0;
 		else if (isOut() && inDeadbandOut())
 			output = 0;
+		
+		if(isOut()) SmartDashboard.putNumber("Actual Out Posistion", pot.getValue());
 			
 		motor.set(limit(output));
 		
