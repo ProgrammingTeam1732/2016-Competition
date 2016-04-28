@@ -8,15 +8,16 @@ import com.ni.vision.NIVision.Image;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.vision.AxisCamera;
+import edu.wpi.first.wpilibj.vision.USBCamera;
 
 public class Camera {
 
 	private Image frame;
 	private Image binaryFrame;
 	private int numberParticles;
-	private int session;
+	//private int session;
 	// private AxisCamera camera;
-
+	private USBCamera camera;
 	public boolean camera_exists = false; // assume it is disconnected
 
 	private final double RATIO = 1.428571; // width/height, 20/12
@@ -35,15 +36,21 @@ public class Camera {
 		// catch(Exception e) {System.err.println("Camera not found");
 		// camera_exists = false;}
 		try{
-			frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
-			binaryFrame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_U8, 0);
+			//frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
+			//binaryFrame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_U8, 0);
+			camera = new USBCamera("cam0");
+			camera.startCapture();
+			SmartDashboard.putNumber("Camera Brightness: ", (int)camera.getBrightness());
+			SmartDashboard.putNumber("Camera Exposure: " , 0);
+			SmartDashboard.putNumber("Camera FPS: ", 10);
+			SmartDashboard.putNumber("Camera White Balance:", 0);			
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 			System.err.println(e);
 			e.printStackTrace();
 		}
-		openCamera();
+		//camera.openCamera();
 		CameraServer.getInstance().setQuality(25);
 		SmartDashboard.putBoolean("binaryFrame?", false);
 		SmartDashboard.putBoolean("Camera Exists?", camera_exists);
@@ -75,14 +82,19 @@ public class Camera {
 		double dist = 0.0;
 		double aspect = 0.0;
 		double area = 0.0;
+		camera.setBrightness((int) SmartDashboard.getNumber("Camera Brightness: ", (int)camera.getBrightness()));
+		camera.setExposureManual((int) SmartDashboard.getNumber("Camera Exposure: " , 0));
+		camera.setFPS((int) SmartDashboard.getNumber("Camera FPS: ", 10));
+		camera.setWhiteBalanceManual((int) SmartDashboard.getNumber("Camera White Balance:", 0));			
 		try {
-			NIVision.IMAQdxGrab(session, frame, 1);
+			//NIVision.IMAQdxGrab(session, frame, 1);
+			camera.getImage(frame);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			System.err.println(e);
 			e.printStackTrace();
 			camera_exists = false;
-			startCamera();
+			//startCamera();
 		}
 		if (camera_exists) {
 			// try{camera.getImage(frame);}
@@ -186,10 +198,11 @@ public class Camera {
 		}
 	}
 
-	public void openCamera() {
+	/*public void openCamera() {
 		try {
-			session = NIVision.IMAQdxOpenCamera("cam1", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-			NIVision.IMAQdxConfigureGrab(session);
+			//session = NIVision.IMAQdxOpenCamera("cam1", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+			
+			/*NIVision.IMAQdxConfigureGrab(session);
 			NIVision.IMAQdxSetAttributeString(session, "CameraAttributes::WhiteBalance::Mode", "Manual");
 			NIVision.IMAQdxSetAttributeI64(session, "CameraAttributes::WhiteBalance::Value", NIVision.IMAQdxGetAttributeMinimumI64(session, "CameraAttributes::WhiteBalance::Value"));
 			
@@ -207,11 +220,11 @@ public class Camera {
 			e.printStackTrace();
 			camera_exists = false;
 		}
-	}
+	}*/
 
-	public void startCamera() {
+	/*public void startCamera() {
 		try {
-			NIVision.IMAQdxStartAcquisition(session);
+			//NIVision.IMAQdxStartAcquisition(session);
 			camera_exists = true;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -230,5 +243,5 @@ public class Camera {
 			e.printStackTrace();
 			camera_exists = false;
 		}
-	}
+	}*/
 }
