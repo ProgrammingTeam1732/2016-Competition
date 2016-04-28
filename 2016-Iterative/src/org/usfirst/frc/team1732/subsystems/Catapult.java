@@ -12,8 +12,8 @@ public class Catapult {
 	
 	private static int Load = 300; 
 	private static int Auto = 270;
-	private static int Far = 460; // 500 practice
-	private static int Close = 950; // 650 practice
+	private static int Far = 460; // 500 practice, 460 competition
+	private static int Close = 1150; // 650 practice, 1150 competition
 	private static int Out = 2000;		// 2000 is competition, 1750 is practice
 	private static int Shoot = 500;
 	// before out was 1930
