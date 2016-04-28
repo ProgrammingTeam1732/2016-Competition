@@ -100,12 +100,14 @@ public class Robot extends IterativeRobot {
 			return rbi;
 		}, (RobotState rbs) -> {
 			//FIXME: change this after testing turning
+			//FIXME
 			if(Math.abs(0.5 - rbs.angle_to_goal) < 0.1) return "Wait to Shoot";
 			else if(!rbs.shoot_mode_auto) return "Wait to Shoot";
 			else return null;
 		})).addState(new State("Auto Shoot Posistion", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
 			//TODO: calculate function for setpoint based on distance
+			//FIXME
 			rbi.catapult_auto_pos = (int) (rbs.distance_to_goal*2);
 			rbi.catapult_shoot = true;
 			return rbi;

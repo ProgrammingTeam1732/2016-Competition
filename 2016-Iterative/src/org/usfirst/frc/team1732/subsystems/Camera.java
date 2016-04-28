@@ -26,7 +26,7 @@ public class Camera {
 	private NIVision.Range PAR_VAL_RANGE = new NIVision.Range(150, 255);
 	private double RATIO_MIN = 1.1;
 	private double RATIO_MAX = 1.7;
-	private double MIN_AREA = 600;
+	private double MIN_AREA = 4000;
 	private int PAR_LIMIT = 10;
 	private double distance = 0.0;
 
@@ -40,6 +40,8 @@ public class Camera {
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
+			System.err.println(e);
+			e.printStackTrace();
 		}
 		openCamera();
 		CameraServer.getInstance().setQuality(25);
@@ -76,7 +78,9 @@ public class Camera {
 		try {
 			NIVision.IMAQdxGrab(session, frame, 1);
 		} catch (Exception e) {
-			System.err.println("Camera not found");
+			System.out.println(e.getMessage());
+			System.err.println(e);
+			e.printStackTrace();
 			camera_exists = false;
 			startCamera();
 		}
@@ -96,7 +100,9 @@ public class Camera {
 			NIVision.imaqColorThreshold(binaryFrame, frame, 255, NIVision.ColorMode.HSL, PAR_HUE_RANGE, PAR_SAT_RANGE,
 					PAR_VAL_RANGE);
 			}catch(Exception e){
-				System.err.println(e.getMessage());
+				System.out.println(e.getMessage());
+				System.err.println(e);
+				e.printStackTrace();
 			}
 
 			// Count and display particles
@@ -173,21 +179,23 @@ public class Camera {
 			else
 				CameraServer.getInstance().setImage(frame);
 		} catch (Exception e) {
-			System.err.println("Camera not found");
+			System.out.println(e.getMessage());
+			System.err.println(e);
+			e.printStackTrace();
 			camera_exists = false;
-			System.err.println(e.getMessage());
 		}
 	}
 
 	public void openCamera() {
 		try {
-			session = NIVision.IMAQdxOpenCamera("cam0", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+			session = NIVision.IMAQdxOpenCamera("cam1", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
 			NIVision.IMAQdxConfigureGrab(session);
 			NIVision.IMAQdxStartAcquisition(session);
 			camera_exists = true;
 		} catch (Exception e) {
-			System.err.println("Camera not found");
-			System.err.println(e.getMessage());
+			System.out.println(e.getMessage());
+			System.err.println(e);
+			e.printStackTrace();
 			camera_exists = false;
 		}
 	}
@@ -197,8 +205,9 @@ public class Camera {
 			NIVision.IMAQdxStartAcquisition(session);
 			camera_exists = true;
 		} catch (Exception e) {
-			System.err.println("Camera not found");
-			System.err.println(e.getMessage());
+			System.out.println(e.getMessage());
+			System.err.println(e);
+			e.printStackTrace();
 			camera_exists = false;
 		}
 	}
@@ -207,8 +216,9 @@ public class Camera {
 		try {
 			NIVision.IMAQdxStopAcquisition(session);
 		} catch (Exception e) {
-			System.err.println("Camera not found");
-			System.err.println(e.getMessage());
+			System.out.println(e.getMessage());
+			System.err.println(e);
+			e.printStackTrace();
 			camera_exists = false;
 		}
 	}

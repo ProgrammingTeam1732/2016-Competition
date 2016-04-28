@@ -20,6 +20,7 @@ public class Systems {
 	Fingers fingers = new Fingers();
 	DefenseManipulator defense_manipulator = new DefenseManipulator();
 	Camera camera = new Camera();
+	AnalogInput pressure = new AnalogInput(3); //on practice bot 3 is used for arm pot
 
 	boolean test_mode_started = false;
 
@@ -54,7 +55,7 @@ public class Systems {
 		rbs.manip_encoder = defense_manipulator.getValue();
 		SmartDashboard.putNumber("Manip_encoder", defense_manipulator.getValue());
 		
-		//SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
+		SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
 
 		rbs.arm_aligned_high = arm.inDeadbandHigh();
 		rbs.arm_aligned_middle = arm.inDeadbandMiddle();
@@ -94,7 +95,7 @@ public class Systems {
 		rbs.manip_encoder = defense_manipulator.getValue();
 		SmartDashboard.putNumber("Manip_encoder", defense_manipulator.getValue());
 		
-		//SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
+		SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
 
 		rbs.arm_aligned_high = arm.inDeadbandHigh();
 		rbs.arm_aligned_middle = arm.inDeadbandMiddle();
@@ -382,6 +383,7 @@ public class Systems {
 		drive.reset();
 		defense_manipulator.reset();
 		catapult.setAuto(270);
+		//catapult.setClose();
 		camera.openCamera();
 	}
 }

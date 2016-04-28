@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Arm {
 	private CANTalon motor = new CANTalon(17);
-	private AnalogInput pot = new AnalogInput(3); //2
+	private AnalogInput pot = new AnalogInput(2); //3 on practice, 2 on competition bot
 
 	private double previous_error = 0;
 	private double previous = 0;
@@ -28,10 +28,10 @@ public class Arm {
 	private static final double DOWN_SPEED = -0.4;
 	private static final double STOP = 0;
 
-	static int Low = (640); // 500
-	static int Middle = (1450); // 1500
+	static int Low = (735); // 640 = practice, 735 = competition
+	static int Middle = (1450); // 1450 practice and competition
 	static int Auto = (3120+1450)/2;
-	static int High = (3135); // 2800
+	static int High = (3120); // 3135 practice, 3120 competition
 	
 	//private boolean auto = false;
 
