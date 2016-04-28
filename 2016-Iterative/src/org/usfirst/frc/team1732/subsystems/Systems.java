@@ -41,7 +41,7 @@ public class Systems {
 	}
 
 	public RobotState getState() {
-		return getState(false);
+		return getState(false, false);
 	}
 
 	public RobotState getCameraState() {
@@ -84,10 +84,11 @@ public class Systems {
 		return rbs;
 	}
 
-	public RobotState getState(boolean shoot) {
+	public RobotState getState(boolean shoot, boolean reset_catapult) {
 		RobotState rbs = new RobotState();
 
 		rbs.shoot = shoot;
+		rbs.reset_catapult = reset_catapult;
 		
 		rbs.camera_exists = camera.camera_exists;
 		rbs.distance_to_goal = camera.getDistance();
@@ -368,7 +369,7 @@ public class Systems {
 		SmartDashboard.putNumber("Encoder Right Disabled", drive.getRight());
 		SmartDashboard.putNumber("Gyro Angle Disabled", gyro.getAngle());
 		//SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
-		camera.getAngle();
+		//camera.getAngle();
 	}
 
 	/*public void stopCamera() {
@@ -383,8 +384,8 @@ public class Systems {
 		drive.reset();
 		defense_manipulator.reset();
 		catapult.setAuto(270);
-		//catapult.setClose();
+		catapult.setClose();
 		//camera.openCamera();
-		camera.startCapture();
+		//camera.startCapture();
 	}
 }

@@ -73,6 +73,8 @@ public class Robot extends IterativeRobot {
 		}, (RobotState rbs) -> {
 			if (rbs.shoot && rbs.fingers_open)
 				return "Shoot Mode";
+			if (rbs.reset_catapult && rbs.fingers_open)
+				return "Shoot Mode";
 			/*
 			 * else if (rbs.shoot) return "Open Fingers";
 			 */
@@ -124,6 +126,8 @@ public class Robot extends IterativeRobot {
 		}, (RobotState rbs) -> {
 			if (rbs.catapult_aligned_shoot && rbs.arm_aligned_high && rbs.fingers_open
 					&& ((Math.abs(System.currentTimeMillis() - rbs.start_time) > 500)))
+				return "Shoot";
+			if (rbs.reset_catapult && rbs.fingers_open)
 				return "Shoot";
 			else
 				return null;
@@ -794,7 +798,7 @@ public class Robot extends IterativeRobot {
 		if(sm.getState().equals("Point at Goal")) {
 			bot.run(sm.process(bot.getCameraState()), input);
 		}
-		else bot.run(sm.process(bot.getState(input.getShoot())), input);
+		else bot.run(sm.process(bot.getState(input.getShoot(), input.getResetShot())), input);
 		SmartDashboard.putNumber("Delay", System.currentTimeMillis() - last);
 		last = System.currentTimeMillis();
 	}
@@ -868,7 +872,7 @@ public class Robot extends IterativeRobot {
 		
 		bot.prepareAuto();
 	}
-
+//TODO:
 	public void autonomousPeriodic() {
 		if (start_mode.equals(default_auto)) {
 			bot.run(new RobotInstruction()); // do nothing
