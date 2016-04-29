@@ -52,6 +52,11 @@ public class Input {
 	public boolean getFingersOpen() { return button1.getRawButton(FINGER) || left.getRawButton(STICK_TRIGGER) || right.getRawButton(STICK_TRIGGER); }
 	public boolean getFingersClose() { return !button1.getRawButton(FINGER); }
 
+	public boolean getResetShot() {
+		if(button1.getRawAxis(STICK_HORI) < -0.1) return true;
+		else return false;
+	}
+	
 	public boolean getIntakeUp() { return button1.getRawButton(INTAKE); }
 	public boolean getIntakeDown() { return !button1.getRawButton(INTAKE); }
 	

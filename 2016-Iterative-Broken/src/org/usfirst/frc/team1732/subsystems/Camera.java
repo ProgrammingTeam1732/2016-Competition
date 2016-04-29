@@ -38,7 +38,7 @@ public class Camera {
 		try{
 			frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 			binaryFrame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_U8, 0);
-			camera = new USBCamera("cam1");
+			camera = new USBCamera("cam0");
 			camera.openCamera();
 			camera.startCapture();
 			camera.setWhiteBalanceManual(4000);
