@@ -19,7 +19,7 @@ public class Systems {
 	Catapult catapult = new Catapult();
 	Fingers fingers = new Fingers();
 	DefenseManipulator defense_manipulator = new DefenseManipulator();
-	Camera camera = new Camera();
+	//Camera camera = new Camera();
 	AnalogInput pressure = new AnalogInput(3); //on practice bot 3 is used for arm pot
 
 	boolean test_mode_started = false;
@@ -49,8 +49,8 @@ public class Systems {
 		
 		rbs.shoot = false;
 		
-		rbs.angle_to_goal = camera.getAngle();
-		rbs.camera_exists = camera.camera_exists;
+		rbs.angle_to_goal = 0.5;//camera.getAngle();
+		rbs.camera_exists = false; //camera.camera_exists;
 		
 		rbs.manip_encoder = defense_manipulator.getValue();
 		SmartDashboard.putNumber("Manip_encoder", defense_manipulator.getValue());
@@ -90,8 +90,8 @@ public class Systems {
 		rbs.shoot = shoot;
 		rbs.reset_catapult = reset_catapult;
 		
-		rbs.camera_exists = camera.camera_exists;
-		rbs.distance_to_goal = camera.getDistance();
+		rbs.camera_exists = false; //camera.camera_exists;
+		rbs.distance_to_goal = 0; //camera.getDistance();
 		
 		rbs.manip_encoder = defense_manipulator.getValue();
 		SmartDashboard.putNumber("Manip_encoder", defense_manipulator.getValue());
@@ -368,7 +368,7 @@ public class Systems {
 		SmartDashboard.putNumber("Encoder Left Disabled", drive.getLeft());
 		SmartDashboard.putNumber("Encoder Right Disabled", drive.getRight());
 		SmartDashboard.putNumber("Gyro Angle Disabled", gyro.getAngle());
-		//SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
+		SmartDashboard.putNumber("Pressure", pressure.getValue() / 12.0);
 		//camera.getAngle();
 	}
 
@@ -383,7 +383,7 @@ public class Systems {
 	public void prepareAuto() {
 		drive.reset();
 		defense_manipulator.reset();
-		catapult.setAuto(270);
+		//catapult.setAuto(270);
 		catapult.setClose();
 		//camera.openCamera();
 		//camera.startCapture();

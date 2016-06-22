@@ -41,10 +41,11 @@ public class Camera {
 			camera = new USBCamera("cam0");
 			camera.openCamera();
 			camera.startCapture();
+			camera.setWhiteBalanceManual(4000);
 			SmartDashboard.putNumber("Camera Brightness: ", (int)camera.getBrightness());
 			SmartDashboard.putNumber("Camera Exposure: " , 0);
 			SmartDashboard.putNumber("Camera FPS: ", 10);	
-			SmartDashboard.putNumber("Camera White Balance:", 0);		
+			//SmartDashboard.putNumber("Camera White Balance:", 0);		
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -88,7 +89,7 @@ public class Camera {
 			camera.setBrightness((int) SmartDashboard.getNumber("Camera Brightness: ", (int)camera.getBrightness()));
 			camera.setExposureManual((int) SmartDashboard.getNumber("Camera Exposure: " , 0));
 			camera.setFPS((int) SmartDashboard.getNumber("Camera FPS: ", 10));
-			camera.setWhiteBalanceManual((int) SmartDashboard.getNumber("Camera White Balance:", 0));
+			//camera.setWhiteBalanceManual((int) SmartDashboard.getNumber("Camera White Balance:", 0));
 			camera.updateSettings();
 			camera.getImage(frame);
 		} catch (Exception e) {

@@ -10,10 +10,12 @@ public class Catapult {
 	private CANTalon motor = new CANTalon(18);
 	private AnalogInput pot = new AnalogInput(0);
 	
-	private static int Load = 300; 
+	private static int Load = 250; 
 	private static int Auto = 270;
-	private static int Far = 700; // 500 practice, 460 competition old, 
-	private static int Close = 1000; // 650 practice, 1150 competition old, 1150 competition new
+
+	private static int Far = 720; // 500 practice, 460 competition old, 
+
+	private static int Close = 900; // 650 practice, 1150 competition old, 1150 competition new
 	private static int Out = 2020;		// 2000 is competition, 1750 is practice
 	private static int Shoot = 500;
 	// before out was 1930

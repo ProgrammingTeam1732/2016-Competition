@@ -73,6 +73,8 @@ public class Robot extends IterativeRobot {
 		}, (RobotState rbs) -> {
 			if (rbs.shoot && rbs.fingers_open)
 				return "Shoot Mode";
+			if (rbs.reset_catapult && rbs.fingers_open)
+				return "Shoot Mode";
 			/*
 			 * else if (rbs.shoot) return "Open Fingers";
 			 */
@@ -124,6 +126,8 @@ public class Robot extends IterativeRobot {
 		}, (RobotState rbs) -> {
 			if (rbs.catapult_aligned_shoot && rbs.arm_aligned_high && rbs.fingers_open
 					&& ((Math.abs(System.currentTimeMillis() - rbs.start_time) > 500)))
+				return "Shoot";
+			if (rbs.reset_catapult && rbs.fingers_open)
 				return "Shoot";
 			else
 				return null;
@@ -232,7 +236,7 @@ public class Robot extends IterativeRobot {
 		double left = 174;
 		double right = 150;
 		double ratio = right/left;
-		double scalar = 1;
+		double scalar = 2/3;
 		double batter = 48;
 		low_bar_sm.addState(new State("Drop Intake", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
@@ -246,7 +250,6 @@ public class Robot extends IterativeRobot {
 		})).addState(new State("Drop Arm", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
 			rbi.catapult_load = true;
-			rbi.arm_low = true;
 			rbi.fingers_close = true;
 			if (rbs.catapult_aligned_load && rbs.fingers_closed && rbs.intake_down) {
 				rbi.arm_low = true;
@@ -798,7 +801,7 @@ public class Robot extends IterativeRobot {
 		if(sm.getState().equals("Point at Goal")) {
 			bot.run(sm.process(bot.getCameraState()), input);
 		}
-		else bot.run(sm.process(bot.getState(input.getShoot())), input);
+		else bot.run(sm.process(bot.getState(input.getShoot(), input.getResetShot())), input);
 		SmartDashboard.putNumber("Delay", System.currentTimeMillis() - last);
 		last = System.currentTimeMillis();
 	}
