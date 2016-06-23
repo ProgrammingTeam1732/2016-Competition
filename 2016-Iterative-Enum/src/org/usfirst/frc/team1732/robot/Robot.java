@@ -42,9 +42,9 @@ public class Robot extends IterativeRobot {
 
 	}
 	
-	StateMachine low_bar_sm = new StateMachine();
+	StateMachine<low_bar_sm_enum> low_bar_sm = new StateMachine<low_bar_sm_enum>();
 	public enum low_bar_sm_enum {
-
+		DropIntake, DropArm, Wait, DriveForward, Turn, DriveForwardTwo, RaiseArm, OpenFingers, Finished;
 	}
 	
 	StateMachine pos2_sm = new StateMachine();
@@ -67,9 +67,9 @@ public class Robot extends IterativeRobot {
 
 	}
 
-	StateMachine approach = new StateMachine();
+	StateMachine<approach_enum> approach = new StateMachine<approach_enum>();
 	public enum approach_enum {
-
+		Accelerate, Finished;
 	}
 
 	StateMachine<sm_enum> sm = new StateMachine<sm_enum>();
@@ -111,7 +111,7 @@ public class Robot extends IterativeRobot {
 		 */
 		// TODO: as
 		// SM Here asdad
-		sm.addState(new State(sm_enum.WaitToShoot, (RobotState rbs) -> {
+		sm.addState(new State<sm_enum>(sm_enum.WaitToShoot, (RobotState rbs) -> {
 			return new RobotInstruction<sm_enum>();
 		} , (RobotState rbs) -> {
 			if (rbs.shoot && rbs.fingers_open)
@@ -123,7 +123,7 @@ public class Robot extends IterativeRobot {
 			 */
 			else
 				return null;
-		})).addState(new State(sm_enum.AutoInit, (RobotState rbs) -> {
+		})).addState(new State<sm_enum>(sm_enum.AutoInit, (RobotState rbs) -> {
 			return new RobotInstruction<sm_enum>();
 		} , (RobotState rbs) -> {
 			if (rbs.arm_aligned_high)
@@ -133,7 +133,7 @@ public class Robot extends IterativeRobot {
 			 */
 			else
 				return null;
-		})).addState(new State(sm_enum.ShootMode, (RobotState rbs) -> {
+		})).addState(new State<sm_enum>(sm_enum.ShootMode, (RobotState rbs) -> {
 			return new RobotInstruction<sm_enum>();
 		} , (RobotState rbs) -> {
 			if (rbs.shoot_mode_far || rbs.shoot_mode_close)
@@ -144,7 +144,7 @@ public class Robot extends IterativeRobot {
 				return sm_enum.PointAtGoal;
 			else
 				return null;
-		})).addState(new State(sm_enum.PointAtGoal, (RobotState rbs) -> {
+		})).addState(new State<sm_enum>(sm_enum.PointAtGoal, (RobotState rbs) -> {
 			RobotInstruction<sm_enum> rbi = new RobotInstruction<sm_enum>();
 			if (rbs.angle_to_goal == -1.0) {
 				rbi.drive_left = 0.2;
@@ -168,7 +168,7 @@ public class Robot extends IterativeRobot {
 				return sm_enum.WaitToShoot;
 			else
 				return null;
-		})).addState(new State("Auto Shoot Posistion", (RobotState rbs) -> {
+		})).addState(new State<sm_enum>(sm_enum.AutoShootPosition, (RobotState rbs) -> {
 			RobotInstruction<sm_enum> rbi = new RobotInstruction<sm_enum>();
 			// TODO: calculate function for setpoint based on distance
 			// FIXME
@@ -181,7 +181,7 @@ public class Robot extends IterativeRobot {
 				return sm_enum.Shoot;
 			else
 				return null;
-		})).addState(new State(sm_enum.ShootPosition, (RobotState rbs) -> {
+		})).addState(new State<sm_enum>(sm_enum.ShootPosition, (RobotState rbs) -> {
 			RobotInstruction<sm_enum> rbi = new RobotInstruction<sm_enum>();
 			rbi.catapult_shoot = true;
 			return rbi;
@@ -199,7 +199,7 @@ public class Robot extends IterativeRobot {
 			 * rbi.fingers_open = true; return rbi; } , (RobotState rbs) -> {
 			 * //if ((Math.abs(System.currentTimeMillis() - rbs.start_time) >
 			 * 200)) return "Shoot Position"; //else // return null; }))
-			 */.addState(new State(sm_enum.Shoot, (RobotState rbs) -> {
+			 */.addState(new State<sm_enum>(sm_enum.Shoot, (RobotState rbs) -> {
 			RobotInstruction<sm_enum> rbi = new RobotInstruction<sm_enum>();
 			rbi.catapult_release = true;
 			return rbi;
@@ -208,7 +208,7 @@ public class Robot extends IterativeRobot {
 				return sm_enum.RetrieveTram;
 			else
 				return null;
-		})).addState(new State(sm_enum.RetrieveTram, (RobotState rbs) -> {
+		})).addState(new State<sm_enum>(sm_enum.RetrieveTram, (RobotState rbs) -> {
 			RobotInstruction<sm_enum> rbi = new RobotInstruction<sm_enum>();
 			rbi.catapult_out = true;
 			return rbi;
@@ -217,7 +217,7 @@ public class Robot extends IterativeRobot {
 				return sm_enum.LatchTram;
 			else
 				return null;
-		})).addState(new State(sm_enum.LatchTram, (RobotState rbs) -> {
+		})).addState(new State<sm_enum>(sm_enum.LatchTram, (RobotState rbs) -> {
 			RobotInstruction<sm_enum> rbi = new RobotInstruction<sm_enum>();
 			rbi.catapult_latch = true;
 			return rbi;
@@ -226,7 +226,7 @@ public class Robot extends IterativeRobot {
 				return sm_enum.PullTram;
 			else
 				return null;
-		})).addState(new State(sm_enum.PullTram, (RobotState rbs) -> {
+		})).addState(new State<sm_enum>(sm_enum.PullTram, (RobotState rbs) -> {
 			RobotInstruction<sm_enum> rbi = new RobotInstruction<sm_enum>();
 			rbi.catapult_load = true;
 			return rbi;
@@ -238,7 +238,7 @@ public class Robot extends IterativeRobot {
 		}));
 
 		// SM Here
-		cross_terrain.addState(new State(cross_terrain_sm_enum.ArmDown, (RobotState rbs) -> {
+		cross_terrain.addState(new State<cross_terrain_sm_enum>(cross_terrain_sm_enum.ArmDown, (RobotState rbs) -> {
 			RobotInstruction<cross_terrain_sm_enum> rbi = new RobotInstruction<cross_terrain_sm_enum>();
 			rbi.intake_down = true;
 			rbi.arm_middle = true;
@@ -248,7 +248,7 @@ public class Robot extends IterativeRobot {
 				return cross_terrain_sm_enum.DriveAcc;
 			else
 				return null;
-		})).addState(new State(cross_terrain_sm_enum.DriveAcc, (RobotState rbs) -> {
+		})).addState(new State<cross_terrain_sm_enum>(cross_terrain_sm_enum.DriveAcc, (RobotState rbs) -> {
 			RobotInstruction<cross_terrain_sm_enum> rbi = new RobotInstruction<cross_terrain_sm_enum>();
 			rbi.drive_left = 0.8 * ((System.currentTimeMillis() - rbs.start_time) / 2500.0);
 			rbi.drive_right = 0.8 * ((System.currentTimeMillis() - rbs.start_time) / 2500.0);
@@ -258,7 +258,7 @@ public class Robot extends IterativeRobot {
 				return cross_terrain_sm_enum.DriveSteady;
 			else
 				return null;
-		})).addState(new State(cross_terrain_sm_enum.DriveSteady, (RobotState rbs) -> {
+		})).addState(new State<cross_terrain_sm_enum>(cross_terrain_sm_enum.DriveSteady, (RobotState rbs) -> {
 			RobotInstruction<cross_terrain_sm_enum> rbi = new RobotInstruction<cross_terrain_sm_enum>();
 			rbi.drive_left = 0.8 - (0.8 * ((System.currentTimeMillis() - rbs.start_time) / 3000.0));
 			rbi.drive_right = 0.8 - (0.8 * ((System.currentTimeMillis() - rbs.start_time) / 3000.0));
@@ -268,7 +268,7 @@ public class Robot extends IterativeRobot {
 				return cross_terrain_sm_enum.Finished;
 			else
 				return null;
-		})).addState(new State(cross_terrain_sm_enum.Finished, (RobotState rbs) -> {
+		})).addState(new State<cross_terrain_sm_enum>(cross_terrain_sm_enum.Finished, (RobotState rbs) -> {
 			RobotInstruction<cross_terrain_sm_enum> rbi = new RobotInstruction<cross_terrain_sm_enum>();
 			return rbi;
 		} , (RobotState rbs) -> {
@@ -276,18 +276,18 @@ public class Robot extends IterativeRobot {
 		}));
 
 		// SM Here
-		approach.addState(new State("Accelerate", (RobotState rbs) -> {
-			RobotInstruction rbi = new RobotInstruction();
+		approach.addState(new State<approach_enum>(approach_enum.Accelerate, (RobotState rbs) -> {
+			RobotInstruction<approach_enum> rbi = new RobotInstruction<approach_enum>();
 			rbi.drive_left = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
 			rbi.drive_right = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
 			return rbi;
 		} , (RobotState rbs) -> {
 			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 1000)
-				return "Finished";
+				return approach_enum.Finished;
 			else
 				return null;
-		})).addState(new State("Finished", (RobotState rbs) -> {
-			RobotInstruction rbi = new RobotInstruction();
+		})).addState(new State<approach_enum>(approach_enum.Finished, (RobotState rbs) -> {
+			RobotInstruction<approach_enum> rbi = new RobotInstruction<approach_enum>();
 			return rbi;
 		} , (RobotState rbs) -> {
 			return null;
@@ -337,17 +337,17 @@ public class Robot extends IterativeRobot {
 		 * RobotInstruction(); } , (RobotState rbs) -> { return null; }));
 		 */
 
-		low_bar_sm.addState(new State("Drop Intake", (RobotState rbs) -> {
-			RobotInstruction rbi = new RobotInstruction();
+		low_bar_sm.addState(new State<low_bar_sm_enum>(low_bar_sm_enum.DropIntake, (RobotState rbs) -> {
+			RobotInstruction<low_bar_sm_enum> rbi = new RobotInstruction<low_bar_sm_enum>();
 			rbi.intake_down = true;
 			return rbi;
 		} , (RobotState rbs) -> {
 			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 1000)
-				return "Drop Arm";
+				return low_bar_sm_enum.DropArm;
 			else
 				return null;
-		})).addState(new State("Drop Arm", (RobotState rbs) -> {
-			RobotInstruction rbi = new RobotInstruction();
+		})).addState(new State<low_bar_sm_enum>(low_bar_sm_enum.DropArm, (RobotState rbs) -> {
+			RobotInstruction<low_bar_sm_enum> rbi = new RobotInstruction<low_bar_sm_enum>();
 			rbi.catapult_load = true;
 			rbi.fingers_close = true;
 			if (rbs.catapult_aligned_load && rbs.fingers_closed && rbs.intake_down) {
@@ -356,15 +356,15 @@ public class Robot extends IterativeRobot {
 			return rbi;
 		} , (RobotState rbs) -> {
 			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 1000)
-				return "Wait";
+				return low_bar_sm_enum.Wait;
 			else
 				return null;
-		})).addState(new State("Wait", (RobotState rbs) -> {
-			RobotInstruction rbi = new RobotInstruction();
+		})).addState(new State<low_bar_sm_enum>(low_bar_sm_enum.Wait, (RobotState rbs) -> {
+			RobotInstruction<low_bar_sm_enum> rbi = new RobotInstruction<low_bar_sm_enum>();
 			return rbi;
 		} , (RobotState rbs) -> {
 			if (rbs.arm_aligned_low)
-				return "Drive Forward";
+				return low_bar_sm_enum.DriveForward;
 			else
 				return null;
 		})).addState(new State("Drive Forward", (RobotState rbs) -> {
