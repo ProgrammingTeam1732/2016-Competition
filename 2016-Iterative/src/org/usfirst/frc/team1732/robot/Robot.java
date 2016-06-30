@@ -167,6 +167,7 @@ public class Robot extends IterativeRobot {
 		})).addState(new State("Retrive Tram", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
 			rbi.catapult_out = true;
+			//rbi.catapult_release = true;
 			return rbi;
 		} , (RobotState rbs) -> {
 			if (rbs.catapult_aligned_out)

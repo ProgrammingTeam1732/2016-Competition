@@ -67,8 +67,8 @@ public class Robot extends IterativeRobot {
 
 	}
 
-	StateMachine<approach_enum> approach = new StateMachine<approach_enum>();
-	public enum approach_enum {
+	StateMachine<approach_sm_enum> approach = new StateMachine<approach_sm_enum>();
+	public enum approach_sm_enum {
 		Accelerate, Finished;
 	}
 
@@ -276,18 +276,18 @@ public class Robot extends IterativeRobot {
 		}));
 
 		// SM Here
-		approach.addState(new State<approach_enum>(approach_enum.Accelerate, (RobotState rbs) -> {
-			RobotInstruction<approach_enum> rbi = new RobotInstruction<approach_enum>();
+		approach.addState(new State<approach_sm_enum>(approach_sm_enum.Accelerate, (RobotState rbs) -> {
+			RobotInstruction<approach_sm_enum> rbi = new RobotInstruction<approach_sm_enum>();
 			rbi.drive_left = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
 			rbi.drive_right = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
 			return rbi;
 		} , (RobotState rbs) -> {
 			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 1000)
-				return approach_enum.Finished;
+				return approach_sm_enum.Finished;
 			else
 				return null;
-		})).addState(new State<approach_enum>(approach_enum.Finished, (RobotState rbs) -> {
-			RobotInstruction<approach_enum> rbi = new RobotInstruction<approach_enum>();
+		})).addState(new State<approach_sm_enum>(approach_sm_enum.Finished, (RobotState rbs) -> {
+			RobotInstruction<approach_sm_enum> rbi = new RobotInstruction<approach_sm_enum>();
 			return rbi;
 		} , (RobotState rbs) -> {
 			return null;
@@ -728,7 +728,7 @@ public class Robot extends IterativeRobot {
 			return null;
 		}));
 
-		// SM Here
+		// FIXME
 		portcullis_sm.addState(new State("Accelerate", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
 			// rbi.reset_defense = true; not needed if lowering defense at same
@@ -962,8 +962,8 @@ public class Robot extends IterativeRobot {
 		pos = (String) pos_chooser.getSelected();
 
 		cross_terrain.setState(cross_terrain_sm_enum.ArmDown);
-		approach.setState("Accelerate");
-		low_bar_sm.setState("Drop Intake");
+		approach.setState(approach_sm_enum.Accelerate);
+		low_bar_sm.setState(low_bar_sm_enum.DropIntake);
 		portcullis_sm.setState("Accelerate");
 		sally_port_sm.setState("Accelerate");
 		drawbridge_sm.setState("Accelerate");
