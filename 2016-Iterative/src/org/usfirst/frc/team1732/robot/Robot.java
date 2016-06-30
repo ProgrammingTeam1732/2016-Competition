@@ -68,7 +68,8 @@ public class Robot extends IterativeRobot {
 		// TODO: as
 		// SM Here asdad
 		sm.addState(new State("Wait to Shoot", (RobotState rbs) -> {
-			return new RobotInstruction();
+			RobotInstruction rbi =  new RobotInstruction();
+			return rbi;
 		} , (RobotState rbs) -> {
 			if (rbs.shoot && rbs.fingers_open)
 				return "Shoot Mode";
