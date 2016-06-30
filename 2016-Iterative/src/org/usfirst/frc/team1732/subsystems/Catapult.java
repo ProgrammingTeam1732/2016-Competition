@@ -17,7 +17,7 @@ public class Catapult {
 	private static int Out = 2020;		// 2000 is competition, 1750 is practice
 	private static int Shoot = 500;
 	// before out was 1930
-		
+		// tset
 	
 	private static final int RADIUS = 100;
 	private static final boolean LATCHED = false;
