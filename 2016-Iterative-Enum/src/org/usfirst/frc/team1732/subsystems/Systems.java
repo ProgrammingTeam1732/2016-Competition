@@ -28,7 +28,7 @@ public class Systems {
 
 	Gyro gyro = new AnalogGyro(1);
 	
-	public void resetDefense() {
+	public void resetDefenseManipulator() {
 		defense_manipulator.reset();
 	}
 
@@ -381,9 +381,10 @@ public class Systems {
 	}*/
 	
 	public void prepareAuto() {
-		drive.reset();
-		defense_manipulator.reset();
-		catapult.setAuto(270);
+		resetDefenseManipulator();
+		resetGyro();
+		resetDriveEncoders();
+		catapult.setAuto(270); // TODO: Why am I doing this here?
 		catapult.setClose();
 		//camera.openCamera();
 		//camera.startCapture();
