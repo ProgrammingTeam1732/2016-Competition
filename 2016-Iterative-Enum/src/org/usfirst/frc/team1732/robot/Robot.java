@@ -517,7 +517,7 @@ public class Robot extends IterativeRobot {
 		}, (RobotState rbs) -> {
 			return null;
 		}));
-		
+
 		position_four_sm.addState(new State<position_four_states>(position_four_states.TurnLeft, (RobotState rbs) -> {
 			RobotInstruction<position_four_states> rbi = new RobotInstruction<position_four_states>();
 			if (rbs.gyro > -15) {
@@ -589,7 +589,7 @@ public class Robot extends IterativeRobot {
 		}, (RobotState rbs) -> {
 			return null;
 		}));
-		
+
 		position_five_sm.addState(new State<position_five_states>(position_five_states.Center, (RobotState rbs) -> {
 			RobotInstruction<position_five_states> rbi = new RobotInstruction<position_five_states>();
 			if (rbs.gyro > 0) {
@@ -814,13 +814,16 @@ public class Robot extends IterativeRobot {
 
 	public void teleopInit() {
 		shoot_sm.setAuto(false);
+		// Makes sure the current shoot_sm state isn't null, because it starts out as null and if autoInit isn't called it remains unitialized,
+		// causing a null pointer exception (what I think the soucre of the error is)
+		if(shoot_sm.getState() == null) shoot_sm.setState(shoot_states.WaitToShoot);
 	}
 
 	public void teleopPeriodic() {
-		if (shoot_sm.getState().equals("Auto Init")) {
+		if (shoot_sm.getState().equals(shoot_states.AutoInit)) {
 			shoot_sm.setState(shoot_states.WaitToShoot);
 		}
-		if (shoot_sm.getState().equals("Point at Goal")) {
+		if (shoot_sm.getState().equals(shoot_states.PointAtGoal)) {
 			bot.run(shoot_sm.process(bot.getCameraState()), input);
 		} else {
 			bot.run(shoot_sm.process(bot.getState(input.getShoot(), input.getResetShot())), input);
@@ -868,7 +871,6 @@ public class Robot extends IterativeRobot {
 
 	boolean over_defenses = false;
 	boolean ready_to_shoot = false;
-	final String finished = "Finished";
 
 	public void autonomousInit() {
 		over_defenses = false;
@@ -906,27 +908,27 @@ public class Robot extends IterativeRobot {
 					bot.run(new RobotInstruction()); // Do nothing
 				} else if (defense.equals(cross_terrain)) {
 					bot.run(cross_terrain_sm.process(bot.getState()));
-					if (cross_terrain_sm.getState().equals("Finished"))
+					if (cross_terrain_sm.getState().equals(cross_terrain_states.Finished))
 						over_defenses = true;
 				} else if (defense.equals(cheval)) {
 					bot.run(cheval_sm.process(bot.getState()));
-					if (cheval_sm.getState().equals("Finished"))
+					if (cheval_sm.getState().equals(cheval_states.Finished))
 						over_defenses = true;
 				} else if (defense.equals(low_bar)) {
 					bot.run(low_bar_sm.process(bot.getState()));
-					if (low_bar_sm.equals("Finished"))
+					if (low_bar_sm.equals(low_bar_states.Finished))
 						over_defenses = true;
 				} else if (defense.equals(drawbridge)) {
 					bot.run(drawbridge_sm.process(bot.getState()));
-					if (drawbridge_sm.getState().equals(finished))
+					if (drawbridge_sm.getState().equals(drawbridge_states.Finished))
 						over_defenses = true;
 				} else if (defense.equals(portcullis)) {
 					bot.run(portcullis_sm.process(bot.getState()));
-					if (portcullis_sm.getState().equals(finished))
+					if (portcullis_sm.getState().equals(portcullis_states.Finished))
 						over_defenses = true;
 				} else if (defense.equals(sally_port)) {
 					bot.run(sally_port_sm.process(bot.getState()));
-					if (sally_port_sm.getState().equals(finished))
+					if (sally_port_sm.getState().equals(sally_port_states.Finished))
 						over_defenses = true;
 				} else {
 					System.err.println("Unknown Crossing Auto Mode");
@@ -934,23 +936,23 @@ public class Robot extends IterativeRobot {
 				}
 			} else if (!ready_to_shoot) { // crossing state machine has finished, not ready to shoot
 				if (position.equals(position_one)) {
-					if (low_bar_sm.getState().equals(finished))
+					if (low_bar_sm.getState().equals(low_bar_states.Finished))
 						ready_to_shoot = false;
 				} else if (position.equals(position_two)) {
 					bot.run(position_two_sm.process(bot.getState()));
-					if (position_two_sm.getState().equals(finished))
+					if (position_two_sm.getState().equals(position_two_states.Finished))
 						ready_to_shoot = false;
 				} else if (position.equals(position_three)) {
 					bot.run(position_three_sm.process(bot.getState()));
-					if (position_three_sm.getState().equals(finished))
+					if (position_three_sm.getState().equals(position_three_states.Finished))
 						ready_to_shoot = false;
 				} else if (position.equals(position_four)) {
 					bot.run(position_four_sm.process(bot.getState()));
-					if (position_four_sm.getState().equals(finished))
+					if (position_four_sm.getState().equals(position_four_states.Finished))
 						ready_to_shoot = false;
 				} else if (position.equals(position_five)) {
 					bot.run(position_five_sm.process(bot.getState()));
-					if (position_five_sm.getState().equals(finished))
+					if (position_five_sm.getState().equals(position_five_states.Finished))
 						ready_to_shoot = false;
 				} else if (position.equals(do_nothing)) {
 					bot.run(new RobotInstruction()); // Do nothing after crossing

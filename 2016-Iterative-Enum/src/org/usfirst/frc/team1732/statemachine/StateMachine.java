@@ -31,12 +31,13 @@ public class StateMachine<T> {
 		int state_index = -1;
 		
 		for (int i = 0; i < states.size(); i++) {
-			if (states.get(i).getName() == current_state) {
+			if (states.get(i) == current_state) {
 				state_index = i;
 				break;
 			}
 		}
 		
+		// Should never happen hopefully now that there are enums
 		if (state_index == -1) {
 			if(!isAuto) SmartDashboard.putString("State", "State not found: " + current_state.toString());
 			else SmartDashboard.putString("Auto State", "State not found: " + current_state.toString());
