@@ -26,7 +26,7 @@ public class Catapult {
 	private double previous_error = 0;
 	private double integral = 0;
 	private int setpoint = Load;
-	private double P = 6.0;
+	private double P = 7.0;
 	private double I = 0.0;
 	private double D = 0.0;
 	private double MAX = 0.6;
