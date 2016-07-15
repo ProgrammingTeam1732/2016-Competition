@@ -113,7 +113,7 @@ public class Robot extends IterativeRobot {
 		position_chooser.addObject(do_nothing, do_nothing);
 		SmartDashboard.putData("Position", position_chooser);
 
-		shoot_sm.addState(new State<shoot_states>(shoot_states.WaitToShoot, (RobotState rbs) -> {
+		shoot_sm.addState(shoot_states.WaitToShoot, (RobotState rbs) -> {
 			return new RobotInstruction<shoot_states>();
 		}, (RobotState rbs) -> {
 			if (rbs.shoot && rbs.fingers_open)
@@ -125,7 +125,7 @@ public class Robot extends IterativeRobot {
 			 */
 			else
 				return null;
-		})).addState(new State<shoot_states>(shoot_states.AutoInit, (RobotState rbs) -> {
+		}).addState(shoot_states.AutoInit, (RobotState rbs) -> {
 			return new RobotInstruction<shoot_states>();
 		}, (RobotState rbs) -> {
 			if (rbs.arm_aligned_high)
@@ -135,7 +135,7 @@ public class Robot extends IterativeRobot {
 			 */
 			else
 				return null;
-		})).addState(new State<shoot_states>(shoot_states.ShootMode, (RobotState rbs) -> {
+		}).addState(shoot_states.ShootMode, (RobotState rbs) -> {
 			return new RobotInstruction<shoot_states>();
 		}, (RobotState rbs) -> {
 			if (rbs.shoot_mode_far || rbs.shoot_mode_close)
@@ -146,7 +146,7 @@ public class Robot extends IterativeRobot {
 				return shoot_states.PointAtGoal;
 			else
 				return null;
-		})).addState(new State<shoot_states>(shoot_states.PointAtGoal, (RobotState rbs) -> {
+		}).addState(shoot_states.PointAtGoal, (RobotState rbs) -> {
 			RobotInstruction<shoot_states> rbi = new RobotInstruction<shoot_states>();
 			if (rbs.angle_to_goal == -1.0) {
 				rbi.drive_left = 0.2;
@@ -169,7 +169,7 @@ public class Robot extends IterativeRobot {
 				return shoot_states.WaitToShoot;
 			else
 				return null;
-		})).addState(new State<shoot_states>(shoot_states.AutoShootPosition, (RobotState rbs) -> {
+		}).addState(shoot_states.AutoShootPosition, (RobotState rbs) -> {
 			RobotInstruction<shoot_states> rbi = new RobotInstruction<shoot_states>();
 			// TODO: calculate function for setpoint based on distance
 			rbi.catapult_auto_pos = (int) (rbs.distance_to_goal * 2);
@@ -181,7 +181,7 @@ public class Robot extends IterativeRobot {
 				return shoot_states.Shoot;
 			else
 				return null;
-		})).addState(new State<shoot_states>(shoot_states.ShootPosition, (RobotState rbs) -> {
+		}).addState(shoot_states.ShootPosition, (RobotState rbs) -> {
 			RobotInstruction<shoot_states> rbi = new RobotInstruction<shoot_states>();
 			rbi.catapult_shoot = true;
 			return rbi;
@@ -193,11 +193,11 @@ public class Robot extends IterativeRobot {
 				return shoot_states.Shoot;
 			else
 				return null;
-		}))/*
+		})/*
 			 * .addState(new State("Open Fingers", (RobotState rbs) -> { RobotInstruction rbi = new RobotInstruction(); // rbi.fingers_open = true;
 			 * return rbi; } , (RobotState rbs) -> { //if ((Math.abs(System.currentTimeMillis() - rbs.start_time) > 200)) return "Shoot Position";
 			 * //else // return null; }))
-			 */.addState(new State<shoot_states>(shoot_states.Shoot, (RobotState rbs) -> {
+			 */.addState(shoot_states.Shoot, (RobotState rbs) -> {
 			RobotInstruction<shoot_states> rbi = new RobotInstruction<shoot_states>();
 			rbi.catapult_release = true;
 			return rbi;
@@ -206,7 +206,7 @@ public class Robot extends IterativeRobot {
 				return shoot_states.RetrieveTram;
 			else
 				return null;
-		})).addState(new State<shoot_states>(shoot_states.RetrieveTram, (RobotState rbs) -> {
+		}).addState(shoot_states.RetrieveTram, (RobotState rbs) -> {
 			RobotInstruction<shoot_states> rbi = new RobotInstruction<shoot_states>();
 			rbi.catapult_out = true;
 			return rbi;
@@ -215,7 +215,7 @@ public class Robot extends IterativeRobot {
 				return shoot_states.LatchTram;
 			else
 				return null;
-		})).addState(new State<shoot_states>(shoot_states.LatchTram, (RobotState rbs) -> {
+		}).addState(shoot_states.LatchTram, (RobotState rbs) -> {
 			RobotInstruction<shoot_states> rbi = new RobotInstruction<shoot_states>();
 			rbi.catapult_latch = true;
 			return rbi;
@@ -224,7 +224,7 @@ public class Robot extends IterativeRobot {
 				return shoot_states.PullTram;
 			else
 				return null;
-		})).addState(new State<shoot_states>(shoot_states.PullTram, (RobotState rbs) -> {
+		}).addState(shoot_states.PullTram, (RobotState rbs) -> {
 			RobotInstruction<shoot_states> rbi = new RobotInstruction<shoot_states>();
 			rbi.catapult_load = true;
 			return rbi;
@@ -233,9 +233,9 @@ public class Robot extends IterativeRobot {
 				return shoot_states.WaitToShoot;
 			else
 				return null;
-		}));
+		});
 
-		cross_terrain_sm.addState(new State<cross_terrain_states>(cross_terrain_states.ArmDown, (RobotState rbs) -> {
+		cross_terrain_sm.addState(cross_terrain_states.ArmDown, (RobotState rbs) -> {
 			RobotInstruction<cross_terrain_states> rbi = new RobotInstruction<cross_terrain_states>();
 			rbi.intake_down = true;
 			rbi.arm_middle = true;
@@ -245,7 +245,7 @@ public class Robot extends IterativeRobot {
 				return cross_terrain_states.DriveAcc;
 			else
 				return null;
-		})).addState(new State<cross_terrain_states>(cross_terrain_states.DriveAcc, (RobotState rbs) -> {
+		}).addState(cross_terrain_states.DriveAcc, (RobotState rbs) -> {
 			RobotInstruction<cross_terrain_states> rbi = new RobotInstruction<cross_terrain_states>();
 			rbi.drive_left = 0.8 * ((System.currentTimeMillis() - rbs.start_time) / 2500.0);
 			rbi.drive_right = 0.8 * ((System.currentTimeMillis() - rbs.start_time) / 2500.0);
@@ -255,7 +255,7 @@ public class Robot extends IterativeRobot {
 				return cross_terrain_states.DriveSteady;
 			else
 				return null;
-		})).addState(new State<cross_terrain_states>(cross_terrain_states.DriveSteady, (RobotState rbs) -> {
+		}).addState(cross_terrain_states.DriveSteady, (RobotState rbs) -> {
 			RobotInstruction<cross_terrain_states> rbi = new RobotInstruction<cross_terrain_states>();
 			rbi.drive_left = 0.8 - (0.8 * ((System.currentTimeMillis() - rbs.start_time) / 3000.0));
 			rbi.drive_right = 0.8 - (0.8 * ((System.currentTimeMillis() - rbs.start_time) / 3000.0));
@@ -265,14 +265,14 @@ public class Robot extends IterativeRobot {
 				return cross_terrain_states.Finished;
 			else
 				return null;
-		})).addState(new State<cross_terrain_states>(cross_terrain_states.Finished, (RobotState rbs) -> {
+		}).addState(cross_terrain_states.Finished, (RobotState rbs) -> {
 			RobotInstruction<cross_terrain_states> rbi = new RobotInstruction<cross_terrain_states>();
 			return rbi;
 		}, (RobotState rbs) -> {
 			return null;
-		}));
+		});
 
-		approach_sm.addState(new State<approach_states>(approach_states.Accelerate, (RobotState rbs) -> {
+		approach_sm.addState(approach_states.Accelerate, (RobotState rbs) -> {
 			RobotInstruction<approach_states> rbi = new RobotInstruction<approach_states>();
 			rbi.drive_left = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
 			rbi.drive_right = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
@@ -282,14 +282,14 @@ public class Robot extends IterativeRobot {
 				return approach_states.Finished;
 			else
 				return null;
-		})).addState(new State<approach_states>(approach_states.Finished, (RobotState rbs) -> {
+		}).addState(approach_states.Finished, (RobotState rbs) -> {
 			RobotInstruction<approach_states> rbi = new RobotInstruction<approach_states>();
 			return rbi;
 		}, (RobotState rbs) -> {
 			return null;
-		}));
+		});
 
-		low_bar_sm.addState(new State<low_bar_states>(low_bar_states.DropIntake, (RobotState rbs) -> {
+		low_bar_sm.addState(low_bar_states.DropIntake, (RobotState rbs) -> {
 			RobotInstruction<low_bar_states> rbi = new RobotInstruction<low_bar_states>();
 			rbi.intake_down = true;
 			return rbi;
@@ -298,7 +298,7 @@ public class Robot extends IterativeRobot {
 				return low_bar_states.DropArm;
 			else
 				return null;
-		})).addState(new State<low_bar_states>(low_bar_states.DropArm, (RobotState rbs) -> {
+		}).addState(low_bar_states.DropArm, (RobotState rbs) -> {
 			RobotInstruction<low_bar_states> rbi = new RobotInstruction<low_bar_states>();
 			rbi.catapult_load = true;
 			rbi.fingers_close = true;
@@ -311,7 +311,7 @@ public class Robot extends IterativeRobot {
 				return low_bar_states.Wait;
 			else
 				return null;
-		})).addState(new State<low_bar_states>(low_bar_states.Wait, (RobotState rbs) -> {
+		}).addState(low_bar_states.Wait, (RobotState rbs) -> {
 			RobotInstruction<low_bar_states> rbi = new RobotInstruction<low_bar_states>();
 			return rbi;
 		}, (RobotState rbs) -> {
@@ -319,7 +319,7 @@ public class Robot extends IterativeRobot {
 				return low_bar_states.DriveForward;
 			else
 				return null;
-		})).addState(new State<low_bar_states>(low_bar_states.DriveForward, (RobotState rbs) -> {
+		}).addState(low_bar_states.DriveForward, (RobotState rbs) -> {
 			RobotInstruction<low_bar_states> rbi = new RobotInstruction<low_bar_states>();
 			rbi.reset_gyro = true;
 			rbi.drive_left = 0.345;
@@ -330,7 +330,7 @@ public class Robot extends IterativeRobot {
 				return low_bar_states.Turn;
 			}
 			return null;
-		})).addState(new State<low_bar_states>(low_bar_states.Turn, (RobotState rbs) -> {
+		}).addState(low_bar_states.Turn, (RobotState rbs) -> {
 			RobotInstruction<low_bar_states> rbi = new RobotInstruction<low_bar_states>();
 			if (rbs.gyro > 55) {
 				rbi.drive_left = -0.4;
@@ -346,7 +346,7 @@ public class Robot extends IterativeRobot {
 				return low_bar_states.DriveForwardTwo;
 			}
 			return null;
-		})).addState(new State<low_bar_states>(low_bar_states.DriveForwardTwo, (RobotState rbs) -> {
+		}).addState(low_bar_states.DriveForwardTwo, (RobotState rbs) -> {
 			RobotInstruction<low_bar_states> rbi = new RobotInstruction<low_bar_states>();
 			rbi.drive_left = 0.2;
 			rbi.drive_right = 0.2;
@@ -356,7 +356,7 @@ public class Robot extends IterativeRobot {
 				return low_bar_states.RaiseArm;
 			}
 			return null;
-		})).addState(new State<low_bar_states>(low_bar_states.RaiseArm, (RobotState rbs) -> {
+		}).addState(low_bar_states.RaiseArm, (RobotState rbs) -> {
 			RobotInstruction<low_bar_states> rbi = new RobotInstruction<low_bar_states>();
 			rbi.arm_high = true;
 			return rbi;
@@ -365,7 +365,7 @@ public class Robot extends IterativeRobot {
 				return low_bar_states.OpenFingers;
 			else
 				return null;
-		})).addState(new State<low_bar_states>(low_bar_states.OpenFingers, (RobotState rbs) -> {
+		}).addState(low_bar_states.OpenFingers, (RobotState rbs) -> {
 			RobotInstruction<low_bar_states> rbi = new RobotInstruction<low_bar_states>();
 			rbi.fingers_open = true;
 			return rbi;
@@ -374,13 +374,13 @@ public class Robot extends IterativeRobot {
 				return low_bar_states.Finished;
 			else
 				return null;
-		})).addState(new State<low_bar_states>(low_bar_states.Finished, (RobotState rbs) -> {
+		}).addState(low_bar_states.Finished, (RobotState rbs) -> {
 			return new RobotInstruction<low_bar_states>();
 		}, (RobotState rbs) -> {
 			return null;
-		}));
+		});
 
-		position_two_sm.addState(new State<position_two_states>(position_two_states.Center, (RobotState rbs) -> {
+		position_two_sm.addState(position_two_states.Center, (RobotState rbs) -> {
 			RobotInstruction<position_two_states> rbi = new RobotInstruction<position_two_states>();
 			if (rbs.gyro > 0) {
 				rbi.drive_left = -0.4;
@@ -396,7 +396,7 @@ public class Robot extends IterativeRobot {
 				return position_two_states.DriveForward;
 			}
 			return null;
-		})).addState(new State<position_two_states>(position_two_states.DriveForward, (RobotState rbs) -> {
+		}).addState(position_two_states.DriveForward, (RobotState rbs) -> {
 			RobotInstruction<position_two_states> rbi = new RobotInstruction<position_two_states>();
 			/*
 			 * if (dist < 5) { drive_speed = 0.3; } else if (dist < 30) { drive_speed = 0.6 * (dist) / 30.0; } else if (dist > 90) { drive_speed =
@@ -411,7 +411,7 @@ public class Robot extends IterativeRobot {
 				return position_two_states.Turn;
 			}
 			return null;
-		})).addState(new State<position_two_states>(position_two_states.Turn, (RobotState rbs) -> {
+		}).addState(position_two_states.Turn, (RobotState rbs) -> {
 			RobotInstruction<position_two_states> rbi = new RobotInstruction<position_two_states>();
 			if (rbs.gyro > +55) {
 				rbi.drive_left = -0.4;
@@ -427,7 +427,7 @@ public class Robot extends IterativeRobot {
 				return position_two_states.DriveForwardTwo;
 			}
 			return null;
-		})).addState(new State<position_two_states>(position_two_states.DriveForwardTwo, (RobotState rbs) -> {
+		}).addState(position_two_states.DriveForwardTwo, (RobotState rbs) -> {
 			RobotInstruction<position_two_states> rbi = new RobotInstruction<position_two_states>();
 			rbi.drive_left = 0.2;
 			rbi.drive_right = 0.2;
@@ -437,15 +437,15 @@ public class Robot extends IterativeRobot {
 				return position_two_states.Finished;
 			}
 			return null;
-		})).addState(new State<position_two_states>(position_two_states.Finished, (RobotState rbs) -> {
+		}).addState(position_two_states.Finished, (RobotState rbs) -> {
 			RobotInstruction<position_two_states> rbi = new RobotInstruction<position_two_states>();
 			rbi.arm_high = true;
 			return rbi;
 		}, (RobotState rbs) -> {
 			return null;
-		}));
+		});
 
-		position_three_sm.addState(new State<position_three_states>(position_three_states.TurnRight, (RobotState rbs) -> {
+		position_three_sm.addState(position_three_states.TurnRight, (RobotState rbs) -> {
 			RobotInstruction<position_three_states> rbi = new RobotInstruction<position_three_states>();
 			if (rbs.gyro > 40) {
 				rbi.drive_left = -0.4;
@@ -461,7 +461,7 @@ public class Robot extends IterativeRobot {
 				return position_three_states.DriveForward;
 			}
 			return null;
-		})).addState(new State<position_three_states>(position_three_states.DriveForward, (RobotState rbs) -> {
+		}).addState(position_three_states.DriveForward, (RobotState rbs) -> {
 			RobotInstruction<position_three_states> rbi = new RobotInstruction<position_three_states>();
 
 			/*
@@ -478,7 +478,7 @@ public class Robot extends IterativeRobot {
 				return position_three_states.TurnLeft;
 			}
 			return null;
-		})).addState(new State<position_three_states>(position_three_states.TurnLeft, (RobotState rbs) -> {
+		}).addState(position_three_states.TurnLeft, (RobotState rbs) -> {
 			RobotInstruction<position_three_states> rbi = new RobotInstruction<position_three_states>();
 			if (Math.abs(rbs.gyro) > -40) {
 				rbi.drive_left = -0.4;
@@ -494,7 +494,7 @@ public class Robot extends IterativeRobot {
 				return position_three_states.DriveForwardTwo;
 			}
 			return null;
-		})).addState(new State<position_three_states>(position_three_states.DriveForwardTwo, (RobotState rbs) -> {
+		}).addState(position_three_states.DriveForwardTwo, (RobotState rbs) -> {
 			RobotInstruction<position_three_states> rbi = new RobotInstruction<position_three_states>();
 
 			/*
@@ -510,15 +510,15 @@ public class Robot extends IterativeRobot {
 				return position_three_states.Finished;
 			}
 			return null;
-		})).addState(new State<position_three_states>(position_three_states.Finished, (RobotState rbs) -> {
+		}).addState(position_three_states.Finished, (RobotState rbs) -> {
 			RobotInstruction<position_three_states> rbi = new RobotInstruction<position_three_states>();
 			rbi.arm_high = true;
 			return rbi;
 		}, (RobotState rbs) -> {
 			return null;
-		}));
+		});
 
-		position_four_sm.addState(new State<position_four_states>(position_four_states.TurnLeft, (RobotState rbs) -> {
+		position_four_sm.addState(position_four_states.TurnLeft, (RobotState rbs) -> {
 			RobotInstruction<position_four_states> rbi = new RobotInstruction<position_four_states>();
 			if (rbs.gyro > -15) {
 				rbi.drive_left = -0.4;
@@ -534,7 +534,7 @@ public class Robot extends IterativeRobot {
 				return position_four_states.DriveForward;
 			}
 			return null;
-		})).addState(new State<position_four_states>(position_four_states.DriveForward, (RobotState rbs) -> {
+		}).addState(position_four_states.DriveForward, (RobotState rbs) -> {
 			RobotInstruction<position_four_states> rbi = new RobotInstruction<position_four_states>();
 
 			/*
@@ -551,7 +551,7 @@ public class Robot extends IterativeRobot {
 				return position_four_states.TurnRight;
 			}
 			return null;
-		})).addState(new State<position_four_states>(position_four_states.TurnRight, (RobotState rbs) -> {
+		}).addState(position_four_states.TurnRight, (RobotState rbs) -> {
 			RobotInstruction<position_four_states> rbi = new RobotInstruction<position_four_states>();
 			if (rbs.gyro > 15) {
 				rbi.drive_left = -0.4;
@@ -567,7 +567,7 @@ public class Robot extends IterativeRobot {
 				return position_four_states.DriveForwardTwo;
 			}
 			return null;
-		})).addState(new State<position_four_states>(position_four_states.DriveForwardTwo, (RobotState rbs) -> {
+		}).addState(position_four_states.DriveForwardTwo, (RobotState rbs) -> {
 			RobotInstruction<position_four_states> rbi = new RobotInstruction<position_four_states>();
 			/*
 			 * if (dist < 5) { drive_speed = 0.3; } else if (dist < 30) { drive_speed = 0.6 * (dist) / 30.0; } else if (dist > 90) { drive_speed =
@@ -582,15 +582,15 @@ public class Robot extends IterativeRobot {
 				return position_four_states.Finished;
 			}
 			return null;
-		})).addState(new State<position_four_states>(position_four_states.Finished, (RobotState rbs) -> {
+		}).addState(position_four_states.Finished, (RobotState rbs) -> {
 			RobotInstruction<position_four_states> rbi = new RobotInstruction<position_four_states>();
 			rbi.arm_high = true;
 			return rbi;
 		}, (RobotState rbs) -> {
 			return null;
-		}));
+		});
 
-		position_five_sm.addState(new State<position_five_states>(position_five_states.Center, (RobotState rbs) -> {
+		position_five_sm.addState(position_five_states.Center, (RobotState rbs) -> {
 			RobotInstruction<position_five_states> rbi = new RobotInstruction<position_five_states>();
 			if (rbs.gyro > 0) {
 				rbi.drive_left = -0.4;
@@ -606,7 +606,7 @@ public class Robot extends IterativeRobot {
 				return position_five_states.DriveForward;
 			}
 			return null;
-		})).addState(new State<position_five_states>(position_five_states.DriveForward, (RobotState rbs) -> {
+		}).addState(position_five_states.DriveForward, (RobotState rbs) -> {
 			RobotInstruction<position_five_states> rbi = new RobotInstruction<position_five_states>();
 			/*
 			 * if (dist < 5) { drive_speed = 0.3; } else if (dist < 30) { drive_speed = 0.6 * (dist) / 30.0; } else if (dist > 90) { drive_speed =
@@ -622,7 +622,7 @@ public class Robot extends IterativeRobot {
 				return position_five_states.Turn;
 			}
 			return null;
-		})).addState(new State<position_five_states>(position_five_states.Turn, (RobotState rbs) -> {
+		}).addState(position_five_states.Turn, (RobotState rbs) -> {
 			RobotInstruction<position_five_states> rbi = new RobotInstruction<position_five_states>();
 			if (rbs.gyro > -55) {
 				rbi.drive_left = -0.4;
@@ -638,7 +638,7 @@ public class Robot extends IterativeRobot {
 				return position_five_states.DriveForwardTwo;
 			}
 			return null;
-		})).addState(new State<position_five_states>(position_five_states.DriveForwardTwo, (RobotState rbs) -> {
+		}).addState(position_five_states.DriveForwardTwo, (RobotState rbs) -> {
 			RobotInstruction<position_five_states> rbi = new RobotInstruction<position_five_states>();
 
 			/*
@@ -654,16 +654,16 @@ public class Robot extends IterativeRobot {
 				return position_five_states.Finished;
 			}
 			return null;
-		})).addState(new State<position_five_states>(position_five_states.Finished, (RobotState rbs) -> {
+		}).addState(position_five_states.Finished, (RobotState rbs) -> {
 			RobotInstruction<position_five_states> rbi = new RobotInstruction<position_five_states>();
 			rbi.arm_high = true;
 			return rbi;
 		}, (RobotState rbs) -> {
 			return null;
-		}));
+		});
 
 		// FIXME
-		portcullis_sm.addState(new State<portcullis_states>(portcullis_states.Accelerate, (RobotState rbs) -> {
+		portcullis_sm.addState(portcullis_states.Accelerate, (RobotState rbs) -> {
 			RobotInstruction<portcullis_states> rbi = new RobotInstruction<portcullis_states>();
 			// rbi.reset_defense = true; not needed if lowering defense at same time
 			rbi.intake_down = true;
@@ -681,7 +681,7 @@ public class Robot extends IterativeRobot {
 				return portcullis_states.ContinueArmDefense;
 			}
 			return null;
-		})).addState(new State<portcullis_states>(portcullis_states.ContinueArmDefense, (RobotState rbs) -> {
+		}).addState(portcullis_states.ContinueArmDefense, (RobotState rbs) -> {
 			RobotInstruction<portcullis_states> rbi = new RobotInstruction<portcullis_states>();
 			rbi.defense_down = true;
 			rbi.arm_auto = true;
@@ -692,7 +692,7 @@ public class Robot extends IterativeRobot {
 				return portcullis_states.ArmLow;
 			}
 			return null;
-		})).addState(new State<portcullis_states>(portcullis_states.ContinueDrive, (RobotState rbs) -> {
+		}).addState(portcullis_states.ContinueDrive, (RobotState rbs) -> {
 			RobotInstruction<portcullis_states> rbi = new RobotInstruction<portcullis_states>();
 			rbi.drive_left = 0.345;
 			rbi.drive_right = 0.345;
@@ -702,7 +702,7 @@ public class Robot extends IterativeRobot {
 				return portcullis_states.ArmLow;
 			}
 			return null;
-		})).addState(new State<portcullis_states>(portcullis_states.ArmLow, (RobotState rbs) -> {
+		}).addState(portcullis_states.ArmLow, (RobotState rbs) -> {
 			RobotInstruction<portcullis_states> rbi = new RobotInstruction<portcullis_states>();
 			rbi.arm_low = true;
 			rbi.drive_left = .345;
@@ -713,13 +713,13 @@ public class Robot extends IterativeRobot {
 				return portcullis_states.Finished;
 			} else
 				return null;
-		})).addState(new State<portcullis_states>(portcullis_states.Finished, (RobotState rbs) -> {
+		}).addState(portcullis_states.Finished, (RobotState rbs) -> {
 			return new RobotInstruction<portcullis_states>();
 		}, (RobotState rbs) -> {
 			return null;
-		}));
+		});
 
-		sally_port_sm.addState(new State<sally_port_states>(sally_port_states.Accelerate, (RobotState rbs) -> {
+		sally_port_sm.addState(sally_port_states.Accelerate, (RobotState rbs) -> {
 			RobotInstruction<sally_port_states> rbi = new RobotInstruction<sally_port_states>();
 			rbi.drive_left = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
 			rbi.drive_right = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
@@ -729,14 +729,14 @@ public class Robot extends IterativeRobot {
 				return sally_port_states.Finished;
 			else
 				return null;
-		})).addState(new State<sally_port_states>(sally_port_states.Finished, (RobotState rbs) -> {
+		}).addState(sally_port_states.Finished, (RobotState rbs) -> {
 			RobotInstruction<sally_port_states> rbi = new RobotInstruction<sally_port_states>();
 			return rbi;
 		}, (RobotState rbs) -> {
 			return null;
-		}));
+		});
 
-		drawbridge_sm.addState(new State<drawbridge_states>(drawbridge_states.Accelerate, (RobotState rbs) -> {
+		drawbridge_sm.addState(drawbridge_states.Accelerate, (RobotState rbs) -> {
 			RobotInstruction<drawbridge_states> rbi = new RobotInstruction<drawbridge_states>();
 			rbi.drive_left = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
 			rbi.drive_right = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
@@ -746,13 +746,13 @@ public class Robot extends IterativeRobot {
 				return drawbridge_states.Finished;
 			else
 				return null;
-		})).addState(new State<drawbridge_states>(drawbridge_states.Finished, (RobotState rbs) -> {
+		}).addState(drawbridge_states.Finished, (RobotState rbs) -> {
 			return new RobotInstruction<drawbridge_states>();
 		}, (RobotState rbs) -> {
 			return null;
-		}));
+		});
 
-		cheval_sm.addState(new State<cheval_states>(cheval_states.Accelerate, (RobotState rbs) -> {
+		cheval_sm.addState(cheval_states.Accelerate, (RobotState rbs) -> {
 			RobotInstruction<cheval_states> rbi = new RobotInstruction<cheval_states>();
 			// rbi.drive_left = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
 			// rbi.drive_right = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
@@ -763,7 +763,7 @@ public class Robot extends IterativeRobot {
 				return cheval_states.Drive;
 			else
 				return null;
-		})).addState(new State<cheval_states>(cheval_states.Drive, (RobotState rbs) -> {
+		}).addState(cheval_states.Drive, (RobotState rbs) -> {
 			RobotInstruction<cheval_states> rbi = new RobotInstruction<cheval_states>();
 			rbi.drive_left = .345;
 			rbi.drive_right = .345;
@@ -773,7 +773,7 @@ public class Robot extends IterativeRobot {
 				return cheval_states.LowMans;
 			} else
 				return null;
-		})).addState(new State<cheval_states>(cheval_states.LowMans, (RobotState rbs) -> {
+		}).addState(cheval_states.LowMans, (RobotState rbs) -> {
 			RobotInstruction<cheval_states> rbi = new RobotInstruction<cheval_states>();
 			rbi.defense_down = true;
 			return rbi;
@@ -781,7 +781,7 @@ public class Robot extends IterativeRobot {
 			if (rbs.manip_encoder / 10.0 > 0.25)
 				return cheval_states.DriveTwo;
 			return null;
-		})).addState(new State<cheval_states>(cheval_states.DriveTwo, (RobotState rbs) -> {
+		}).addState(cheval_states.DriveTwo, (RobotState rbs) -> {
 			RobotInstruction<cheval_states> rbi = new RobotInstruction<cheval_states>();
 			rbi.drive_left = .345;
 			rbi.drive_right = .345;
@@ -793,7 +793,7 @@ public class Robot extends IterativeRobot {
 				return cheval_states.RaiseMans;
 			} else
 				return null;
-		})).addState(new State<cheval_states>(cheval_states.RaiseMans, (RobotState rbs) -> {
+		}).addState(cheval_states.RaiseMans, (RobotState rbs) -> {
 			RobotInstruction<cheval_states> rbi = new RobotInstruction<cheval_states>();
 			rbi.defense_up = true;
 			return rbi;
@@ -802,12 +802,12 @@ public class Robot extends IterativeRobot {
 			if (rbs.manip_encoder / 10.0 < -0.25)
 				return cheval_states.Finished;
 			return null;
-		})).addState(new State<cheval_states>(cheval_states.Finished, (RobotState rbs) -> {
+		}).addState(cheval_states.Finished, (RobotState rbs) -> {
 			RobotInstruction<cheval_states> rbi = new RobotInstruction<cheval_states>();
 			return rbi;
 		}, (RobotState rbs) -> {
 			return null;
-		}));
+		});
 	}
 
 	private long last;
@@ -816,7 +816,8 @@ public class Robot extends IterativeRobot {
 		shoot_sm.setAuto(false);
 		// Makes sure the current shoot_sm state isn't null, because it starts out as null and if autoInit isn't called it remains unitialized,
 		// causing a null pointer exception (what I think the soucre of the error is)
-		if(shoot_sm.getState() == null) shoot_sm.setState(shoot_states.WaitToShoot);
+		if (shoot_sm.getState() == null)
+			shoot_sm.setState(shoot_states.WaitToShoot);
 	}
 
 	public void teleopPeriodic() {

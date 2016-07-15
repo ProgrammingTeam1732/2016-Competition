@@ -20,8 +20,8 @@ public class StateMachine<T> {
 		return current_state;
 	}
 	
-	public StateMachine<T> addState(State<T> in) {
-		states.add(in);
+	public StateMachine<T> addState(T state, Act<T> act, End<T> finish) {
+		states.add(new State<T>(state, act, finish));
 		return this;
 	}
 	
