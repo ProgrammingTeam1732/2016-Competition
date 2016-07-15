@@ -264,9 +264,14 @@ public class Systems {
 			 * 
 			 * } else { System.err.println("Unknown Arm State"); }
 			 */
+		boolean driverIntake = false;
 
 		if (io.getFingersOpen()) {
 			fingers.open();
+			if(io.getTriggers() && arm.inDeadbandLow() && intake.isDown()) {
+				intake.setIn();
+				driverIntake = true;
+			}
 		} else if (io.getFingersClose()) {
 			fingers.close();
 		}
@@ -289,9 +294,9 @@ public class Systems {
 		if (io.getIntakeIn()) { // TODO make intake auto for
 								// raise and lower arm
 			intake.setIn();
-		} else if (io.getIntakeOut()) {
+		} else if (io.getIntakeOut() && !driverIntake) {
 			intake.setOut();
-		} else {
+		} else if (!driverIntake){
 			intake.setStop();
 		}
 
