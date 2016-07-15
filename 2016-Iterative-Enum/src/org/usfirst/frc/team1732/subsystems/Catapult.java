@@ -26,8 +26,8 @@ public class Catapult {
 	private double previous_error = 0;
 	private double integral = 0;
 	private int setpoint = Load;
-	private double P = 7.0;
-	private double I = 0.0;
+	private double P = 6.0;
+	private double I = 3.0;
 	private double D = 0.0;
 	private double MAX = 0.6;
 
@@ -66,12 +66,18 @@ public class Catapult {
 		double derivative = (error - previous_error) / dt;
 		double output = (P/1000.0) * error + (I/1000.0) * integral + (D/1000.0) * derivative;
 		
-		if (isLoad() && inDeadbandLoad())
+		if (isLoad() && inDeadbandLoad()) {
 			output = 0;
-		else if (isShoot() && inDeadbandShoot())
+			integral = 0;
+		}
+		else if (isShoot() && inDeadbandShoot()) {
 			output = 0;
-		else if (isOut() && inDeadbandOut())
+			integral = 0;
+		}
+		else if (isOut() && inDeadbandOut()) {
 			output = 0;
+			integral = 0;
+		}
 		
 		if(isOut()) SmartDashboard.putNumber("Actual Out Posistion", pot.getValue());
 			
