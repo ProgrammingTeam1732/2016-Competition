@@ -49,10 +49,13 @@ public class Input {
 	//public boolean getClimberUp() { return button1.getRawButton(CLIMBER_UP); }
 	//public boolean getClimberDown() { return button1.getRawButton(CLIMBER_DOWN); }
 	
-	public boolean getFingersOpen() { return button1.getRawButton(FINGER) || left.getRawButton(STICK_TRIGGER) || right.getRawButton(STICK_TRIGGER); }
+	public boolean getFingersOpen() { return button1.getRawButton(FINGER) || getTriggers();}
 	public boolean getFingersClose() { return !button1.getRawButton(FINGER); }
+	public boolean getTriggers() {return getLeftTrigger() || getRightTrigger();}
 
 	public boolean getResetShot() {
+		// We had to put this button onto a port used for joysticks
+		// that is why it is being used as a joystick
 		if(button1.getRawAxis(STICK_HORI) < -0.1) return true;
 		else return false;
 	}
