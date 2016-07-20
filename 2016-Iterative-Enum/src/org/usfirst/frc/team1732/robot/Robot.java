@@ -129,10 +129,7 @@ public class Robot extends IterativeRobot {
 			return new RobotInstruction<shoot_states>();
 		}, (RobotState rbs) -> {
 			if (rbs.arm_aligned_high)
-				return shoot_states.ShootPosition;
-			/*
-			 * else if (rbs.shoot) return "Open Fingers";
-			 */
+				return shoot_states.ShootMode;
 			else
 				return null;
 		}).addState(shoot_states.ShootMode, (RobotState rbs) -> {
@@ -172,7 +169,7 @@ public class Robot extends IterativeRobot {
 		}).addState(shoot_states.AutoShootPosition, (RobotState rbs) -> {
 			RobotInstruction<shoot_states> rbi = new RobotInstruction<shoot_states>();
 			// TODO: calculate function for setpoint based on distance
-			rbi.catapult_auto_pos = (int) (rbs.distance_to_goal * 2);
+			//rbi.catapult_auto_pos = (int) (rbs.distance_to_goal * 2);
 			rbi.catapult_shoot = true;
 			return rbi;
 		}, (RobotState rbs) -> {
@@ -816,7 +813,7 @@ public class Robot extends IterativeRobot {
 		shoot_sm.setAuto(false);
 		// Makes sure the current shoot_sm state isn't null, because it starts out as null and if autoInit isn't called it remains unitialized,
 		// causing a null pointer exception (what I think the soucre of the error is)
-		if (shoot_sm.getState() == null)
+		if (shoot_sm.getState() == null || shoot_sm.getState() == shoot_states.AutoInit)
 			shoot_sm.setState(shoot_states.WaitToShoot);
 	}
 
@@ -962,7 +959,7 @@ public class Robot extends IterativeRobot {
 					bot.run(new RobotInstruction()); // Do nothing
 				}
 			} else if (ready_to_shoot) {
-				bot.run(shoot_sm.process(bot.getState())); // Shoot then stop (should proceed to wait to shoot state after shooting)
+				bot.run(shoot_sm.process(bot.getCameraState())); // Shoot then stop (should proceed to wait to shoot state after shooting)
 			} else {
 				bot.run(new RobotInstruction()); // Do nothing (if finished with crossing and position and done shooting)
 			}

@@ -6,7 +6,10 @@ public class Particle implements Comparable<Particle> {
 
 	// Image width: 320
 	// height: 240
-
+	
+	
+	private static final int imageWidthPixels = 320;
+	private static final int goalWidthInches = 20;
 	private double left;
 	private double top;
 	private double right;
@@ -54,12 +57,14 @@ public class Particle implements Comparable<Particle> {
 	}
 
 	public double getDistance() {
-		return (640 * 20) / (Math.abs(right - left) * 2 * Math.tan(Math.toRadians(47 / 2)));
+		return imageWidthPixels*goalWidthInches / (2 * Math.abs(left-right) * Math.tan(Math.toRadians(47/2.0)));
+		//double imageWidthInInches = 320 * 20.0 / Math.abs(right - left);
+		//return imageWidthInInches / 2.0 / Math.tan(Math.toRadians(47 / 2));
 	}
 	// 640/w = 2*tan(47/2)*d/20
 
 	public double getDirection() {
-		return (right + left) / 1280; // 0 = left, 1 = right, 0.5 = middle
+		return (left+right) / (imageWidthPixels*2); // 0 = left, 1 = right, 0.5 = middle
 	}
 
 }

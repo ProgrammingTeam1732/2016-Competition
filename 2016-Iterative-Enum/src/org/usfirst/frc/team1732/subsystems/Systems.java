@@ -50,7 +50,8 @@ public class Systems {
 		rbs.shoot = false;
 
 		rbs.angle_to_goal = camera.getAngle();
-		rbs.camera_exists = camera.camera_exists;
+		rbs.camera_exists = camera.cameraExists;
+		rbs.distance_to_goal = camera.getDistance();
 
 		rbs.manip_encoder = defense_manipulator.getValue();
 		SmartDashboard.putNumber("Manip_encoder", defense_manipulator.getValue());
@@ -90,7 +91,7 @@ public class Systems {
 		rbs.shoot = shoot;
 		rbs.reset_catapult = reset_catapult;
 
-		rbs.camera_exists = camera.camera_exists;
+		rbs.camera_exists = camera.cameraExists;
 		rbs.distance_to_goal = camera.getDistance();
 
 		rbs.manip_encoder = defense_manipulator.getValue();
@@ -304,6 +305,11 @@ public class Systems {
 		} else {
 			defense_manipulator.stop();
 		}
+		
+		SmartDashboard.putBoolean("View Camera in Teleop", false);
+		if(SmartDashboard.getBoolean("View Camera in Teleop", false)) {
+			camera.getAngle();
+		}
 	}
 
 	public void test_mode(Input io) {
@@ -369,8 +375,10 @@ public class Systems {
 		SmartDashboard.putNumber("Encoder Left Disabled", drive.getLeft());
 		SmartDashboard.putNumber("Encoder Right Disabled", drive.getRight());
 		SmartDashboard.putNumber("Gyro Angle Disabled", gyro.getAngle());
-		// SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
-		// camera.getAngle();
+		if (camera.cameraExists) {
+			camera.getAngle();
+			camera.sendImage();
+		}
 	}
 
 	/*
@@ -383,9 +391,7 @@ public class Systems {
 		resetDefenseManipulator();
 		resetGyro();
 		resetDriveEncoders();
-		catapult.setAuto(270); // TODO: Why am I doing this here?
+		catapult.setAuto(270);
 		catapult.setClose();
-		// camera.openCamera();
-		// camera.startCapture();
 	}
 }
