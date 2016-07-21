@@ -781,58 +781,35 @@ public class Robot extends IterativeRobot {
 		}));
 
 		// SM Here
-		cheval_sm.addState(new State("Accelerate", (RobotState rbs) -> {
+		cheval_sm.addState(new State("Drive to Cheval", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
-			// rbi.drive_left = 0.5 * ((System.currentTimeMillis() -
-			// rbs.start_time) / 1000.0);
-			// rbi.drive_right = 0.5 * ((System.currentTimeMillis() -
-			// rbs.start_time) / 1000.0);
-			rbi.arm_auto = true;
+			rbi.drive_left = 0.5;
+			rbi.drive_right = 0.5;
+			rbi.arm_middle = true;
 			return rbi;
 		} , (RobotState rbs) -> {
-			if (rbs.arm_aligned_auto)
-				return "Drive";
+			//FIXME: distance to cheval
+			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 21) {
+				return "Drop Intake";
+			}
 			else
 				return null;
-		})).addState(new State("Drive", (RobotState rbs) -> {
+		})).addState(new State("Drop Intake", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
-			rbi.drive_left = .345;
-			rbi.drive_right = .345;
+			rbi.intake_down = true;
 			return rbi;
 		} , (RobotState rbs) -> {
-			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 21) {
-				return "Low Mans";
+			if (rbs.intake_down && rbs.arm_aligned_middle) {
+				return "Drive Across Cheval";
 			} else
 				return null;
-		})).addState(new State("Low Mans", (RobotState rbs) -> {
+		})).addState(new State("Drive Across Cheval", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
-			rbi.defense_down = true;
+			rbi.drive_left = 0.3;
+			rbi.drive_right = 0.3;
 			return rbi;
 		} , (RobotState rbs) -> {
-			if (rbs.manip_encoder / 10.0 > 0.25)
-				return "Drive2";
-			return null;
-		})).addState(new State("Drive2", (RobotState rbs) -> {
-			RobotInstruction rbi = new RobotInstruction();
-			rbi.drive_left = .345;
-			rbi.drive_right = .345;
-			rbi.arm_middle = true;
-			rbi.reset_defense = true;
-			return rbi;
-		} , (RobotState rbs) -> {
-			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 55) {
-				return "Raise Mans";
-			} else
-				return null;
-		})).addState(new State("Raise Mans", (RobotState rbs) -> {
-			RobotInstruction rbi = new RobotInstruction();
-			rbi.defense_up = true;
-			return rbi;
-		} , (RobotState rbs) -> {
-			// FIXME: determine positive and negative direction on encoder for
-			// mans
-			if (rbs.manip_encoder / 10.0 < -0.25)
-				return "Finished";
+			if (System.currentTimeMillis() - rbs.start_time > 5000) return "Finished";
 			return null;
 		})).addState(new State("Finished", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();

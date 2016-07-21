@@ -50,7 +50,7 @@ public class Input {
 	//public boolean getClimberDown() { return button1.getRawButton(CLIMBER_DOWN); }
 	
 	public boolean getFingersOpen() { return button1.getRawButton(FINGER) || getTriggers();}
-	public boolean getFingersClose() { return !button1.getRawButton(FINGER); }
+	public boolean getFingersClose() { return !getFingersOpen(); }
 	public boolean getTriggers() {return getLeftTrigger() || getRightTrigger();}
 
 	public boolean getResetShot() {
@@ -75,12 +75,12 @@ public class Input {
 	public boolean getLeftFour() {return left.getRawButton(STICK_FOUR);}
 	public boolean getLeftFive() {return left.getRawButton(STICK_FIVE);}
 	public boolean getLeftSix() {return left.getRawButton(STICK_SIX);}
-	public boolean getRightTrigger() {return left.getRawButton(STICK_TRIGGER);}
-	public boolean getRightTwo() {return left.getRawButton(STICK_TWO);}
-	public boolean getRightThree() {return left.getRawButton(STICK_THREE);}
-	public boolean getRightFour() {return left.getRawButton(STICK_FOUR);}
-	public boolean getRightFive() {return left.getRawButton(STICK_FIVE);}
-	public boolean getRightSix() {return left.getRawButton(STICK_SIX);}
+	public boolean getRightTrigger() {return right.getRawButton(STICK_TRIGGER);}
+	public boolean getRightTwo() {return right.getRawButton(STICK_TWO);}
+	public boolean getRightThree() {return right.getRawButton(STICK_THREE);}
+	public boolean getRightFour() {return right.getRawButton(STICK_FOUR);}
+	public boolean getRightFive() {return right.getRawButton(STICK_FIVE);}
+	public boolean getRightSix() {return right.getRawButton(STICK_SIX);}
 	
 	/*private final int CONTROL_LEFT_VERT = 1;
 	private final int CONTROL_LEFT_HORI = 0;

@@ -32,6 +32,7 @@ public class RobotInstruction {
 	public boolean arm_high = false;
 	public boolean arm_middle = false;
 	public boolean arm_low = false;
+	public boolean arm_cheval = false;
 	public boolean arm_auto = false;
 	
 	public boolean defense_down = false;

@@ -29,6 +29,7 @@ public class Arm {
 	private static final double STOP = 0;
 
 	static int Low = (735); // 640 = practice, 735 = competition
+	static int Cheval = (950);
 	static int Middle = (1450); // 1450 practice and competition
 	static int Auto = (3120+1450)/2;
 	static int High = (3340); // 3135 practice, 3340 competition, 3120 was old competition
@@ -49,6 +50,7 @@ public class Arm {
 		else if (inDeadbandMiddle()) setpoint = Middle;
 		else if (inDeadbandHigh()) setpoint = High;
 		else if(inDeadbandAuto()) setpoint = Auto;
+		else if(inDeadbandCheval()) setpoint = Cheval;
 	}
 
 	public void run() {
@@ -101,6 +103,8 @@ public class Arm {
 				output = 0;
 			else if(isAuto() && inDeadbandAuto())
 				output = 0;
+			else if(isCheval() && inDeadbandCheval())
+				output = 0;
 			
 			motor.set(limit(limit_low(output)));
 
@@ -139,6 +143,15 @@ public class Arm {
 
 	public boolean isLow() {
 		return setpoint == Low;
+	}
+	
+	public void setCheval() {
+		setpoint = Cheval;
+		run();
+	}
+	
+	public boolean isCheval() {
+		return setpoint == Cheval;
 	}
 
 	public void setMiddle() {
@@ -202,6 +215,10 @@ public class Arm {
 
 	public boolean inDeadbandLow() {
 		return Math.abs(Low - pot.getValue()) < RADIUS;
+	}
+	
+	public boolean inDeadbandCheval() {
+		return Math.asin(Cheval - pot.getValue()) < RADIUS;
 	}
 
 	public double getPos() {

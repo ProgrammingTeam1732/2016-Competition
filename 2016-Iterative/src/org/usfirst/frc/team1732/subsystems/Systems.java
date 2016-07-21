@@ -60,6 +60,7 @@ public class Systems {
 		rbs.arm_aligned_high = arm.inDeadbandHigh();
 		rbs.arm_aligned_middle = arm.inDeadbandMiddle();
 		rbs.arm_aligned_low = arm.inDeadbandLow();
+		rbs.arm_aligned_cheval = arm.inDeadbandCheval();
 		rbs.arm_aligned_auto = arm.inDeadbandAuto();
 
 		SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
@@ -102,6 +103,7 @@ public class Systems {
 		rbs.arm_aligned_middle = arm.inDeadbandMiddle();
 		rbs.arm_aligned_low = arm.inDeadbandLow();
 		rbs.arm_aligned_auto = arm.inDeadbandAuto();
+		rbs.arm_aligned_cheval = arm.inDeadbandCheval();
 
 		SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
 		rbs.gyro = gyro.getAngle();
@@ -165,6 +167,8 @@ public class Systems {
 			arm.setMiddle();
 		} else if (rbi.arm_low) {
 			arm.setLow();
+		} else if (rbi.arm_cheval) {
+			arm.setCheval();
 		} else {
 			arm.run();
 		}
@@ -228,7 +232,9 @@ public class Systems {
 		}
 
 		// if (io.getArmNot()) {
-		if (io.getArmLow() && fingers.isClosed()) {
+		if (io.getArmCheval() && fingers.isClosed()) {
+			arm.setCheval();
+		} else if (io.getArmLow() && fingers.isClosed()) {
 			arm.setLow();// low
 			/*
 			 * if (arm.isLow()) { arm.run(); } else { if
@@ -315,6 +321,7 @@ public class Systems {
 		 * latch is controlled by left stick button six capapult actuator is
 		 * controlled by left stick buttons four (positive) and three (negative)
 		 */
+		
 		if (!test_mode_started) {
 			System.out.println("Test Mode Started");
 			test_mode_started = true;
