@@ -22,6 +22,7 @@ public class RobotState {
 	public boolean arm_aligned_middle;
 	public boolean arm_aligned_low;
 	public boolean arm_aligned_auto;
+	public boolean arm_aligned_cheval;
 	
 	public boolean catapult_aligned_out;
 	public boolean catapult_aligned_shoot;

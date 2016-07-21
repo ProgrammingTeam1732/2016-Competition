@@ -32,7 +32,7 @@ public class Robot extends IterativeRobot {
 	StateMachine<cheval_states> cheval_sm = new StateMachine<cheval_states>();
 
 	public enum cheval_states {
-		Accelerate, Drive, LowMans, DriveTwo, RaiseMans, Finished;
+		DriveToCheval, DropIntake, DriveAcrossCheval, Finished;
 	}
 
 	StateMachine<drawbridge_states> drawbridge_sm = new StateMachine<drawbridge_states>();
@@ -749,55 +749,33 @@ public class Robot extends IterativeRobot {
 			return null;
 		});
 
-		cheval_sm.addState(cheval_states.Accelerate, (RobotState rbs) -> {
+		cheval_sm.addState(cheval_states.DriveToCheval, (RobotState rbs) -> {
 			RobotInstruction<cheval_states> rbi = new RobotInstruction<cheval_states>();
-			// rbi.drive_left = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
-			// rbi.drive_right = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
-			rbi.arm_auto = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (rbs.arm_aligned_auto)
-				return cheval_states.Drive;
-			else
-				return null;
-		}).addState(cheval_states.Drive, (RobotState rbs) -> {
-			RobotInstruction<cheval_states> rbi = new RobotInstruction<cheval_states>();
-			rbi.drive_left = .345;
-			rbi.drive_right = .345;
+			rbi.drive_left = 0.5;
+			rbi.drive_right = 0.5;
+			rbi.arm_middle = true;
 			return rbi;
 		}, (RobotState rbs) -> {
 			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 21) {
-				return cheval_states.LowMans;
+				return cheval_states.DropIntake;
 			} else
 				return null;
-		}).addState(cheval_states.LowMans, (RobotState rbs) -> {
+		}).addState(cheval_states.DropIntake, (RobotState rbs) -> {
 			RobotInstruction<cheval_states> rbi = new RobotInstruction<cheval_states>();
-			rbi.defense_down = true;
+			rbi.intake_down = true;
 			return rbi;
 		}, (RobotState rbs) -> {
-			if (rbs.manip_encoder / 10.0 > 0.25)
-				return cheval_states.DriveTwo;
-			return null;
-		}).addState(cheval_states.DriveTwo, (RobotState rbs) -> {
-			RobotInstruction<cheval_states> rbi = new RobotInstruction<cheval_states>();
-			rbi.drive_left = .345;
-			rbi.drive_right = .345;
-			rbi.arm_middle = true;
-			rbi.reset_defense = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 55) {
-				return cheval_states.RaiseMans;
+			if (rbs.intake_down && rbs.arm_aligned_middle) {
+				return cheval_states.DriveAcrossCheval;
 			} else
 				return null;
-		}).addState(cheval_states.RaiseMans, (RobotState rbs) -> {
+		}).addState(cheval_states.DriveAcrossCheval, (RobotState rbs) -> {
 			RobotInstruction<cheval_states> rbi = new RobotInstruction<cheval_states>();
-			rbi.defense_up = true;
+			rbi.drive_left = 0.3;
+			rbi.drive_right = 0.3;
 			return rbi;
 		}, (RobotState rbs) -> {
-			// FIXME: determine positive and negative direction on encoder for manipulaters
-			if (rbs.manip_encoder / 10.0 < -0.25)
-				return cheval_states.Finished;
+			if (System.currentTimeMillis() - rbs.start_time > 5000) return cheval_states.Finished;
 			return null;
 		}).addState(cheval_states.Finished, (RobotState rbs) -> {
 			RobotInstruction<cheval_states> rbi = new RobotInstruction<cheval_states>();
@@ -882,7 +860,7 @@ public class Robot extends IterativeRobot {
 		portcullis_sm.setState(portcullis_states.Accelerate);
 		sally_port_sm.setState(sally_port_states.Accelerate);
 		drawbridge_sm.setState(drawbridge_states.Accelerate);
-		cheval_sm.setState(cheval_states.Accelerate);
+		cheval_sm.setState(cheval_states.DriveToCheval);
 
 		position_two_sm.setState(position_two_states.Center);
 		position_three_sm.setState(position_three_states.TurnRight);

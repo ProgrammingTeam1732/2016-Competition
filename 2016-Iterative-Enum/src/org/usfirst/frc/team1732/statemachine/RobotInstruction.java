@@ -3,7 +3,7 @@ package org.usfirst.frc.team1732.statemachine;
 public class RobotInstruction<T> {
 	public T next = null;
 	public boolean machine_finished = false;
-		
+	
 	public boolean catapult_load = false;
 	public boolean catapult_out = false;
 	public boolean catapult_shoot = false;
@@ -32,6 +32,7 @@ public class RobotInstruction<T> {
 	public boolean arm_high = false;
 	public boolean arm_middle = false;
 	public boolean arm_low = false;
+	public boolean arm_cheval = false;
 	public boolean arm_auto = false;
 	
 	public boolean defense_down = false;

@@ -19,16 +19,16 @@ public class Systems {
 	Catapult catapult = new Catapult();
 	Fingers fingers = new Fingers();
 	DefenseManipulator defense_manipulator = new DefenseManipulator();
-	Camera camera = new Camera();
-	AnalogInput pressure = new AnalogInput(3); // on practice bot 3 is used for arm pot
+	//Camera camera = new Camera();
+	AnalogInput pressure = new AnalogInput(3); //on practice bot 3 is used for arm pot
 
 	boolean test_mode_started = false;
 
-	// AnalogInput pressure = new AnalogInput(3);
+	//AnalogInput pressure = new AnalogInput(3);
 
 	Gyro gyro = new AnalogGyro(1);
-
-	public void resetDefenseManipulator() {
+	
+	public void resetDefense() {
 		defense_manipulator.reset();
 	}
 
@@ -46,21 +46,21 @@ public class Systems {
 
 	public RobotState getCameraState() {
 		RobotState rbs = new RobotState();
-
+		
 		rbs.shoot = false;
-
-		rbs.angle_to_goal = camera.getAngle();
-		rbs.camera_exists = camera.cameraExists;
-		rbs.distance_to_goal = camera.getDistance();
-
+		
+		rbs.angle_to_goal = 0.5;//camera.getAngle();
+		rbs.camera_exists = false; //camera.camera_exists;
+		
 		rbs.manip_encoder = defense_manipulator.getValue();
 		SmartDashboard.putNumber("Manip_encoder", defense_manipulator.getValue());
-
+		
 		SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
 
 		rbs.arm_aligned_high = arm.inDeadbandHigh();
 		rbs.arm_aligned_middle = arm.inDeadbandMiddle();
 		rbs.arm_aligned_low = arm.inDeadbandLow();
+		rbs.arm_aligned_cheval = arm.inDeadbandCheval();
 		rbs.arm_aligned_auto = arm.inDeadbandAuto();
 
 		SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
@@ -69,7 +69,7 @@ public class Systems {
 		rbs.shoot_mode_far = catapult.isFar();
 		rbs.shoot_mode_close = catapult.isClose();
 		rbs.shoot_mode_auto = catapult.isAuto();
-
+		
 		rbs.catapult_aligned_out = catapult.inDeadbandOut();
 		rbs.catapult_aligned_load = catapult.inDeadbandLoad();
 		rbs.catapult_aligned_shoot = catapult.inDeadbandShoot();
@@ -90,19 +90,20 @@ public class Systems {
 
 		rbs.shoot = shoot;
 		rbs.reset_catapult = reset_catapult;
-
-		rbs.camera_exists = camera.cameraExists;
-		rbs.distance_to_goal = camera.getDistance();
-
+		
+		rbs.camera_exists = false; //camera.camera_exists;
+		rbs.distance_to_goal = 0; //camera.getDistance();
+		
 		rbs.manip_encoder = defense_manipulator.getValue();
 		SmartDashboard.putNumber("Manip_encoder", defense_manipulator.getValue());
-
+		
 		SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
 
 		rbs.arm_aligned_high = arm.inDeadbandHigh();
 		rbs.arm_aligned_middle = arm.inDeadbandMiddle();
 		rbs.arm_aligned_low = arm.inDeadbandLow();
 		rbs.arm_aligned_auto = arm.inDeadbandAuto();
+		rbs.arm_aligned_cheval = arm.inDeadbandCheval();
 
 		SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
 		rbs.gyro = gyro.getAngle();
@@ -110,7 +111,7 @@ public class Systems {
 		rbs.shoot_mode_far = catapult.isFar();
 		rbs.shoot_mode_close = catapult.isClose();
 		rbs.shoot_mode_auto = catapult.isAuto();
-
+		
 		rbs.catapult_aligned_out = catapult.inDeadbandOut();
 		rbs.catapult_aligned_load = catapult.inDeadbandLoad();
 		rbs.catapult_aligned_shoot = catapult.inDeadbandShoot();
@@ -166,6 +167,8 @@ public class Systems {
 			arm.setMiddle();
 		} else if (rbi.arm_low) {
 			arm.setLow();
+		} else if (rbi.arm_cheval) {
+			arm.setCheval();
 		} else {
 			arm.run();
 		}
@@ -201,11 +204,9 @@ public class Systems {
 	}
 
 	public void run(RobotInstruction rbi, Input io) {
-
-		if (!rbi.drive_auto)
-			drive.drive(io.getLeftVert(), io.getRightVert());
-		else
-			drive.drive(rbi.drive_left, rbi.drive_right);
+		
+		if(!rbi.drive_auto) drive.drive(io.getLeftVert(), io.getRightVert());
+		else drive.drive(rbi.drive_left, rbi.drive_right);
 		if (io.getSetShootClose()) {
 			catapult.setClose();
 		} else if (io.getSetShootFar()) {
@@ -213,7 +214,7 @@ public class Systems {
 		} else if (io.getSetShootAuto()) {
 			catapult.setAuto(rbi.catapult_auto_pos);
 		}
-
+		
 		if (rbi.catapult_shoot) {
 			catapult.setShoot();
 		} else if (rbi.catapult_out) {
@@ -231,42 +232,49 @@ public class Systems {
 		}
 
 		// if (io.getArmNot()) {
-		if (io.getArmLow() && fingers.isClosed()) {
+		if (io.getArmCheval() && fingers.isClosed()) {
+			arm.setCheval();
+		} else if (io.getArmLow() && fingers.isClosed()) {
 			arm.setLow();// low
 			/*
-			 * if (arm.isLow()) { arm.run(); } else { if (catapult.inDeadbandLoad() /*&& intake.isDown()
+			 * if (arm.isLow()) { arm.run(); } else { if
+			 * (catapult.inDeadbandLoad() /*&& intake.isDown()
 			 *//*
-				 * ) { rbi.fingers_close = true; arm.setLow(); } else { arm.run(); } }
+				 * ) { rbi.fingers_close = true; arm.setLow(); } else {
+				 * arm.run(); } }
 				 */
 		} else if (io.getArmMiddle() && fingers.isClosed()) {
 			arm.setMiddle(); // middle
 			/*
-			 * if (arm.isLow()) { if (catapult.inDeadbandLoad() /*&& intake.isDown()
+			 * if (arm.isLow()) { if (catapult.inDeadbandLoad() /*&&
+			 * intake.isDown()
 			 *//*
-				 * ) { rbi.fingers_close = true; arm.setMiddle(); } else { arm.run(); } } else if (arm.isMiddle()) { arm.run(); } else {
+				 * ) { rbi.fingers_close = true; arm.setMiddle(); } else {
+				 * arm.run(); } } else if (arm.isMiddle()) { arm.run(); } else {
 				 * 
 				 * arm.setMiddle(); // }
 				 */
 		} else if (io.getArmHigh() && fingers.isClosed()) {
 			arm.setHigh(); // high
 			/*
-			 * if (arm.isLow()) { if (catapult.inDeadbandLoad() /*&& intake.isDown()*) { rbi.fingers_close = true; arm.setHigh(); } else { arm.run();
-			 * } } else { arm.setHigh(); }
+			 * if (arm.isLow()) { if (catapult.inDeadbandLoad() /*&&
+			 * intake.isDown()*) { rbi.fingers_close = true; arm.setHigh(); }
+			 * else { arm.run(); } } else { arm.setHigh(); }
 			 */
 		} else {
 			arm.run();
 		} /*
-			 * else { // run } if (arm.isAuto()) { arm.run(); } else { arm.stop(); } } /*} else if (io.getArmUp()) { arm.setUp(); } else if
-			 * (io.getArmDown()) { arm.setDown();
+			 * else { // run } if (arm.isAuto()) { arm.run(); } else {
+			 * arm.stop(); } } /*} else if (io.getArmUp()) { arm.setUp(); } else
+			 * if (io.getArmDown()) { arm.setDown();
 			 * 
 			 * } else { System.err.println("Unknown Arm State"); }
 			 */
-
 		boolean driverIntake = false;
 
 		if (io.getFingersOpen()) {
 			fingers.open();
-			if (io.getTriggers() && arm.inDeadbandLow() && intake.isDown()) {
+			if(io.getTriggers() && arm.inDeadbandLow() && intake.isDown()) {
 				intake.setIn();
 				driverIntake = true;
 			}
@@ -290,11 +298,11 @@ public class Systems {
 		// }
 
 		if (io.getIntakeIn()) { // TODO make intake auto for
-			// raise and lower arm
+								// raise and lower arm
 			intake.setIn();
 		} else if (io.getIntakeOut() && !driverIntake) {
 			intake.setOut();
-		} else if (!driverIntake) {
+		} else if (!driverIntake){
 			intake.setStop();
 		}
 
@@ -305,18 +313,15 @@ public class Systems {
 		} else {
 			defense_manipulator.stop();
 		}
-		
-		SmartDashboard.putBoolean("View Camera in Teleop", false);
-		if(SmartDashboard.getBoolean("View Camera in Teleop", false)) {
-			camera.getAngle();
-		}
 	}
 
 	public void test_mode(Input io) {
 		/*
-		 * In testing mode: wheel motors controlled by y-axis on sticks catapult latch is controlled by left stick button six capapult actuator is
+		 * In testing mode: wheel motors controlled by y-axis on sticks catapult
+		 * latch is controlled by left stick button six capapult actuator is
 		 * controlled by left stick buttons four (positive) and three (negative)
 		 */
+		
 		if (!test_mode_started) {
 			System.out.println("Test Mode Started");
 			test_mode_started = true;
@@ -375,23 +380,24 @@ public class Systems {
 		SmartDashboard.putNumber("Encoder Left Disabled", drive.getLeft());
 		SmartDashboard.putNumber("Encoder Right Disabled", drive.getRight());
 		SmartDashboard.putNumber("Gyro Angle Disabled", gyro.getAngle());
-		if (camera.cameraExists) {
-			camera.getAngle();
-			camera.sendImage();
-		}
+		SmartDashboard.putNumber("Pressure", pressure.getValue() / 12.0);
+		//camera.getAngle();
 	}
 
-	/*
-	 * public void stopCamera() { camera.stopCamera(); }
-	 * 
-	 * public void startCamera() { //camera.startCamera(); }
-	 */
-
+	/*public void stopCamera() {
+		camera.stopCamera();
+	}
+	
+	public void startCamera() {
+		//camera.startCamera();
+	}*/
+	
 	public void prepareAuto() {
-		resetDefenseManipulator();
-		resetGyro();
-		resetDriveEncoders();
-		catapult.setAuto(270);
+		drive.reset();
+		defense_manipulator.reset();
+		//catapult.setAuto(270);
 		catapult.setClose();
+		//camera.openCamera();
+		//camera.startCapture();
 	}
 }

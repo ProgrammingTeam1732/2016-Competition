@@ -900,7 +900,7 @@ public class Robot extends IterativeRobot {
 		portcullis_sm.setState("Accelerate");
 		sally_port_sm.setState("Accelerate");
 		drawbridge_sm.setState("Accelerate");
-		cheval_sm.setState("Accelerate");
+		cheval_sm.setState("Drive to Cheval");
 
 		pos2_sm.setState("Center");
 		pos3_sm.setState("Turn Right");
