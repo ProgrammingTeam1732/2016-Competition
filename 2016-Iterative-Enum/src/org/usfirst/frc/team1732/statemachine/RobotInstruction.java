@@ -1,7 +1,6 @@
 package org.usfirst.frc.team1732.statemachine;
 
 public class RobotInstruction {
-	public boolean machine_finished = false;
 	
 	public boolean catapult_load = false;
 	public boolean catapult_out = false;
