@@ -785,7 +785,6 @@ public class Robot extends IterativeRobot {
 			RobotInstruction rbi = new RobotInstruction();
 			rbi.drive_left = 0.5;
 			rbi.drive_right = 0.5;
-			rbi.arm_middle = true;
 			return rbi;
 		} , (RobotState rbs) -> {
 			//FIXME: distance to cheval
@@ -799,10 +798,17 @@ public class Robot extends IterativeRobot {
 			rbi.intake_down = true;
 			return rbi;
 		} , (RobotState rbs) -> {
-			if (rbs.intake_down && rbs.arm_aligned_middle) {
-				return "Drive Across Cheval";
+			if (rbs.intake_down) {
+				return "Drop Arm To Cheval";
 			} else
 				return null;
+		})).addState(new State("Drop Arm To Cheval", (RobotState rbs) -> {
+			RobotInstruction rbi = new RobotInstruction();
+			rbi.arm_cheval = true;
+			return rbi;
+		}, (RobotState rbs) -> {
+			if (rbs.arm_aligned_cheval) return "Drive Across Cheval";
+			else return null;
 		})).addState(new State("Drive Across Cheval", (RobotState rbs) -> {
 			RobotInstruction rbi = new RobotInstruction();
 			rbi.drive_left = 0.3;

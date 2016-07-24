@@ -6,7 +6,7 @@ public class RobotState {
 	public int drive_right_dist;
 	public int drive_left_dist;
 	
-	public double angle_to_goal;
+	public double angle_to_goal = 0.5;
 	public double distance_to_goal;
 	public boolean camera_exists;
 	

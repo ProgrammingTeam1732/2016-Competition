@@ -28,11 +28,11 @@ public class Arm {
 	private static final double DOWN_SPEED = -0.4;
 	private static final double STOP = 0;
 
-	static int Low = (735); // 640 = practice, 735 = competition
-	static int Cheval = (950);
-	static int Middle = (1450); // 1450 practice and competition
-	static int Auto = (3120+1450)/2;
-	static int High = (3340); // 3135 practice, 3340 competition, 3120 was old competition
+	private static int Low = (735); // 640 = practice, 735 = competition
+	private static int Cheval = (950);
+	private static int Middle = (1450); // 1450 practice and competition
+	private static int Auto = (3120+1450)/2;
+	private static int High = (3340); // 3135 practice, 3340 competition, 3120 was old competition
 	
 	//private boolean auto = false;
 

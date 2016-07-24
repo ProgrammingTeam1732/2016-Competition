@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot {
 
-	Systems bot;
-	Input input = new Input();
+	public static Systems bot;
+	public Input input = new Input();
 
 	StateMachine<cross_terrain_states> cross_terrain_sm = new StateMachine<cross_terrain_states>();
 
@@ -32,7 +32,7 @@ public class Robot extends IterativeRobot {
 	StateMachine<cheval_states> cheval_sm = new StateMachine<cheval_states>();
 
 	public enum cheval_states {
-		DriveToCheval, DropIntake, DriveAcrossCheval, Finished;
+		DriveToCheval, DropIntake, DropArmToCheval, DriveAcrossCheval, Finished;
 	}
 
 	StateMachine<drawbridge_states> drawbridge_sm = new StateMachine<drawbridge_states>();
@@ -113,674 +113,520 @@ public class Robot extends IterativeRobot {
 		position_chooser.addObject(do_nothing, do_nothing);
 		SmartDashboard.putData("Position", position_chooser);
 
-		shoot_sm.addState(shoot_states.WaitToShoot, (RobotState rbs) -> {
-			return new RobotInstruction<shoot_states>();
-		}, (RobotState rbs) -> {
-			if (rbs.shoot && rbs.fingers_open)
+		shoot_sm.addState(shoot_states.WaitToShoot, () -> {
+			if (bot.robotState.shoot && bot.robotState.fingers_open)
 				return shoot_states.ShootMode;
-			if (rbs.reset_catapult && rbs.fingers_open)
-				return shoot_states.ShootMode;
-			/*
-			 * else if (rbs.shoot) return "Open Fingers";
-			 */
-			else
-				return null;
-		}).addState(shoot_states.AutoInit, (RobotState rbs) -> {
-			return new RobotInstruction<shoot_states>();
-		}, (RobotState rbs) -> {
-			if (rbs.arm_aligned_high)
+			if (bot.robotState.reset_catapult && bot.robotState.fingers_open)
 				return shoot_states.ShootMode;
 			else
 				return null;
-		}).addState(shoot_states.ShootMode, (RobotState rbs) -> {
-			return new RobotInstruction<shoot_states>();
-		}, (RobotState rbs) -> {
-			if (rbs.shoot_mode_far || rbs.shoot_mode_close)
+		}).addState(shoot_states.AutoInit, () -> {
+			if (bot.robotState.arm_aligned_high)
+				return shoot_states.ShootMode;
+			else
+				return null;
+		}).addState(shoot_states.ShootMode, () -> {
+			if (bot.robotState.shoot_mode_far || bot.robotState.shoot_mode_close)
 				return shoot_states.ShootPosition;
-			else if (!rbs.camera_exists)
+			else if (!bot.robotState.camera_exists)
 				return shoot_states.WaitToShoot;
-			else if (rbs.shoot_mode_auto)
+			else if (bot.robotState.shoot_mode_auto)
 				return shoot_states.PointAtGoal;
 			else
 				return null;
-		}).addState(shoot_states.PointAtGoal, (RobotState rbs) -> {
-			RobotInstruction<shoot_states> rbi = new RobotInstruction<shoot_states>();
-			if (rbs.angle_to_goal == -1.0) {
-				rbi.drive_left = 0.2;
-				rbi.drive_right = -0.2;
+		}).addState(shoot_states.PointAtGoal, () -> {
+			if (bot.robotState.angle_to_goal == -1.0) {
+				bot.robotInstruction.drive_left = 0.2;
+				bot.robotInstruction.drive_right = -0.2;
 			}
 			double turn = -0.2;
-			if (rbs.angle_to_goal < 0.5)
+			if (bot.robotState.angle_to_goal < 0.5)
 				turn = 0.2;
 			else
 				turn = -0.2;
-			rbi.drive_auto = true;
-			rbi.drive_left = turn;
-			rbi.drive_right = -turn;
-			return rbi;
-		}, (RobotState rbs) -> {
+			bot.robotInstruction.drive_auto = true;
+			bot.robotInstruction.drive_left = turn;
+			bot.robotInstruction.drive_right = -turn;
+		}, () -> {
 			// FIXME: change this after testing turning
-			if (Math.abs(0.5 - rbs.angle_to_goal) < 0.1)
+			if (Math.abs(0.5 - bot.robotState.angle_to_goal) < 0.1)
 				return shoot_states.WaitToShoot;
-			else if (!rbs.shoot_mode_auto)
+			else if (!bot.robotState.shoot_mode_auto)
 				return shoot_states.WaitToShoot;
 			else
 				return null;
-		}).addState(shoot_states.AutoShootPosition, (RobotState rbs) -> {
-			RobotInstruction<shoot_states> rbi = new RobotInstruction<shoot_states>();
+		}).addState(shoot_states.AutoShootPosition, () -> {
 			// TODO: calculate function for setpoint based on distance
-			//rbi.catapult_auto_pos = (int) (rbs.distance_to_goal * 2);
-			rbi.catapult_shoot = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (rbs.catapult_aligned_shoot && rbs.arm_aligned_high && rbs.fingers_open
-					&& ((Math.abs(System.currentTimeMillis() - rbs.start_time) > 500)))
+			// bot.robotInstruction.catapult_auto_pos = (int) (bot.robotState.distance_to_goal * 2);
+			bot.robotInstruction.catapult_shoot = true;
+		}, () -> {
+			if (bot.robotState.catapult_aligned_shoot && bot.robotState.arm_aligned_high && bot.robotState.fingers_open
+					&& ((Math.abs(System.currentTimeMillis() - bot.robotState.start_time) > 500)))
 				return shoot_states.Shoot;
 			else
 				return null;
-		}).addState(shoot_states.ShootPosition, (RobotState rbs) -> {
-			RobotInstruction<shoot_states> rbi = new RobotInstruction<shoot_states>();
-			rbi.catapult_shoot = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (rbs.catapult_aligned_shoot && rbs.arm_aligned_high && rbs.fingers_open
-					&& ((Math.abs(System.currentTimeMillis() - rbs.start_time) > 500)))
+		}).addState(shoot_states.ShootPosition, () -> {
+			bot.robotInstruction.catapult_shoot = true;
+		}, () -> {
+			if (bot.robotState.catapult_aligned_shoot && bot.robotState.arm_aligned_high && bot.robotState.fingers_open
+					&& ((Math.abs(System.currentTimeMillis() - bot.robotState.start_time) > 500)))
 				return shoot_states.Shoot;
-			if (rbs.reset_catapult && rbs.fingers_open)
+			if (bot.robotState.reset_catapult && bot.robotState.fingers_open)
 				return shoot_states.Shoot;
 			else
 				return null;
-		})/*
-			 * .addState(new State("Open Fingers", (RobotState rbs) -> { RobotInstruction rbi = new RobotInstruction(); // rbi.fingers_open = true;
-			 * return rbi; } , (RobotState rbs) -> { //if ((Math.abs(System.currentTimeMillis() - rbs.start_time) > 200)) return "Shoot Position";
-			 * //else // return null; }))
-			 */.addState(shoot_states.Shoot, (RobotState rbs) -> {
-			RobotInstruction<shoot_states> rbi = new RobotInstruction<shoot_states>();
-			rbi.catapult_release = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 200)
+		}).addState(shoot_states.Shoot, () -> {
+			bot.robotInstruction.catapult_release = true;
+		}, () -> {
+			if (Math.abs(System.currentTimeMillis() - bot.robotState.start_time) > 200)
 				return shoot_states.RetrieveTram;
 			else
 				return null;
-		}).addState(shoot_states.RetrieveTram, (RobotState rbs) -> {
-			RobotInstruction<shoot_states> rbi = new RobotInstruction<shoot_states>();
-			rbi.catapult_out = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (rbs.catapult_aligned_out)
+		}).addState(shoot_states.RetrieveTram, () -> {
+			bot.robotInstruction.catapult_out = true;
+		}, () -> {
+			if (bot.robotState.catapult_aligned_out)
 				return shoot_states.LatchTram;
 			else
 				return null;
-		}).addState(shoot_states.LatchTram, (RobotState rbs) -> {
-			RobotInstruction<shoot_states> rbi = new RobotInstruction<shoot_states>();
-			rbi.catapult_latch = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 500)
+		}).addState(shoot_states.LatchTram, () -> {
+			bot.robotInstruction.catapult_latch = true;
+		}, () -> {
+			if (Math.abs(System.currentTimeMillis() - bot.robotState.start_time) > 500)
 				return shoot_states.PullTram;
 			else
 				return null;
-		}).addState(shoot_states.PullTram, (RobotState rbs) -> {
-			RobotInstruction<shoot_states> rbi = new RobotInstruction<shoot_states>();
-			rbi.catapult_load = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (rbs.catapult_aligned_load)
+		}).addState(shoot_states.PullTram, () -> {
+			bot.robotInstruction.catapult_load = true;
+		}, () -> {
+			if (bot.robotState.catapult_aligned_load)
 				return shoot_states.WaitToShoot;
 			else
 				return null;
 		});
 
-		cross_terrain_sm.addState(cross_terrain_states.ArmDown, (RobotState rbs) -> {
-			RobotInstruction<cross_terrain_states> rbi = new RobotInstruction<cross_terrain_states>();
-			rbi.intake_down = true;
-			rbi.arm_middle = true;
-			return rbi;
-		}, (RobotState rbs) -> { // FIXME?
-			if (rbs.arm_aligned_middle)
+		cross_terrain_sm.addState(cross_terrain_states.ArmDown, () -> {
+			bot.robotInstruction.intake_down = true;
+			bot.robotInstruction.arm_middle = true;
+		}, () -> { // FIXME?
+			if (bot.robotState.arm_aligned_middle)
 				return cross_terrain_states.DriveAcc;
 			else
 				return null;
-		}).addState(cross_terrain_states.DriveAcc, (RobotState rbs) -> {
-			RobotInstruction<cross_terrain_states> rbi = new RobotInstruction<cross_terrain_states>();
-			rbi.drive_left = 0.8 * ((System.currentTimeMillis() - rbs.start_time) / 2500.0);
-			rbi.drive_right = 0.8 * ((System.currentTimeMillis() - rbs.start_time) / 2500.0);
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 2500)
+		}).addState(cross_terrain_states.DriveAcc, () -> {
+			bot.robotInstruction.drive_left = 0.8 * ((System.currentTimeMillis() - bot.robotState.start_time) / 2500.0);
+			bot.robotInstruction.drive_right = 0.8 * ((System.currentTimeMillis() - bot.robotState.start_time) / 2500.0);
+		}, () -> {
+			if (Math.abs(System.currentTimeMillis() - bot.robotState.start_time) > 2500)
 				return cross_terrain_states.DriveSteady;
 			else
 				return null;
-		}).addState(cross_terrain_states.DriveSteady, (RobotState rbs) -> {
-			RobotInstruction<cross_terrain_states> rbi = new RobotInstruction<cross_terrain_states>();
-			rbi.drive_left = 0.8 - (0.8 * ((System.currentTimeMillis() - rbs.start_time) / 3000.0));
-			rbi.drive_right = 0.8 - (0.8 * ((System.currentTimeMillis() - rbs.start_time) / 3000.0));
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 3000)
+		}).addState(cross_terrain_states.DriveSteady, () -> {
+			bot.robotInstruction.drive_left = 0.8 - (0.8 * ((System.currentTimeMillis() - bot.robotState.start_time) / 3000.0));
+			bot.robotInstruction.drive_right = 0.8 - (0.8 * ((System.currentTimeMillis() - bot.robotState.start_time) / 3000.0));
+		}, () -> {
+			if (Math.abs(System.currentTimeMillis() - bot.robotState.start_time) > 3000)
 				return cross_terrain_states.Finished;
 			else
 				return null;
-		}).addState(cross_terrain_states.Finished, (RobotState rbs) -> {
-			RobotInstruction<cross_terrain_states> rbi = new RobotInstruction<cross_terrain_states>();
-			return rbi;
-		}, (RobotState rbs) -> {
+		}).addState(cross_terrain_states.Finished, () -> {
 			return null;
 		});
 
-		approach_sm.addState(approach_states.Accelerate, (RobotState rbs) -> {
-			RobotInstruction<approach_states> rbi = new RobotInstruction<approach_states>();
-			rbi.drive_left = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
-			rbi.drive_right = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 1000)
+		approach_sm.addState(approach_states.Accelerate, () -> {
+			bot.robotInstruction.drive_left = 0.5 * ((System.currentTimeMillis() - bot.robotState.start_time) / 1000.0);
+			bot.robotInstruction.drive_right = 0.5 * ((System.currentTimeMillis() - bot.robotState.start_time) / 1000.0);
+		}, () -> {
+			if (Math.abs(System.currentTimeMillis() - bot.robotState.start_time) > 1000)
 				return approach_states.Finished;
 			else
 				return null;
-		}).addState(approach_states.Finished, (RobotState rbs) -> {
-			RobotInstruction<approach_states> rbi = new RobotInstruction<approach_states>();
-			return rbi;
-		}, (RobotState rbs) -> {
+		}).addState(approach_states.Finished, () -> {
 			return null;
 		});
 
-		low_bar_sm.addState(low_bar_states.DropIntake, (RobotState rbs) -> {
-			RobotInstruction<low_bar_states> rbi = new RobotInstruction<low_bar_states>();
-			rbi.intake_down = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 1000)
+		low_bar_sm.addState(low_bar_states.DropIntake, () -> {
+			bot.robotInstruction.intake_down = true;
+		}, () -> {
+			if (Math.abs(System.currentTimeMillis() - bot.robotState.start_time) > 1000)
 				return low_bar_states.DropArm;
 			else
 				return null;
-		}).addState(low_bar_states.DropArm, (RobotState rbs) -> {
-			RobotInstruction<low_bar_states> rbi = new RobotInstruction<low_bar_states>();
-			rbi.catapult_load = true;
-			rbi.fingers_close = true;
-			if (rbs.catapult_aligned_load && rbs.fingers_closed && rbs.intake_down) {
-				rbi.arm_low = true;
+		}).addState(low_bar_states.DropArm, () -> {
+			bot.robotInstruction.catapult_load = true;
+			bot.robotInstruction.fingers_close = true;
+			if (bot.robotState.catapult_aligned_load && bot.robotState.fingers_closed && bot.robotState.intake_down) {
+				bot.robotInstruction.arm_low = true;
 			}
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 1000)
+		}, () -> {
+			if (Math.abs(System.currentTimeMillis() - bot.robotState.start_time) > 1000)
 				return low_bar_states.Wait;
 			else
 				return null;
-		}).addState(low_bar_states.Wait, (RobotState rbs) -> {
-			RobotInstruction<low_bar_states> rbi = new RobotInstruction<low_bar_states>();
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (rbs.arm_aligned_low)
+		}).addState(low_bar_states.Wait, () -> {
+			if (bot.robotState.arm_aligned_low)
 				return low_bar_states.DriveForward;
 			else
 				return null;
-		}).addState(low_bar_states.DriveForward, (RobotState rbs) -> {
-			RobotInstruction<low_bar_states> rbi = new RobotInstruction<low_bar_states>();
-			rbi.reset_gyro = true;
-			rbi.drive_left = 0.345;
-			rbi.drive_right = 0.345;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 220) {
+		}).addState(low_bar_states.DriveForward, () -> {
+			bot.robotInstruction.reset_gyro = true;
+			bot.robotInstruction.drive_left = 0.345;
+			bot.robotInstruction.drive_right = 0.345;
+		}, () -> {
+			if (((bot.robotState.drive_left_dist + bot.robotState.drive_left_dist) / 2.0) * 0.095 > 220) {
 				return low_bar_states.Turn;
 			}
 			return null;
-		}).addState(low_bar_states.Turn, (RobotState rbs) -> {
-			RobotInstruction<low_bar_states> rbi = new RobotInstruction<low_bar_states>();
-			if (rbs.gyro > 55) {
-				rbi.drive_left = -0.4;
-				rbi.drive_right = 0.4;
+		}).addState(low_bar_states.Turn, () -> {
+			if (bot.robotState.gyro > 55) {
+				bot.robotInstruction.drive_left = -0.4;
+				bot.robotInstruction.drive_right = 0.4;
 			} else {
-				rbi.drive_left = 0.4;
-				rbi.drive_right = -0.4;
+				bot.robotInstruction.drive_left = 0.4;
+				bot.robotInstruction.drive_right = -0.4;
 			}
-			rbi.reset_drive = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (Math.abs(rbs.gyro - 55) < 1) {
+			bot.robotInstruction.reset_drive = true;
+		}, () -> {
+			if (Math.abs(bot.robotState.gyro - 55) < 1) {
 				return low_bar_states.DriveForwardTwo;
 			}
 			return null;
-		}).addState(low_bar_states.DriveForwardTwo, (RobotState rbs) -> {
-			RobotInstruction<low_bar_states> rbi = new RobotInstruction<low_bar_states>();
-			rbi.drive_left = 0.2;
-			rbi.drive_right = 0.2;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 160) {
+		}).addState(low_bar_states.DriveForwardTwo, () -> {
+			bot.robotInstruction.drive_left = 0.2;
+			bot.robotInstruction.drive_right = 0.2;
+		}, () -> {
+			if (((bot.robotState.drive_left_dist + bot.robotState.drive_left_dist) / 2.0) * 0.095 > 160) {
 				return low_bar_states.RaiseArm;
 			}
 			return null;
-		}).addState(low_bar_states.RaiseArm, (RobotState rbs) -> {
-			RobotInstruction<low_bar_states> rbi = new RobotInstruction<low_bar_states>();
-			rbi.arm_high = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (System.currentTimeMillis() - rbs.start_time > 500)
+		}).addState(low_bar_states.RaiseArm, () -> {
+			bot.robotInstruction.arm_high = true;
+		}, () -> {
+			if (System.currentTimeMillis() - bot.robotState.start_time > 500)
 				return low_bar_states.OpenFingers;
 			else
 				return null;
-		}).addState(low_bar_states.OpenFingers, (RobotState rbs) -> {
-			RobotInstruction<low_bar_states> rbi = new RobotInstruction<low_bar_states>();
-			rbi.fingers_open = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (System.currentTimeMillis() - rbs.start_time > 500)
+		}).addState(low_bar_states.OpenFingers, () -> {
+			bot.robotInstruction.fingers_open = true;
+		}, () -> {
+			if (System.currentTimeMillis() - bot.robotState.start_time > 500)
 				return low_bar_states.Finished;
 			else
 				return null;
-		}).addState(low_bar_states.Finished, (RobotState rbs) -> {
-			return new RobotInstruction<low_bar_states>();
-		}, (RobotState rbs) -> {
+		}).addState(low_bar_states.Finished, () -> {
 			return null;
 		});
 
-		position_two_sm.addState(position_two_states.Center, (RobotState rbs) -> {
-			RobotInstruction<position_two_states> rbi = new RobotInstruction<position_two_states>();
-			if (rbs.gyro > 0) {
-				rbi.drive_left = -0.4;
-				rbi.drive_right = 0.4;
+		position_two_sm.addState(position_two_states.Center, () -> {
+			if (bot.robotState.gyro > 0) {
+				bot.robotInstruction.drive_left = -0.4;
+				bot.robotInstruction.drive_right = 0.4;
 			} else {
-				rbi.drive_left = 0.4;
-				rbi.drive_right = -0.4;
+				bot.robotInstruction.drive_left = 0.4;
+				bot.robotInstruction.drive_right = -0.4;
 			}
-			rbi.reset_drive = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (Math.abs(rbs.gyro) < 1) {
+			bot.robotInstruction.reset_drive = true;
+		}, () -> {
+			if (Math.abs(bot.robotState.gyro) < 1) {
 				return position_two_states.DriveForward;
 			}
 			return null;
-		}).addState(position_two_states.DriveForward, (RobotState rbs) -> {
-			RobotInstruction<position_two_states> rbi = new RobotInstruction<position_two_states>();
-			/*
-			 * if (dist < 5) { drive_speed = 0.3; } else if (dist < 30) { drive_speed = 0.6 * (dist) / 30.0; } else if (dist > 90) { drive_speed =
-			 * -1/30.0 * dist + (18/5.0); } else { drive_speed = 0.6; }
-			 */
-			rbi.reset_gyro = true;
-			rbi.drive_left = 0.345;
-			rbi.drive_right = 0.345;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 105) {
+		}).addState(position_two_states.DriveForward, () -> {
+			bot.robotInstruction.reset_gyro = true;
+			bot.robotInstruction.drive_left = 0.345;
+			bot.robotInstruction.drive_right = 0.345;
+		}, () -> {
+			if (((bot.robotState.drive_left_dist + bot.robotState.drive_left_dist) / 2.0) * 0.095 > 105) {
 				return position_two_states.Turn;
 			}
 			return null;
-		}).addState(position_two_states.Turn, (RobotState rbs) -> {
-			RobotInstruction<position_two_states> rbi = new RobotInstruction<position_two_states>();
-			if (rbs.gyro > +55) {
-				rbi.drive_left = -0.4;
-				rbi.drive_right = 0.4;
+		}).addState(position_two_states.Turn, () -> {
+			if (bot.robotState.gyro > +55) {
+				bot.robotInstruction.drive_left = -0.4;
+				bot.robotInstruction.drive_right = 0.4;
 			} else {
-				rbi.drive_left = 0.4;
-				rbi.drive_right = -0.4;
+				bot.robotInstruction.drive_left = 0.4;
+				bot.robotInstruction.drive_right = -0.4;
 			}
-			rbi.reset_drive = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (Math.abs(rbs.gyro - 55) < 1) {
+			bot.robotInstruction.reset_drive = true;
+		}, () -> {
+			if (Math.abs(bot.robotState.gyro - 55) < 1) {
 				return position_two_states.DriveForwardTwo;
 			}
 			return null;
-		}).addState(position_two_states.DriveForwardTwo, (RobotState rbs) -> {
-			RobotInstruction<position_two_states> rbi = new RobotInstruction<position_two_states>();
-			rbi.drive_left = 0.2;
-			rbi.drive_right = 0.2;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 53) {
+		}).addState(position_two_states.DriveForwardTwo, () -> {
+			bot.robotInstruction.drive_left = 0.2;
+			bot.robotInstruction.drive_right = 0.2;
+		}, () -> {
+			if (((bot.robotState.drive_left_dist + bot.robotState.drive_left_dist) / 2.0) * 0.095 > 53) {
 				return position_two_states.Finished;
 			}
 			return null;
-		}).addState(position_two_states.Finished, (RobotState rbs) -> {
-			RobotInstruction<position_two_states> rbi = new RobotInstruction<position_two_states>();
-			rbi.arm_high = true;
-			return rbi;
-		}, (RobotState rbs) -> {
+		}).addState(position_two_states.Finished, () -> {
+			bot.robotInstruction.arm_high = true;
+			bot.robotInstruction.fingers_open = true;
+		}, () -> {
 			return null;
 		});
 
-		position_three_sm.addState(position_three_states.TurnRight, (RobotState rbs) -> {
-			RobotInstruction<position_three_states> rbi = new RobotInstruction<position_three_states>();
-			if (rbs.gyro > 40) {
-				rbi.drive_left = -0.4;
-				rbi.drive_right = 0.4;
+		position_three_sm.addState(position_three_states.TurnRight, () -> {
+			if (bot.robotState.gyro > 40) {
+				bot.robotInstruction.drive_left = -0.4;
+				bot.robotInstruction.drive_right = 0.4;
 			} else {
-				rbi.drive_left = 0.4;
-				rbi.drive_right = -0.4;
+				bot.robotInstruction.drive_left = 0.4;
+				bot.robotInstruction.drive_right = -0.4;
 			}
-			rbi.reset_drive = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (Math.abs(rbs.gyro - 40) < 1) {
+			bot.robotInstruction.reset_drive = true;
+		}, () -> {
+			if (Math.abs(bot.robotState.gyro - 40) < 1) {
 				return position_three_states.DriveForward;
 			}
 			return null;
-		}).addState(position_three_states.DriveForward, (RobotState rbs) -> {
-			RobotInstruction<position_three_states> rbi = new RobotInstruction<position_three_states>();
-
-			/*
-			 * if (dist < 5) { drive_speed = 0.3; } else if (dist < 30) { drive_speed = 0.6 * (dist) / 30.0; } else if (dist > 90) { drive_speed =
-			 * -1/30.0 * dist + (18/5.0); } else { drive_speed = 0.6; }
-			 */
-
-			rbi.drive_left = 0.345;
-			rbi.drive_right = 0.345;
-			rbi.reset_gyro = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 54) {
+		}).addState(position_three_states.DriveForward, () -> {
+			bot.robotInstruction.drive_left = 0.345;
+			bot.robotInstruction.drive_right = 0.345;
+			bot.robotInstruction.reset_gyro = true;
+		}, () -> {
+			if (((bot.robotState.drive_left_dist + bot.robotState.drive_left_dist) / 2.0) * 0.095 > 54) {
 				return position_three_states.TurnLeft;
 			}
 			return null;
-		}).addState(position_three_states.TurnLeft, (RobotState rbs) -> {
-			RobotInstruction<position_three_states> rbi = new RobotInstruction<position_three_states>();
-			if (Math.abs(rbs.gyro) > -40) {
-				rbi.drive_left = -0.4;
-				rbi.drive_right = 0.4;
+		}).addState(position_three_states.TurnLeft, () -> {
+			if (Math.abs(bot.robotState.gyro) > -40) {
+				bot.robotInstruction.drive_left = -0.4;
+				bot.robotInstruction.drive_right = 0.4;
 			} else {
-				rbi.drive_left = 0.4;
-				rbi.drive_right = -0.4;
+				bot.robotInstruction.drive_left = 0.4;
+				bot.robotInstruction.drive_right = -0.4;
 			}
-			rbi.reset_drive = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (Math.abs(rbs.gyro + 40) < 1) {
+			bot.robotInstruction.reset_drive = true;
+		}, () -> {
+			if (Math.abs(bot.robotState.gyro + 40) < 1) {
 				return position_three_states.DriveForwardTwo;
 			}
 			return null;
-		}).addState(position_three_states.DriveForwardTwo, (RobotState rbs) -> {
-			RobotInstruction<position_three_states> rbi = new RobotInstruction<position_three_states>();
-
-			/*
-			 * if (dist < 5) { drive_speed = 0.3; } else if (dist < 30) { drive_speed = 0.6 * (dist) / 30.0; } else if (dist > 90) { drive_speed =
-			 * -1/30.0 * dist + (18/5.0); } else { drive_speed = 0.6; }
-			 */
-
-			rbi.drive_left = 0.2;
-			rbi.drive_right = 0.2;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 111) {
+		}).addState(position_three_states.DriveForwardTwo, () -> {
+			bot.robotInstruction.drive_left = 0.2;
+			bot.robotInstruction.drive_right = 0.2;
+		}, () -> {
+			if (((bot.robotState.drive_left_dist + bot.robotState.drive_left_dist) / 2.0) * 0.095 > 111) {
 				return position_three_states.Finished;
 			}
 			return null;
-		}).addState(position_three_states.Finished, (RobotState rbs) -> {
-			RobotInstruction<position_three_states> rbi = new RobotInstruction<position_three_states>();
-			rbi.arm_high = true;
-			return rbi;
-		}, (RobotState rbs) -> {
+		}).addState(position_three_states.Finished, () -> {
+			bot.robotInstruction.arm_high = true;
+			bot.robotInstruction.fingers_open = true;
+		}, () -> {
 			return null;
 		});
 
-		position_four_sm.addState(position_four_states.TurnLeft, (RobotState rbs) -> {
-			RobotInstruction<position_four_states> rbi = new RobotInstruction<position_four_states>();
-			if (rbs.gyro > -15) {
-				rbi.drive_left = -0.4;
-				rbi.drive_right = 0.4;
+		position_four_sm.addState(position_four_states.TurnLeft, () -> {
+			if (bot.robotState.gyro > -15) {
+				bot.robotInstruction.drive_left = -0.4;
+				bot.robotInstruction.drive_right = 0.4;
 			} else {
-				rbi.drive_left = 0.4;
-				rbi.drive_right = -0.4;
+				bot.robotInstruction.drive_left = 0.4;
+				bot.robotInstruction.drive_right = -0.4;
 			}
-			rbi.reset_drive = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (Math.abs(rbs.gyro + 15) < 1) {
+			bot.robotInstruction.reset_drive = true;
+		}, () -> {
+			if (Math.abs(bot.robotState.gyro + 15) < 1) {
 				return position_four_states.DriveForward;
 			}
 			return null;
-		}).addState(position_four_states.DriveForward, (RobotState rbs) -> {
-			RobotInstruction<position_four_states> rbi = new RobotInstruction<position_four_states>();
-
-			/*
-			 * if (dist < 5) { drive_speed = 0.3; } else if (dist < 30) { drive_speed = 0.6 * (dist) / 30.0; } else if (dist > 90) { drive_speed =
-			 * -1/30.0 * dist + (18/5.0); } else { drive_speed = 0.6; }
-			 */
-
-			rbi.drive_left = 0.345;
-			rbi.drive_right = 0.345;
-			rbi.reset_gyro = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 62) {
+		}).addState(position_four_states.DriveForward, () -> {
+			bot.robotInstruction.drive_left = 0.345;
+			bot.robotInstruction.drive_right = 0.345;
+			bot.robotInstruction.reset_gyro = true;
+		}, () -> {
+			if (((bot.robotState.drive_left_dist + bot.robotState.drive_left_dist) / 2.0) * 0.095 > 62) {
 				return position_four_states.TurnRight;
 			}
 			return null;
-		}).addState(position_four_states.TurnRight, (RobotState rbs) -> {
-			RobotInstruction<position_four_states> rbi = new RobotInstruction<position_four_states>();
-			if (rbs.gyro > 15) {
-				rbi.drive_left = -0.4;
-				rbi.drive_right = 0.4;
+		}).addState(position_four_states.TurnRight, () -> {
+			if (bot.robotState.gyro > 15) {
+				bot.robotInstruction.drive_left = -0.4;
+				bot.robotInstruction.drive_right = 0.4;
 			} else {
-				rbi.drive_left = 0.4;
-				rbi.drive_right = -0.4;
+				bot.robotInstruction.drive_left = 0.4;
+				bot.robotInstruction.drive_right = -0.4;
 			}
-			rbi.reset_drive = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (Math.abs(rbs.gyro - 15) < 1) {
+			bot.robotInstruction.reset_drive = true;
+		}, () -> {
+			if (Math.abs(bot.robotState.gyro - 15) < 1) {
 				return position_four_states.DriveForwardTwo;
 			}
 			return null;
-		}).addState(position_four_states.DriveForwardTwo, (RobotState rbs) -> {
-			RobotInstruction<position_four_states> rbi = new RobotInstruction<position_four_states>();
-			/*
-			 * if (dist < 5) { drive_speed = 0.3; } else if (dist < 30) { drive_speed = 0.6 * (dist) / 30.0; } else if (dist > 90) { drive_speed =
-			 * -1/30.0 * dist + (18/5.0); } else { drive_speed = 0.6; }
-			 */
-
-			rbi.drive_left = 0.2;
-			rbi.drive_right = 0.2;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 89) {
+		}).addState(position_four_states.DriveForwardTwo, () -> {
+			bot.robotInstruction.drive_left = 0.2;
+			bot.robotInstruction.drive_right = 0.2;
+		}, () -> {
+			if (((bot.robotState.drive_left_dist + bot.robotState.drive_left_dist) / 2.0) * 0.095 > 89) {
 				return position_four_states.Finished;
 			}
 			return null;
-		}).addState(position_four_states.Finished, (RobotState rbs) -> {
-			RobotInstruction<position_four_states> rbi = new RobotInstruction<position_four_states>();
-			rbi.arm_high = true;
-			return rbi;
-		}, (RobotState rbs) -> {
+		}).addState(position_four_states.Finished, () -> {
+			bot.robotInstruction.arm_high = true;
+			bot.robotInstruction.fingers_open = true;
+		}, () -> {
 			return null;
 		});
 
-		position_five_sm.addState(position_five_states.Center, (RobotState rbs) -> {
-			RobotInstruction<position_five_states> rbi = new RobotInstruction<position_five_states>();
-			if (rbs.gyro > 0) {
-				rbi.drive_left = -0.4;
-				rbi.drive_right = 0.4;
+		position_five_sm.addState(position_five_states.Center, () -> {
+			if (bot.robotState.gyro > 0) {
+				bot.robotInstruction.drive_left = -0.4;
+				bot.robotInstruction.drive_right = 0.4;
 			} else {
-				rbi.drive_left = 0.4;
-				rbi.drive_right = -0.4;
+				bot.robotInstruction.drive_left = 0.4;
+				bot.robotInstruction.drive_right = -0.4;
 			}
-			rbi.reset_drive = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (Math.abs(rbs.gyro) < 1) {
+			bot.robotInstruction.reset_drive = true;
+		}, () -> {
+			if (Math.abs(bot.robotState.gyro) < 1) {
 				return position_five_states.DriveForward;
 			}
 			return null;
-		}).addState(position_five_states.DriveForward, (RobotState rbs) -> {
-			RobotInstruction<position_five_states> rbi = new RobotInstruction<position_five_states>();
-			/*
-			 * if (dist < 5) { drive_speed = 0.3; } else if (dist < 30) { drive_speed = 0.6 * (dist) / 30.0; } else if (dist > 90) { drive_speed =
-			 * -1/30.0 * dist + (18/5.0); } else { drive_speed = 0.6; }
-			 */
-
-			rbi.drive_left = 0.345;
-			rbi.drive_right = 0.345;
-			rbi.reset_gyro = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 120) {
+		}).addState(position_five_states.DriveForward, () -> {
+			bot.robotInstruction.drive_left = 0.345;
+			bot.robotInstruction.drive_right = 0.345;
+			bot.robotInstruction.reset_gyro = true;
+		}, () -> {
+			if (((bot.robotState.drive_left_dist + bot.robotState.drive_left_dist) / 2.0) * 0.095 > 120) {
 				return position_five_states.Turn;
 			}
 			return null;
-		}).addState(position_five_states.Turn, (RobotState rbs) -> {
-			RobotInstruction<position_five_states> rbi = new RobotInstruction<position_five_states>();
-			if (rbs.gyro > -55) {
-				rbi.drive_left = -0.4;
-				rbi.drive_right = 0.4;
+		}).addState(position_five_states.Turn, () -> {
+			if (bot.robotState.gyro > -55) {
+				bot.robotInstruction.drive_left = -0.4;
+				bot.robotInstruction.drive_right = 0.4;
 			} else {
-				rbi.drive_left = 0.4;
-				rbi.drive_right = -0.4;
+				bot.robotInstruction.drive_left = 0.4;
+				bot.robotInstruction.drive_right = -0.4;
 			}
-			rbi.reset_drive = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (Math.abs(rbs.gyro + 50) < 1) {
+			bot.robotInstruction.reset_drive = true;
+		}, () -> {
+			if (Math.abs(bot.robotState.gyro + 50) < 1) {
 				return position_five_states.DriveForwardTwo;
 			}
 			return null;
-		}).addState(position_five_states.DriveForwardTwo, (RobotState rbs) -> {
-			RobotInstruction<position_five_states> rbi = new RobotInstruction<position_five_states>();
-
-			/*
-			 * if (dist < 5) { drive_speed = 0.3; } else if (dist < 30) { drive_speed = 0.6 * (dist) / 30.0; } else if (dist > 90) { drive_speed =
-			 * -1/30.0 * dist + (18/5.0); } else { drive_speed = 0.6; }
-			 */
-
-			rbi.drive_left = 0.2;
-			rbi.drive_right = 0.2;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 58) {
+		}).addState(position_five_states.DriveForwardTwo, () -> {
+			bot.robotInstruction.drive_left = 0.2;
+			bot.robotInstruction.drive_right = 0.2;
+		}, () -> {
+			if (((bot.robotState.drive_left_dist + bot.robotState.drive_left_dist) / 2.0) * 0.095 > 58) {
 				return position_five_states.Finished;
 			}
 			return null;
-		}).addState(position_five_states.Finished, (RobotState rbs) -> {
-			RobotInstruction<position_five_states> rbi = new RobotInstruction<position_five_states>();
-			rbi.arm_high = true;
-			return rbi;
-		}, (RobotState rbs) -> {
+		}).addState(position_five_states.Finished, () -> {
+			bot.robotInstruction.arm_high = true;
+			bot.robotInstruction.fingers_open = true;
+		}, () -> {
 			return null;
 		});
 
 		// FIXME
-		portcullis_sm.addState(portcullis_states.Accelerate, (RobotState rbs) -> {
-			RobotInstruction<portcullis_states> rbi = new RobotInstruction<portcullis_states>();
-			// rbi.reset_defense = true; not needed if lowering defense at same time
-			rbi.intake_down = true;
-			rbi.defense_down = true;
-			rbi.arm_auto = true;
-			rbi.drive_left = 0.345;
-			rbi.drive_right = 0.345;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (rbs.arm_aligned_auto && rbs.manip_encoder / 10.0 > 0.25) {
+		portcullis_sm.addState(portcullis_states.Accelerate, () -> {
+			// bot.robotInstruction.reset_defense = true; not needed if lowering defense at same time
+			bot.robotInstruction.intake_down = true;
+			bot.robotInstruction.defense_down = true;
+			bot.robotInstruction.arm_auto = true;
+			bot.robotInstruction.drive_left = 0.345;
+			bot.robotInstruction.drive_right = 0.345;
+		}, () -> {
+			if (bot.robotState.arm_aligned_auto && bot.robotState.manip_encoder / 10.0 > 0.25) {
 				// FIXME: counts per rotation
 				return portcullis_states.ContinueDrive;
 			}
-			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 21) {
+			if (((bot.robotState.drive_left_dist + bot.robotState.drive_left_dist) / 2.0) * 0.095 > 21) {
 				return portcullis_states.ContinueArmDefense;
 			}
 			return null;
-		}).addState(portcullis_states.ContinueArmDefense, (RobotState rbs) -> {
-			RobotInstruction<portcullis_states> rbi = new RobotInstruction<portcullis_states>();
-			rbi.defense_down = true;
-			rbi.arm_auto = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (rbs.arm_aligned_auto && rbs.manip_encoder / 10.0 > 0.25) {
+		}).addState(portcullis_states.ContinueArmDefense, () -> {
+			bot.robotInstruction.defense_down = true;
+			bot.robotInstruction.arm_auto = true;
+		}, () -> {
+			if (bot.robotState.arm_aligned_auto && bot.robotState.manip_encoder / 10.0 > 0.25) {
 				// FIXME: counts per rotation
 				return portcullis_states.ArmLow;
 			}
 			return null;
-		}).addState(portcullis_states.ContinueDrive, (RobotState rbs) -> {
-			RobotInstruction<portcullis_states> rbi = new RobotInstruction<portcullis_states>();
-			rbi.drive_left = 0.345;
-			rbi.drive_right = 0.345;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 21) {
+		}).addState(portcullis_states.ContinueDrive, () -> {
+			bot.robotInstruction.drive_left = 0.345;
+			bot.robotInstruction.drive_right = 0.345;
+		}, () -> {
+			if (((bot.robotState.drive_left_dist + bot.robotState.drive_left_dist) / 2.0) * 0.095 > 21) {
 				return portcullis_states.ArmLow;
 			}
 			return null;
-		}).addState(portcullis_states.ArmLow, (RobotState rbs) -> {
-			RobotInstruction<portcullis_states> rbi = new RobotInstruction<portcullis_states>();
-			rbi.arm_low = true;
-			rbi.drive_left = .345;
-			rbi.drive_right = .345;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 55) {
+		}).addState(portcullis_states.ArmLow, () -> {
+			bot.robotInstruction.arm_low = true;
+			bot.robotInstruction.drive_left = .345;
+			bot.robotInstruction.drive_right = .345;
+		}, () -> {
+			if (((bot.robotState.drive_left_dist + bot.robotState.drive_left_dist) / 2.0) * 0.095 > 55) {
 				return portcullis_states.Finished;
 			} else
 				return null;
-		}).addState(portcullis_states.Finished, (RobotState rbs) -> {
-			return new RobotInstruction<portcullis_states>();
-		}, (RobotState rbs) -> {
+		}).addState(portcullis_states.Finished, () -> {
 			return null;
 		});
 
-		sally_port_sm.addState(sally_port_states.Accelerate, (RobotState rbs) -> {
-			RobotInstruction<sally_port_states> rbi = new RobotInstruction<sally_port_states>();
-			rbi.drive_left = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
-			rbi.drive_right = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 1000)
+		sally_port_sm.addState(sally_port_states.Accelerate, () -> {
+			bot.robotInstruction.drive_left = 0.5 * ((System.currentTimeMillis() - bot.robotState.start_time) / 1000.0);
+			bot.robotInstruction.drive_right = 0.5 * ((System.currentTimeMillis() - bot.robotState.start_time) / 1000.0);
+		}, () -> {
+			if (Math.abs(System.currentTimeMillis() - bot.robotState.start_time) > 1000)
 				return sally_port_states.Finished;
 			else
 				return null;
-		}).addState(sally_port_states.Finished, (RobotState rbs) -> {
-			RobotInstruction<sally_port_states> rbi = new RobotInstruction<sally_port_states>();
-			return rbi;
-		}, (RobotState rbs) -> {
+		}).addState(sally_port_states.Finished, () -> {
 			return null;
 		});
 
-		drawbridge_sm.addState(drawbridge_states.Accelerate, (RobotState rbs) -> {
-			RobotInstruction<drawbridge_states> rbi = new RobotInstruction<drawbridge_states>();
-			rbi.drive_left = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
-			rbi.drive_right = 0.5 * ((System.currentTimeMillis() - rbs.start_time) / 1000.0);
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (Math.abs(System.currentTimeMillis() - rbs.start_time) > 1000)
+		drawbridge_sm.addState(drawbridge_states.Accelerate, () -> {
+			bot.robotInstruction.drive_left = 0.5 * ((System.currentTimeMillis() - bot.robotState.start_time) / 1000.0);
+			bot.robotInstruction.drive_right = 0.5 * ((System.currentTimeMillis() - bot.robotState.start_time) / 1000.0);
+		}, () -> {
+			if (Math.abs(System.currentTimeMillis() - bot.robotState.start_time) > 1000)
 				return drawbridge_states.Finished;
 			else
 				return null;
-		}).addState(drawbridge_states.Finished, (RobotState rbs) -> {
-			return new RobotInstruction<drawbridge_states>();
-		}, (RobotState rbs) -> {
+		}).addState(drawbridge_states.Finished, () -> {
 			return null;
 		});
 
-		cheval_sm.addState(cheval_states.DriveToCheval, (RobotState rbs) -> {
-			RobotInstruction<cheval_states> rbi = new RobotInstruction<cheval_states>();
-			rbi.drive_left = 0.5;
-			rbi.drive_right = 0.5;
-			rbi.arm_middle = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (((rbs.drive_left_dist + rbs.drive_left_dist) / 2.0) * 0.095 > 21) {
+		cheval_sm.addState(cheval_states.DriveToCheval, () -> {
+			bot.robotInstruction.drive_left = 0.4;
+			bot.robotInstruction.drive_right = 0.4;
+		}, () -> {
+			// TODO: Fix distance
+			if (((bot.robotState.drive_left_dist + bot.robotState.drive_left_dist) / 2.0) * 0.095 > 21) {
 				return cheval_states.DropIntake;
 			} else
 				return null;
-		}).addState(cheval_states.DropIntake, (RobotState rbs) -> {
-			RobotInstruction<cheval_states> rbi = new RobotInstruction<cheval_states>();
-			rbi.intake_down = true;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (rbs.intake_down && rbs.arm_aligned_middle) {
-				return cheval_states.DriveAcrossCheval;
+		}).addState(cheval_states.DropIntake, () -> {
+			bot.robotInstruction.intake_down = true;
+		}, () -> {
+			if (bot.robotState.intake_down) {
+				return cheval_states.DropArmToCheval;
 			} else
 				return null;
-		}).addState(cheval_states.DriveAcrossCheval, (RobotState rbs) -> {
-			RobotInstruction<cheval_states> rbi = new RobotInstruction<cheval_states>();
-			rbi.drive_left = 0.3;
-			rbi.drive_right = 0.3;
-			return rbi;
-		}, (RobotState rbs) -> {
-			if (System.currentTimeMillis() - rbs.start_time > 5000) return cheval_states.Finished;
+		}).addState(cheval_states.DropArmToCheval, () -> {
+			bot.robotInstruction.arm_cheval = true;
+		}, () -> {
+			if (bot.robotState.arm_aligned_cheval)
+				return cheval_states.DriveAcrossCheval;
+			else
+				return null;
+		}).addState(cheval_states.DriveAcrossCheval, () -> {
+			bot.robotInstruction.drive_left = 0.3;
+			bot.robotInstruction.drive_right = 0.3;
+		}, () -> {
+			if (System.currentTimeMillis() - bot.robotState.start_time > 3000)
+				return cheval_states.Finished;
 			return null;
-		}).addState(cheval_states.Finished, (RobotState rbs) -> {
-			RobotInstruction<cheval_states> rbi = new RobotInstruction<cheval_states>();
-			return rbi;
-		}, (RobotState rbs) -> {
+		}).addState(cheval_states.Finished, () -> {
 			return null;
 		});
 	}
@@ -800,10 +646,12 @@ public class Robot extends IterativeRobot {
 			shoot_sm.setState(shoot_states.WaitToShoot);
 		}
 		if (shoot_sm.getState().equals(shoot_states.PointAtGoal)) {
-			bot.run(shoot_sm.process(bot.getCameraState()), input);
+			bot.getCameraState();
 		} else {
-			bot.run(shoot_sm.process(bot.getState(input.getShoot(), input.getResetShot())), input);
+			bot.getState(input.getShoot(), input.getResetShot());
 		}
+		shoot_sm.process();
+		bot.run(input);
 		SmartDashboard.putNumber("Delay", System.currentTimeMillis() - last);
 		last = System.currentTimeMillis();
 	}
@@ -874,76 +722,81 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void autonomousPeriodic() {
+		bot.getAutoState();
 		if (start_mode.equals(do_nothing)) {
-			bot.run(new RobotInstruction()); // Do nothing
+			// Do nothing
 		} else if (start_mode.equals(approach_defenses)) {
-			bot.run(approach_sm.process(bot.getState())); // approach_sm batter
+			approach_sm.process(); // approach the batter
 		} else if (start_mode.equals(cross_defenses)) {
 			if (!over_defenses) {
 				if (defense.equals(do_nothing)) {
-					bot.run(new RobotInstruction()); // Do nothing
+					// Do nothing
 				} else if (defense.equals(cross_terrain)) {
-					bot.run(cross_terrain_sm.process(bot.getState()));
+					cross_terrain_sm.process();
 					if (cross_terrain_sm.getState().equals(cross_terrain_states.Finished))
 						over_defenses = true;
 				} else if (defense.equals(cheval)) {
-					bot.run(cheval_sm.process(bot.getState()));
+					cheval_sm.process();
 					if (cheval_sm.getState().equals(cheval_states.Finished))
 						over_defenses = true;
 				} else if (defense.equals(low_bar)) {
-					bot.run(low_bar_sm.process(bot.getState()));
+					low_bar_sm.process();
 					if (low_bar_sm.equals(low_bar_states.Finished))
 						over_defenses = true;
 				} else if (defense.equals(drawbridge)) {
-					bot.run(drawbridge_sm.process(bot.getState()));
+					drawbridge_sm.process();
 					if (drawbridge_sm.getState().equals(drawbridge_states.Finished))
 						over_defenses = true;
 				} else if (defense.equals(portcullis)) {
-					bot.run(portcullis_sm.process(bot.getState()));
+					portcullis_sm.process();
 					if (portcullis_sm.getState().equals(portcullis_states.Finished))
 						over_defenses = true;
 				} else if (defense.equals(sally_port)) {
-					bot.run(sally_port_sm.process(bot.getState()));
+					sally_port_sm.process();
 					if (sally_port_sm.getState().equals(sally_port_states.Finished))
 						over_defenses = true;
 				} else {
 					System.err.println("Unknown Crossing Auto Mode");
-					bot.run(new RobotInstruction()); // do nothing
+					// do nothing
 				}
 			} else if (!ready_to_shoot) { // crossing state machine has finished, not ready to shoot
 				if (position.equals(position_one)) {
 					if (low_bar_sm.getState().equals(low_bar_states.Finished))
 						ready_to_shoot = false;
 				} else if (position.equals(position_two)) {
-					bot.run(position_two_sm.process(bot.getState()));
+					position_two_sm.process();
 					if (position_two_sm.getState().equals(position_two_states.Finished))
 						ready_to_shoot = false;
 				} else if (position.equals(position_three)) {
-					bot.run(position_three_sm.process(bot.getState()));
+					position_three_sm.process();
 					if (position_three_sm.getState().equals(position_three_states.Finished))
 						ready_to_shoot = false;
 				} else if (position.equals(position_four)) {
-					bot.run(position_four_sm.process(bot.getState()));
+					position_four_sm.process();
 					if (position_four_sm.getState().equals(position_four_states.Finished))
 						ready_to_shoot = false;
 				} else if (position.equals(position_five)) {
-					bot.run(position_five_sm.process(bot.getState()));
+					position_five_sm.process();
 					if (position_five_sm.getState().equals(position_five_states.Finished))
 						ready_to_shoot = false;
 				} else if (position.equals(do_nothing)) {
-					bot.run(new RobotInstruction()); // Do nothing after crossing
+					// Do nothing after crossing
 				} else {
 					System.err.println("Unknown Posistion Auto Mode");
-					bot.run(new RobotInstruction()); // Do nothing
+					// Do nothing
 				}
 			} else if (ready_to_shoot) {
-				bot.run(shoot_sm.process(bot.getCameraState())); // Shoot then stop (should proceed to wait to shoot state after shooting)
+				if(shoot_sm.getState().equals(shoot_states.PointAtGoal)) {
+					bot.getCameraState();
+				}
+				shoot_sm.process(); // Shoot then stop (should proceed to wait to shoot state after shooting)
 			} else {
-				bot.run(new RobotInstruction()); // Do nothing (if finished with crossing and position and done shooting)
+				// Do nothing (if finished with crossing and position and done shooting)
 			}
 		} else {
-			System.err.println("Unknown Auto Mode");
-			bot.run(new RobotInstruction()); // Do nothing
+			// Do nothing, no mode was selected/some sort of error occured
+			System.err.println("Mode not selected");
 		}
+		bot.run();
 	}
 }

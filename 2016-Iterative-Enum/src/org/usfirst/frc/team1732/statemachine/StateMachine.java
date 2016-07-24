@@ -1,7 +1,7 @@
 package org.usfirst.frc.team1732.statemachine;
 
 import java.util.ArrayList;
-
+import org.usfirst.frc.team1732.robot.Robot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class StateMachine<T> {
@@ -20,13 +20,18 @@ public class StateMachine<T> {
 		return current_state;
 	}
 	
-	public StateMachine<T> addState(T state, Act<T> act, End<T> finish) {
+	public StateMachine<T> addState(T state, End<T> finish) {
+		states.add(new State<T>(state, ()->{}, finish));
+		return this;
+	}
+	
+	public StateMachine<T> addState(T state, Act act, End<T> finish) {
 		states.add(new State<T>(state, act, finish));
 		return this;
 	}
 	
-	public RobotInstruction<T> process(RobotState rbs) {
-		rbs.start_time = start;
+	public void process() {
+		Robot.bot.robotState.start_time = start;
 		
 		int state_index = -1;
 		
@@ -37,24 +42,15 @@ public class StateMachine<T> {
 			}
 		}
 		
-		// Should never happen hopefully now that there are enums
-		if (state_index == -1) {
-			if(!isAuto) SmartDashboard.putString("State", "State not found: " + current_state.toString());
-			else SmartDashboard.putString("Auto State", "State not found: " + current_state.toString());
-			return new RobotInstruction<T>();
-		}
+		T next = states.get(state_index).process();
 		
-		RobotInstruction<T> out = states.get(state_index).process(rbs);
-		
-		if (!out.next.equals(current_state)) {
-			current_state = out.next;
-			
+		if (!next.equals(current_state)) {
+			current_state = next;
 			start = System.currentTimeMillis();
 		}
 		
 		if(!isAuto) SmartDashboard.putString("State", current_state.toString());
 		else SmartDashboard.putString("Auto State", current_state.toString());
-		return out;
 	}
 	
 	public void setAuto(boolean b) {

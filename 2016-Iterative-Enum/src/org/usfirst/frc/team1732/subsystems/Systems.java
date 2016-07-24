@@ -13,189 +13,153 @@ import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Systems {
-	Drive drive = new Drive();
-	Intake intake = new Intake();
-	Arm arm = new Arm();
-	Catapult catapult = new Catapult();
-	Fingers fingers = new Fingers();
-	DefenseManipulator defense_manipulator = new DefenseManipulator();
-	//Camera camera = new Camera();
-	AnalogInput pressure = new AnalogInput(3); //on practice bot 3 is used for arm pot
+	private Drive drive = new Drive();
+	private Intake intake = new Intake();
+	private Arm arm = new Arm();
+	private Catapult catapult = new Catapult();
+	private Fingers fingers = new Fingers();
+	private DefenseManipulator defense_manipulator = new DefenseManipulator();
+	// private Camera camera = new Camera();
+	private AnalogInput pressure = new AnalogInput(3); // on practice bot 3 is used for arm pot
+	private Gyro gyro = new AnalogGyro(1);
+	public RobotState robotState = new RobotState();
+	public RobotInstruction robotInstruction = new RobotInstruction();
 
 	boolean test_mode_started = false;
 
-	//AnalogInput pressure = new AnalogInput(3);
-
-	Gyro gyro = new AnalogGyro(1);
-	
-	public void resetDefense() {
+	private void resetDefense() {
 		defense_manipulator.reset();
 	}
 
-	public void resetGyro() {
+	private void resetGyro() {
 		gyro.reset();
 	}
 
-	public void resetDriveEncoders() {
+	private void resetDriveEncoders() {
 		drive.reset();
 	}
 
-	public RobotState getState() {
-		return getState(false, false);
+	public void getCameraState() {
+		robotState.angle_to_goal = 0.5; // camera.getAngle();
+		robotState.camera_exists = false; // camera.camera_exists;
 	}
 
-	public RobotState getCameraState() {
-		RobotState rbs = new RobotState();
-		
-		rbs.shoot = false;
-		
-		rbs.angle_to_goal = 0.5;//camera.getAngle();
-		rbs.camera_exists = false; //camera.camera_exists;
-		
-		rbs.manip_encoder = defense_manipulator.getValue();
+	public void getAutoState() {
+		getState(false, false);
+	}
+
+	public void getState(boolean shoot, boolean reset_catapult) {
+		// reset the state and instructions
+		robotState = new RobotState();
+		robotInstruction = new RobotInstruction();
+
+		robotState.shoot = shoot;
+		robotState.reset_catapult = reset_catapult;
+
+		robotState.camera_exists = false; // camera.camera_exists;
+		robotState.distance_to_goal = 0; // camera.getDistance();
+
+		robotState.manip_encoder = defense_manipulator.getValue();
 		SmartDashboard.putNumber("Manip_encoder", defense_manipulator.getValue());
-		
+
 		SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
 
-		rbs.arm_aligned_high = arm.inDeadbandHigh();
-		rbs.arm_aligned_middle = arm.inDeadbandMiddle();
-		rbs.arm_aligned_low = arm.inDeadbandLow();
-		rbs.arm_aligned_cheval = arm.inDeadbandCheval();
-		rbs.arm_aligned_auto = arm.inDeadbandAuto();
+		robotState.arm_aligned_high = arm.inDeadbandHigh();
+		robotState.arm_aligned_middle = arm.inDeadbandMiddle();
+		robotState.arm_aligned_low = arm.inDeadbandLow();
+		robotState.arm_aligned_auto = arm.inDeadbandAuto();
+		robotState.arm_aligned_cheval = arm.inDeadbandCheval();
 
 		SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
-		rbs.gyro = gyro.getAngle();
+		robotState.gyro = gyro.getAngle();
 
-		rbs.shoot_mode_far = catapult.isFar();
-		rbs.shoot_mode_close = catapult.isClose();
-		rbs.shoot_mode_auto = catapult.isAuto();
-		
-		rbs.catapult_aligned_out = catapult.inDeadbandOut();
-		rbs.catapult_aligned_load = catapult.inDeadbandLoad();
-		rbs.catapult_aligned_shoot = catapult.inDeadbandShoot();
+		robotState.shoot_mode_far = catapult.isFar();
+		robotState.shoot_mode_close = catapult.isClose();
+		robotState.shoot_mode_auto = catapult.isAuto();
 
-		rbs.intake_down = intake.isDown();
-		rbs.intake_up = intake.isUp();
+		robotState.catapult_aligned_out = catapult.inDeadbandOut();
+		robotState.catapult_aligned_load = catapult.inDeadbandLoad();
+		robotState.catapult_aligned_shoot = catapult.inDeadbandShoot();
 
-		rbs.drive_left_dist = drive.getLeft();
-		rbs.drive_right_dist = drive.getRight();
+		robotState.intake_down = intake.isDown();
+		robotState.intake_up = intake.isUp();
 
-		rbs.fingers_open = fingers.isOpen();
-		rbs.fingers_closed = fingers.isClosed();
-		return rbs;
+		robotState.drive_left_dist = drive.getLeft();
+		robotState.drive_right_dist = drive.getRight();
+
+		robotState.fingers_open = fingers.isOpen();
+		robotState.fingers_closed = fingers.isClosed();
 	}
 
-	public RobotState getState(boolean shoot, boolean reset_catapult) {
-		RobotState rbs = new RobotState();
+	public void run() {
+		drive.drive(-1 * robotInstruction.drive_left, -1 * robotInstruction.drive_right);
 
-		rbs.shoot = shoot;
-		rbs.reset_catapult = reset_catapult;
-		
-		rbs.camera_exists = false; //camera.camera_exists;
-		rbs.distance_to_goal = 0; //camera.getDistance();
-		
-		rbs.manip_encoder = defense_manipulator.getValue();
-		SmartDashboard.putNumber("Manip_encoder", defense_manipulator.getValue());
-		
-		SmartDashboard.putNumber("Pressure", pressure.getValue() / 24.0);
-
-		rbs.arm_aligned_high = arm.inDeadbandHigh();
-		rbs.arm_aligned_middle = arm.inDeadbandMiddle();
-		rbs.arm_aligned_low = arm.inDeadbandLow();
-		rbs.arm_aligned_auto = arm.inDeadbandAuto();
-		rbs.arm_aligned_cheval = arm.inDeadbandCheval();
-
-		SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
-		rbs.gyro = gyro.getAngle();
-
-		rbs.shoot_mode_far = catapult.isFar();
-		rbs.shoot_mode_close = catapult.isClose();
-		rbs.shoot_mode_auto = catapult.isAuto();
-		
-		rbs.catapult_aligned_out = catapult.inDeadbandOut();
-		rbs.catapult_aligned_load = catapult.inDeadbandLoad();
-		rbs.catapult_aligned_shoot = catapult.inDeadbandShoot();
-
-		rbs.intake_down = intake.isDown();
-		rbs.intake_up = intake.isUp();
-
-		rbs.drive_left_dist = drive.getLeft();
-		rbs.drive_right_dist = drive.getRight();
-
-		rbs.fingers_open = fingers.isOpen();
-		rbs.fingers_closed = fingers.isClosed();
-		return rbs;
-	}
-
-	public void run(RobotInstruction rbi) {
-		drive.drive(-1 * rbi.drive_left, -1 * rbi.drive_right);
-
-		if (rbi.reset_defense) {
+		if (robotInstruction.reset_defense) {
 			defense_manipulator.reset();
 		}
-		if (rbi.arm_auto) {
+		if (robotInstruction.arm_auto) {
 			arm.setAuto();
 		}
-		if (rbi.reset_drive) {
+		if (robotInstruction.reset_drive) {
 			drive.reset();
 		}
 
-		if (rbi.reset_gyro) {
+		if (robotInstruction.reset_gyro) {
 			resetGyro();
 		}
 
-		if (rbi.catapult_shoot) {
-			catapult.setAuto(rbi.catapult_auto_pos);
+		if (robotInstruction.catapult_shoot) {
+			catapult.setAuto(robotInstruction.catapult_auto_pos);
 			catapult.setShoot();
-		} else if (rbi.catapult_out) {
+		} else if (robotInstruction.catapult_out) {
 			catapult.setOut();
-		} else if (rbi.catapult_load) {
+		} else if (robotInstruction.catapult_load) {
 			catapult.setLoad();
 		} else {
 			catapult.run();
 		}
 
-		if (rbi.catapult_latch) {
+		if (robotInstruction.catapult_latch) {
 			catapult.latch();
-		} else if (rbi.catapult_release) {
+		} else if (robotInstruction.catapult_release) {
 			catapult.release();
 		}
 
-		if (rbi.arm_high) {
+		if (robotInstruction.arm_high) {
 			arm.setHigh();
-		} else if (rbi.arm_middle) {
+		} else if (robotInstruction.arm_middle) {
 			arm.setMiddle();
-		} else if (rbi.arm_low) {
+		} else if (robotInstruction.arm_low) {
 			arm.setLow();
-		} else if (rbi.arm_cheval) {
+		} else if (robotInstruction.arm_cheval) {
 			arm.setCheval();
 		} else {
 			arm.run();
 		}
 
-		if (rbi.fingers_open) {
+		if (robotInstruction.fingers_open) {
 			fingers.open();
-		} else if (rbi.fingers_close) {
+		} else if (robotInstruction.fingers_close) {
 			fingers.close();
 		}
 
-		if (rbi.intake_up) {
+		if (robotInstruction.intake_up) {
 			intake.setUp();
-		} else if (rbi.intake_down) {
+		} else if (robotInstruction.intake_down) {
 			intake.setDown();
 		}
 
-		if (rbi.intake_in) {
+		if (robotInstruction.intake_in) {
 			intake.setIn();
-		} else if (rbi.intake_out) {
+		} else if (robotInstruction.intake_out) {
 			intake.setOut();
 		} else {
 			intake.setStop();
 		}
 
-		if (rbi.defense_up) {
+		if (robotInstruction.defense_up) {
 			defense_manipulator.down();
-		} else if (rbi.defense_down) {
+		} else if (robotInstruction.defense_down) {
 			defense_manipulator.up();
 		} else {
 			defense_manipulator.stop();
@@ -203,31 +167,33 @@ public class Systems {
 
 	}
 
-	public void run(RobotInstruction rbi, Input io) {
-		
-		if(!rbi.drive_auto) drive.drive(io.getLeftVert(), io.getRightVert());
-		else drive.drive(rbi.drive_left, rbi.drive_right);
+	public void run(Input io) {
+
+		if (!robotInstruction.drive_auto)
+			drive.drive(io.getLeftVert(), io.getRightVert());
+		else
+			drive.drive(robotInstruction.drive_left, robotInstruction.drive_right);
 		if (io.getSetShootClose()) {
 			catapult.setClose();
 		} else if (io.getSetShootFar()) {
 			catapult.setFar();
 		} else if (io.getSetShootAuto()) {
-			catapult.setAuto(rbi.catapult_auto_pos);
+			catapult.setAuto(robotInstruction.catapult_auto_pos);
 		}
-		
-		if (rbi.catapult_shoot) {
+
+		if (robotInstruction.catapult_shoot) {
 			catapult.setShoot();
-		} else if (rbi.catapult_out) {
+		} else if (robotInstruction.catapult_out) {
 			catapult.setOut();
-		} else if (rbi.catapult_load) {
+		} else if (robotInstruction.catapult_load) {
 			catapult.setLoad();
 		} else {
 			catapult.run();
 		}
 
-		if (rbi.catapult_latch) {
+		if (robotInstruction.catapult_latch) {
 			catapult.latch();
-		} else if (rbi.catapult_release) {
+		} else if (robotInstruction.catapult_release) {
 			catapult.release();
 		}
 
@@ -237,36 +203,30 @@ public class Systems {
 		} else if (io.getArmLow() && fingers.isClosed()) {
 			arm.setLow();// low
 			/*
-			 * if (arm.isLow()) { arm.run(); } else { if
-			 * (catapult.inDeadbandLoad() /*&& intake.isDown()
+			 * if (arm.isLow()) { arm.run(); } else { if (catapult.inDeadbandLoad() /*&& intake.isDown()
 			 *//*
-				 * ) { rbi.fingers_close = true; arm.setLow(); } else {
-				 * arm.run(); } }
+				 * ) { robotInstruction.fingers_close = true; arm.setLow(); } else { arm.run(); } }
 				 */
 		} else if (io.getArmMiddle() && fingers.isClosed()) {
 			arm.setMiddle(); // middle
 			/*
-			 * if (arm.isLow()) { if (catapult.inDeadbandLoad() /*&&
-			 * intake.isDown()
+			 * if (arm.isLow()) { if (catapult.inDeadbandLoad() /*&& intake.isDown()
 			 *//*
-				 * ) { rbi.fingers_close = true; arm.setMiddle(); } else {
-				 * arm.run(); } } else if (arm.isMiddle()) { arm.run(); } else {
+				 * ) { robotInstruction.fingers_close = true; arm.setMiddle(); } else { arm.run(); } } else if (arm.isMiddle()) { arm.run(); } else {
 				 * 
 				 * arm.setMiddle(); // }
 				 */
 		} else if (io.getArmHigh() && fingers.isClosed()) {
 			arm.setHigh(); // high
 			/*
-			 * if (arm.isLow()) { if (catapult.inDeadbandLoad() /*&&
-			 * intake.isDown()*) { rbi.fingers_close = true; arm.setHigh(); }
-			 * else { arm.run(); } } else { arm.setHigh(); }
+			 * if (arm.isLow()) { if (catapult.inDeadbandLoad() /*&& intake.isDown()*) { robotInstruction.fingers_close = true; arm.setHigh(); } else
+			 * { arm.run(); } } else { arm.setHigh(); }
 			 */
 		} else {
 			arm.run();
 		} /*
-			 * else { // run } if (arm.isAuto()) { arm.run(); } else {
-			 * arm.stop(); } } /*} else if (io.getArmUp()) { arm.setUp(); } else
-			 * if (io.getArmDown()) { arm.setDown();
+			 * else { // run } if (arm.isAuto()) { arm.run(); } else { arm.stop(); } } /*} else if (io.getArmUp()) { arm.setUp(); } else if
+			 * (io.getArmDown()) { arm.setDown();
 			 * 
 			 * } else { System.err.println("Unknown Arm State"); }
 			 */
@@ -274,7 +234,7 @@ public class Systems {
 
 		if (io.getFingersOpen()) {
 			fingers.open();
-			if(io.getTriggers() && arm.inDeadbandLow() && intake.isDown()) {
+			if (io.getTriggers() && arm.inDeadbandLow() && intake.isDown()) {
 				intake.setIn();
 				driverIntake = true;
 			}
@@ -283,10 +243,10 @@ public class Systems {
 		}
 
 		// if (io.getIntakeNot()) {
-		// if (rbi.intake_up && (arm.inDeadbandHigh() ||
+		// if (robotInstruction.intake_up && (arm.inDeadbandHigh() ||
 		// arm.inDeadbandMiddle())) {
 		// intake.setUp();
-		// } else if (rbi.intake_down) {
+		// } else if (robotInstruction.intake_down) {
 		// intake.setDown();
 		// }
 		// } else { // default case
@@ -302,7 +262,7 @@ public class Systems {
 			intake.setIn();
 		} else if (io.getIntakeOut() && !driverIntake) {
 			intake.setOut();
-		} else if (!driverIntake){
+		} else if (!driverIntake) {
 			intake.setStop();
 		}
 
@@ -317,11 +277,10 @@ public class Systems {
 
 	public void test_mode(Input io) {
 		/*
-		 * In testing mode: wheel motors controlled by y-axis on sticks catapult
-		 * latch is controlled by left stick button six capapult actuator is
+		 * In testing mode: wheel motors controlled by y-axis on sticks catapult latch is controlled by left stick button six capapult actuator is
 		 * controlled by left stick buttons four (positive) and three (negative)
 		 */
-		
+
 		if (!test_mode_started) {
 			System.out.println("Test Mode Started");
 			test_mode_started = true;
@@ -381,23 +340,22 @@ public class Systems {
 		SmartDashboard.putNumber("Encoder Right Disabled", drive.getRight());
 		SmartDashboard.putNumber("Gyro Angle Disabled", gyro.getAngle());
 		SmartDashboard.putNumber("Pressure", pressure.getValue() / 12.0);
-		//camera.getAngle();
+		// camera.getAngle();
 	}
 
-	/*public void stopCamera() {
-		camera.stopCamera();
-	}
-	
-	public void startCamera() {
-		//camera.startCamera();
-	}*/
-	
+	/*
+	 * public void stopCamera() { camera.stopCamera(); }
+	 * 
+	 * public void startCamera() { //camera.startCamera(); }
+	 */
+
 	public void prepareAuto() {
-		drive.reset();
-		defense_manipulator.reset();
-		//catapult.setAuto(270);
+		resetDriveEncoders();
+		resetDefense();
+		resetGyro();
+		// catapult.setAuto(270);
 		catapult.setClose();
-		//camera.openCamera();
-		//camera.startCapture();
+		// camera.openCamera();
+		// camera.startCapture();
 	}
 }
