@@ -2,9 +2,6 @@
 package org.usfirst.frc.team1732.robot;
 
 import org.usfirst.frc.team1732.io.Input;
-import org.usfirst.frc.team1732.statemachine.RobotInstruction;
-import org.usfirst.frc.team1732.statemachine.RobotState;
-import org.usfirst.frc.team1732.statemachine.State;
 import org.usfirst.frc.team1732.statemachine.StateMachine;
 import org.usfirst.frc.team1732.subsystems.Systems;
 
@@ -786,7 +783,7 @@ public class Robot extends IterativeRobot {
 					// Do nothing
 				}
 			} else if (ready_to_shoot) {
-				if(shoot_sm.getState().equals(shoot_states.PointAtGoal)) {
+				if (shoot_sm.getState().equals(shoot_states.PointAtGoal)) {
 					bot.getCameraState();
 				}
 				shoot_sm.process(); // Shoot then stop (should proceed to wait to shoot state after shooting)

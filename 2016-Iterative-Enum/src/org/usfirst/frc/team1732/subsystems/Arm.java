@@ -24,9 +24,6 @@ public class Arm {
 	//private int dir = 0;
 
 	private static final int RADIUS = 50;
-	private static final double UP_SPEED = 0.4;
-	private static final double DOWN_SPEED = -0.4;
-	private static final double STOP = 0;
 
 	private static int Low = (735); // 640 = practice, 735 = competition
 	private static int Cheval = (950);
