@@ -3,7 +3,7 @@
 
 The 2016-Iterative project is the code on the robot
 
-The 2016-Iterative project is the code that uses enums rather than strings to identify states in the state machine, amoung other things
+The 2016-IterativeEnum project is the code that uses enums rather than strings to identify states in the state machine, amoung other things
 
 The 2016-IterativeBroken project is code that broke at worlds and we haven't tried to figure out why
 
