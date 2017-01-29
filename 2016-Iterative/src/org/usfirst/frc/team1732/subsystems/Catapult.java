@@ -1,35 +1,38 @@
 package org.usfirst.frc.team1732.subsystems;
 
+import com.ctre.CANTalon;
+
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Catapult {
-	private Solenoid latch = new Solenoid(2, 1);
-	private CANTalon motor = new CANTalon(18);
-	private AnalogInput pot = new AnalogInput(0);
+	private Solenoid	latch	= new Solenoid(2, 1);
+	private CANTalon	motor	= new CANTalon(18);
+	private AnalogInput	pot		= new AnalogInput(0);
 
-	private static int Load = 250;
-	private static int Auto = 270;
-	private static int Far = 700; // 500 practice, 460 competition old, 720
-	private static int Close = 900; // 650 practice, 1150 competition old, 1150 competition new
-	private static int Out = 2020; // 2000 is competition, 1750 is practice
-	private static int Shoot = 500;
+	private static int	Load	= 250;
+	private static int	Auto	= 270;
+	private static int	Far		= 700;	// 500 practice, 460 competition old,
+										// 720
+	private static int	Close	= 900;	// 650 practice, 1150 competition old,
+										// 1150 competition new
+	private static int	Out		= 2020;	// 2000 is competition, 1750 is practice
+	private static int	Shoot	= 500;
 	// before out was 1930
 	// tset
 
-	private static final int RADIUS = 100;
-	private static final boolean LATCHED = false;
-	private static final boolean RELEASE = true;
+	private static final int		RADIUS	= 100;
+	private static final boolean	LATCHED	= false;
+	private static final boolean	RELEASE	= true;
 
-	private double previous_error = 0;
-	private double integral = 0;
-	private int setpoint = Load;
-	private double P = 6.0;
-	private double I = 3.0;
-	private double D = 0.0;
-	private double MAX = 0.6;
+	private double	previous_error	= 0;
+	private double	integral		= 0;
+	private int		setpoint		= Load;
+	private double	P				= 6.0;
+	private double	I				= 3.0;
+	private double	D				= 0.0;
+	private double	MAX				= 0.6;
 
 	private long time = System.currentTimeMillis();
 
@@ -61,24 +64,25 @@ public class Catapult {
 		double dt = (System.currentTimeMillis() - time);
 		double measured = pot.getValue();
 		SmartDashboard.putNumber("Catapult Pot", measured);
-		double error = setpoint - measured; // difference between setpoint and measured
-		integral += error * dt / 1000.0; // number of units times the number of seconds between updates, is accumulated over time
+		double error = setpoint - measured; // difference between setpoint and
+											// measured
+		integral += error * dt / 1000.0; // number of units times the number of
+											// seconds between updates, is
+											// accumulated over time
 		double derivative = (error - previous_error) / dt;
 		double output = (P / 1000.0) * error + (I / 1000.0) * integral + (D / 1000.0) * derivative;
 
 		if (isLoad() && inDeadbandLoad()) {
 			output = 0;
 			integral = 0;
-		}
-		else if (isShoot() && inDeadbandShoot()) {
+		} else if (isShoot() && inDeadbandShoot()) {
+			output = 0;
+			integral = 0;
+		} else if (isOut() && inDeadbandOut()) {
 			output = 0;
 			integral = 0;
 		}
-		else if (isOut() && inDeadbandOut()) {
-			output = 0;
-			integral = 0;
-		}
-		
+
 		if (isOut())
 			SmartDashboard.putNumber("Actual Out Posistion", pot.getValue());
 
@@ -96,7 +100,9 @@ public class Catapult {
 		time = System.currentTimeMillis();
 	}
 
-	// public void calibrate(double input) { motor.set(input); SmartDashboard.putNumber("Catapult Output", input); SmartDashboard.putNumber("Catapult
+	// public void calibrate(double input) { motor.set(input);
+	// SmartDashboard.putNumber("Catapult Output", input);
+	// SmartDashboard.putNumber("Catapult
 	// Pot", pot.getValue()); }
 
 	public void setLoad() {
