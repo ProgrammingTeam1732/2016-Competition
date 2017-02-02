@@ -1,4 +1,4 @@
-package org.usfirst.frc.team1732.subsystems;
+/*package org.usfirst.frc.team1732.subsystems;
 
 import java.util.ArrayList;
 
@@ -201,7 +201,7 @@ public class Camera {
 		}
 	}
 
-	/*public void openCamera() {
+	public void openCamera() {
 		try {
 			//session = NIVision.IMAQdxOpenCamera("cam1", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
 			
@@ -223,9 +223,9 @@ public class Camera {
 			e.printStackTrace();
 			camera_exists = false;
 		}
-	}*/
+	}
 
-	/*public void startCamera() {
+	public void startCamera() {
 		try {
 			//NIVision.IMAQdxStartAcquisition(session);
 			camera_exists = true;
@@ -247,9 +247,9 @@ public class Camera {
 			e.printStackTrace();
 			camera_exists = false;
 		}
-	}*/
+	}
 	
 	public void startCapture() {
 		camera.startCapture();
 	}
-}
+}*/

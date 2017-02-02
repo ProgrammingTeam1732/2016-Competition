@@ -853,7 +853,7 @@ public class Robot extends IterativeRobot {
 		System.out.println("Test Initialization");
 	}
 
-	public void testPeriodic() {
+	/*public void testPeriodic() {
 		bot.test_mode(input);
 	}
 
@@ -861,7 +861,7 @@ public class Robot extends IterativeRobot {
 		bot.disabled();
 		SmartDashboard.putNumber("Delay", System.currentTimeMillis() - last);
 		last = System.currentTimeMillis();
-	}
+	}*/
 
 	long start_time;
 
@@ -916,7 +916,7 @@ public class Robot extends IterativeRobot {
 		sm.setAuto(true);
 		sm.setState("Auto Init");
 
-		bot.prepareAuto();
+		//bot.prepareAuto();
 	}
 
 	// TODO:
